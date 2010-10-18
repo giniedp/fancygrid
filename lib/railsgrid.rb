@@ -2,6 +2,9 @@
   require File.join(File.dirname(__FILE__), file)
 end
 
+# enables rake tasks in the final application
+Dir["#{Gem.searcher.find('railsgrid').full_gem_path}/**/tasks/*.rake"].each { |ext| load ext }
+
 module Railsgrid
   class Railtie < Rails::Railtie
     initializer "railsgrid.initialize" do |app|

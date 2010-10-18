@@ -16,6 +16,44 @@ Gem::Specification.new do |s|
     "LICENSE",
      "README.rdoc"
   ]
+  s.files = [
+    ".gitignore",
+     "LICENSE",
+     "README.rdoc",
+     "Rakefile",
+     "VERSION",
+     "app/public/images/railsgrid/add.png",
+     "app/public/images/railsgrid/clear.png",
+     "app/public/images/railsgrid/ddn.png",
+     "app/public/images/railsgrid/dn.png",
+     "app/public/images/railsgrid/first.png",
+     "app/public/images/railsgrid/last.png",
+     "app/public/images/railsgrid/loading.gif",
+     "app/public/images/railsgrid/magnifier.png",
+     "app/public/images/railsgrid/next.png",
+     "app/public/images/railsgrid/prev.png",
+     "app/public/images/railsgrid/reload.png",
+     "app/public/images/railsgrid/th_bg.png",
+     "app/public/images/railsgrid/up.png",
+     "app/public/images/railsgrid/uup.png",
+     "app/public/javascripts/railsgrid.js",
+     "app/public/stylesheets/railsgrid.css",
+     "app/views/railsgrid/_cells.html.haml",
+     "app/views/railsgrid/_controls.html.haml",
+     "app/views/railsgrid/_frame.html.haml",
+     "config/locales/railsgrid.de.yml",
+     "config/locales/railsgrid.en.yml",
+     "lib/column.rb",
+     "lib/railsgrid.rb",
+     "lib/result.rb",
+     "lib/table.rb",
+     "lib/table_helper.rb",
+     "lib/tasks/railsgrid.rake",
+     "lib/version.rb",
+     "railsgrid.gemspec",
+     "test/helper.rb",
+     "test/test_railsgrid.rb"
+  ]
   s.homepage = %q{http://github.com/giniedp/railsgrid}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
