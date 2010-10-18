@@ -6,7 +6,10 @@ Still in development
 
 Howto
 =====
+In your gemfile
 
+    gem 'railsgrid', :git => 'git@github.com:giniedp/railsgrid.git', :branch => 'master'
+    
 In your controller
 
     def index
