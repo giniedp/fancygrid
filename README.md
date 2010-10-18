@@ -3,17 +3,24 @@ Fancygrid
 
 Fancygrid is under heavy development. Things may change frequently.
 
+Requirements
+=====
+jQuery >= 1.4.2
+Rails 3
+Haml
+
 Installation
 =====
 In your gemfile
-
     gem 'fancygrid', :git => 'git@github.com:giniedp/fancygrid.git', :branch => 'master'
     
 Run
+    bundle install
     
+and
     rake fancygrid:install
     
-And follow the instructions
+then follow the instructions
 
 Howto
 =====
@@ -25,25 +32,25 @@ In your Controller e.g. UsersController
         # setup and initialize fancygrid to display users
         fancygrid_for :users do |grid|
         
-          # setup some default query options
+          # specify default query options
           grid.query.merge!({
-            
             :order => ["created_at DESC"]
           })
           
           # specify attributes to display  
           grid.attributes([ :id, :username, :email ])
           
-          # specify methods to call on each
+          # specify methods to call on each result
           grid.methods( :full_name )
           
-          # specify cells that will be rendered with cutom code
+          # specify cells that will be rendered with custom code
           grid.cells(:actions)
           
           # specify the url where this setup is defined
           # here we are in the index method of the users controller
+          # this is a callback url to update the grid via ajax
           grid.url = users_path
-      
+          
         end
         
       end
