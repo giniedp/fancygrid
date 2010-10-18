@@ -4,19 +4,19 @@ require 'rake'
 require 'net/http'
 require 'uri'
 
-namespace :railsgrid do
+namespace :fancygrid do
   
-  desc "generates needed railsgrid javascript"
+  desc "generates needed fancygrid javascript"
   task :javascript => :environment do 
 
-    js_source = File.join(File.dirname(__FILE__), '..', '..', 'app', 'public', 'javascripts', 'railsgrid.js')
-    js_target = Rails.root.join('public', 'javascripts', 'railsgrid.js')
-    js_min = Rails.root.join('public', 'javascripts', 'railsgrid.min.js')
+    js_source = File.join(File.dirname(__FILE__), '..', '..', 'app', 'public', 'javascripts', 'fancygrid.js')
+    js_target = Rails.root.join('public', 'javascripts', 'fancygrid.js')
+    js_min = Rails.root.join('public', 'javascripts', 'fancygrid.min.js')
     
-    puts "- Remove existing railsgrid javascripts"
+    puts "- Remove existing fancygrid javascripts"
     File.delete(js_target) if File.exists?(js_target)
     File.delete(js_min) if File.exists?(js_min)
-    puts "- Copy railsgrid javascripts"
+    puts "- Copy fancygrid javascripts"
     File.open(js_target, 'w') do |f|
       File.open(js_source, "r") do |file|
         while (line = file.gets)
@@ -26,12 +26,12 @@ namespace :railsgrid do
     end
   end
   
-  desc "generates minified railsgrid javascript"
+  desc "generates minified fancygrid javascript"
   task :javascript_min => [:environment, :javascript] do 
     
-    js_source = File.join(File.dirname(__FILE__), '..', '..', 'app', 'public', 'javascripts', 'railsgrid.js')
-    js_target = Rails.root.join('public', 'javascripts', 'railsgrid.js')
-    js_min = Rails.root.join('public', 'javascripts', 'railsgrid.min.js')
+    js_source = File.join(File.dirname(__FILE__), '..', '..', 'app', 'public', 'javascripts', 'fancygrid.js')
+    js_target = Rails.root.join('public', 'javascripts', 'fancygrid.js')
+    js_min = Rails.root.join('public', 'javascripts', 'fancygrid.min.js')
     
     lines = []
     File.open(js_target, 'r') do |f|
@@ -64,20 +64,20 @@ namespace :railsgrid do
     end
   end
   
-  desc "installs railsgrid"
+  desc "installs fancygrid"
   task :install => [:environment, :javascript] do
 
     puts "- Copy images"
-    FileUtils.mkdir_p(Pathname.new(Rails.public_path).join('images','railsgrid'))
+    FileUtils.mkdir_p(Pathname.new(Rails.public_path).join('images','fancygrid'))
     %w(add.png clear.png ddn.png dn.png first.png loading.gif magnifier.png next.png prev.png reload.png th_bg.png up.png uup.png).each do |filename|
-      plugin_path = File.join(File.dirname(__FILE__), "..", "..", "app", "public", "images", "railsgrid", "#{filename}")
-      rails_path = Pathname.new(Rails.public_path).join('images','railsgrid',filename)
+      plugin_path = File.join(File.dirname(__FILE__), "..", "..", "app", "public", "images", "fancygrid", "#{filename}")
+      rails_path = Pathname.new(Rails.public_path).join('images','fancygrid',filename)
       File.copy(plugin_path, rails_path) unless File.exists? rails_path
     end
     
     puts "- Copy stylesheets"
     FileUtils.mkdir_p(Pathname.new(Rails.public_path).join('stylesheets'))
-    %w(railsgrid.css).each do |filename|
+    %w(fancygrid.css).each do |filename|
       plugin_path = File.join(File.dirname(__FILE__), "..", "..", "app", "public", "stylesheets", "#{filename}")
       rails_path = Pathname.new(Rails.public_path).join('stylesheets', filename)
       File.copy(plugin_path, rails_path) unless File.exists? rails_path
@@ -85,8 +85,8 @@ namespace :railsgrid do
     
     puts "- Copy locales"
     %w(de en).each do |locale|
-      plugin_path = File.join(File.dirname(__FILE__), "..", "..", "config", "locales", "railsgrid.#{locale}.yml")
-      rails_path = Pathname.new(Rails.root).join('config','locales',"railsgrid.#{locale}.yml")
+      plugin_path = File.join(File.dirname(__FILE__), "..", "..", "config", "locales", "fancygrid.#{locale}.yml")
+      rails_path = Pathname.new(Rails.root).join('config','locales',"fancygrid.#{locale}.yml")
       File.copy(plugin_path, rails_path) unless File.exists? rails_path
     end
     
@@ -94,8 +94,8 @@ namespace :railsgrid do
     puts "="
     puts "=  Almost done. Next steps you have to do yourself:"
     puts "=  -----------------------------------------------"
-    puts "=  1 include the javascript file in your layout : \"= javascript_include_tag 'railsgrid'\""
-    puts "=  2 include the stylesheet file in your layout : \"= stylesheet_link_tag 'railsgrid'\""
+    puts "=  1 include the javascript file in your layout : \"= javascript_include_tag 'fancygrid'\""
+    puts "=  2 include the stylesheet file in your layout : \"= stylesheet_link_tag 'fancygrid'\""
     puts "="
     puts "====================================================================="
   end

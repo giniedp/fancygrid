@@ -1,5 +1,5 @@
 de:
-  railsgrid:
+  fancygrid:
     pagination:
       per_page: 'Ergebnisse pro Seite:'
       page: 'Seite'

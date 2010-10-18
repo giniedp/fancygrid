@@ -1,12 +1,12 @@
 (function($, undefined) {
 
-  $.fn.railsgrid = function(method) {
+  $.fn.fancygrid = function(method) {
     if ( methods[method] ) {
       return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
     } else if (typeof(method) === 'object' || !method) {
       return methods.init.apply(this, arguments);
     } else {
-      $.error( 'Method ' + method + ' does not exist on jQuery.railsgrid' );
+      $.error( 'Method ' + method + ' does not exist on jQuery.fancygrid' );
     }
   };
 
@@ -29,59 +29,59 @@
       
       return this.each(function(){
         var $this = $(this);
-        var data = $this.data('railsgrid');
+        var data = $this.data('fancygrid');
         
         if (!data){
-          // initialize railsgrid
+          // initialize fancygrid
           
           // set data
-          $this.data('railsgrid', settings);
+          $this.data('fancygrid', settings);
           
           // search attribute changed/focused
-          $this.find(".js-attribute").bind("change.railsgrid", function(){
-            $(this).parents(".js-railsgrid").railsgrid('newSearch'); 
+          $this.find(".js-attribute").bind("change.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('newSearch'); 
             return false;
-          }).bind("focus.railsgrid", function(){
+          }).bind("focus.fancygrid", function(){
             $(this).select();
             return false;
           });
           
           // search attribute changed/focused
-          $this.find(".js-page").bind("change.railsgrid", function(){
-            $(this).parents(".js-railsgrid").railsgrid('page', $(this).val()); 
+          $this.find(".js-page").bind("change.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('page', $(this).val()); 
             return false;
-          }).bind("focus.railsgrid", function(){
+          }).bind("focus.fancygrid", function(){
             $(this).select();
             return false;
           });
           
           // previous page click
-          $this.find(".js-previous").bind("click.railsgrid", function(){
-            $(this).parents(".js-railsgrid").railsgrid('previousPage'); 
+          $this.find(".js-previous").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('previousPage'); 
             return false;
           });
           
           // next page click
-          $this.find(".js-next").bind("click.railsgrid", function(){
-            $(this).parents(".js-railsgrid").railsgrid('nextPage'); 
+          $this.find(".js-next").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('nextPage'); 
             return false;
           });
           
           // reload click
-          $this.find(".js-reload").bind("click.railsgrid", function(){
-            $(this).parents(".js-railsgrid").railsgrid('reloadPage'); 
+          $this.find(".js-reload").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('reloadPage'); 
             return false;
           });
           
           // clear click
-          $this.find(".js-clear").bind("click.railsgrid", function(){
-            $(this).parents(".js-railsgrid").railsgrid('clearSearch'); 
+          $this.find(".js-clear").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('clearSearch'); 
             return false;
           });
           
           // clear click
-          $this.find(".js-per-page").bind("change.railsgrid", function(){
-            $(this).parents(".js-railsgrid").railsgrid('perPage', $(this).val()); 
+          $this.find(".js-per-page").bind("change.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('perPage', $(this).val()); 
             return false;
           });
         } else {
@@ -92,14 +92,14 @@
     destroy : function(){
       return this.each(function(){
         var $this = $(this);
-        data = $this.data('railsgrid');
-        $this.unbind('.railsgrid');
-        $this.removeData('railsgrid');
+        data = $this.data('fancygrid');
+        $this.unbind('.fancygrid');
+        $this.removeData('fancygrid');
       });
     },
     setupConditions : function(){
       var $this = $(this);
-      var data = $this.data('railsgrid');
+      var data = $this.data('fancygrid');
       
       data.query.conditions = {};
       $(this).find(".js-attribute").each(function(){
@@ -108,7 +108,7 @@
     },
     setupPagination : function(page, perPage){
       var $this = $(this);
-      var data = $this.data('railsgrid');
+      var data = $this.data('fancygrid');
       
       data.query.pagination = { page : 0, per_page : 20 };
       if(!isNaN(Number(page)) && Number(page) >= 0){
@@ -125,7 +125,7 @@
       var $this = $(this);
       var $content = $this.find(".js-tablewrapper");
       var $control = $this.find(".js-tablecontrol");
-      var data = $this.data('railsgrid');
+      var data = $this.data('fancygrid');
       data.queries += 1;
       
       $control.find(".js-reload").addClass("loading");
@@ -168,51 +168,51 @@
     },
     nextPage : function(){
       var $this = $(this);
-      data = $this.data('railsgrid');
-      $this.railsgrid("setupPagination", data.query.pagination.page + 1, data.query.pagination.per_page);
-      $this.railsgrid("search");
+      data = $this.data('fancygrid');
+      $this.fancygrid("setupPagination", data.query.pagination.page + 1, data.query.pagination.per_page);
+      $this.fancygrid("search");
     },
     previousPage : function(){
       var $this = $(this);
-      data = $this.data('railsgrid');
-      $this.railsgrid("setupPagination", data.query.pagination.page - 1, data.query.pagination.per_page);
-      $this.railsgrid("search");
+      data = $this.data('fancygrid');
+      $this.fancygrid("setupPagination", data.query.pagination.page - 1, data.query.pagination.per_page);
+      $this.fancygrid("search");
     },
     perPage : function(perPage){
       var $this = $(this);
-      data = $this.data('railsgrid');
-      $this.railsgrid("setupPagination", 0, perPage);
-      $this.railsgrid("search");
+      data = $this.data('fancygrid');
+      $this.fancygrid("setupPagination", 0, perPage);
+      $this.fancygrid("search");
     },
     page : function(page){
       var $this = $(this);
-      data = $this.data('railsgrid');
-      $this.railsgrid("setupPagination", Number(page) - 1, data.query.pagination.per_page);
-      $this.railsgrid("search");
+      data = $this.data('fancygrid');
+      $this.fancygrid("setupPagination", Number(page) - 1, data.query.pagination.per_page);
+      $this.fancygrid("search");
     },
     reloadPage : function(){
       var $this = $(this);
-      data = $this.data('railsgrid');
-      $this.railsgrid("setupPagination", data.query.pagination.page, data.query.pagination.per_page);
-      $this.railsgrid("setupConditions");
-      $this.railsgrid("search");
+      data = $this.data('fancygrid');
+      $this.fancygrid("setupPagination", data.query.pagination.page, data.query.pagination.per_page);
+      $this.fancygrid("setupConditions");
+      $this.fancygrid("search");
     },
     newSearch : function(){
       var $this = $(this);
-      data = $this.data('railsgrid');
-      $this.railsgrid("setupPagination", 0, data.query.pagination.per_page);
-      $this.railsgrid("setupConditions");
-      $this.railsgrid("search");
+      data = $this.data('fancygrid');
+      $this.fancygrid("setupPagination", 0, data.query.pagination.per_page);
+      $this.fancygrid("setupConditions");
+      $this.fancygrid("search");
     },
     clearSearch : function(){
       var $this = $(this);
-      data = $this.data('railsgrid');
+      data = $this.data('fancygrid');
       $this.find(".js-attribute").each(function(){
         $(this).val("");
       });
-      $this.railsgrid("setupPagination", 0, data.query.pagination.per_page);
-      $this.railsgrid("setupConditions");
-      $this.railsgrid("search");
+      $this.fancygrid("setupPagination", 0, data.query.pagination.per_page);
+      $this.fancygrid("setupConditions");
+      $this.fancygrid("search");
     },
     action : function(name, value){
       $(this).trigger("action_" + name, value);

@@ -1,14 +1,25 @@
-module Railsgrid
+module Fancygrid
   class Table
     cattr_accessor :frame_template, :control_template, :cells_template
-    attr_accessor :model_classname, :model_class, :css_selector, :url
+    attr_accessor :name, :model_classname, :model_class, :table_name, :url
     attr_accessor :columns, :query, :result, :toolbars
     
-    def initialize model_classname
-      self.model_classname = model_classname.to_s
-      self.model_class     = model_classname.to_s.camelize.constantize
-      self.css_selector    = model_classname.to_s.gsub(/\//, "_") # cant have slashes in css selector
-      self.url             = "/" + model_classname.to_s.pluralize
+    #
+    #
+    #
+    def initialize resource
+      
+      self.name             = resource
+      self.model_class      = resource.to_param.singularize.camelize.constantize
+      self.model_classname  = self.model_class.name.underscore
+      
+      if self.model_class < ActiveRecord::Base
+        self.table_name       = self.model_class.table_name
+      else
+        self.table_name       = self.model_classname.camelize.demodulize.underscore.pluralize
+      end
+      
+      self.url             = "/"
       self.columns         = []
       self.result          = nil
       self.toolbars        = {}
@@ -24,14 +35,10 @@ module Railsgrid
       }
     end
     
-    def name
-      self.model_classname
-    end
-    
     def fields field_type, model_name, names
       names = [names] unless names.is_a? Array
       names.each do |name|
-        self.columns << Railsgrid::Column.new(field_type, "#{model_name}[#{name}]", self)
+        self.columns << Fancygrid::Column.new(name, field_type, "#{model_name}[#{name}]", self)
       end
     end
     
@@ -49,7 +56,7 @@ module Railsgrid
     
     def button toolbar_name, button_name, button_value
       # TODO
-      #self.toolbars[toolbar_name] ||= Railsgrid::Toolbar.new(toolbar_name)
+      #self.toolbars[toolbar_name] ||= Fancygrid::Toolbar.new(toolbar_name)
       #self.toolbars[toolbar_name].button(button_name, button_value)
     end
     
@@ -87,7 +94,7 @@ module Railsgrid
     def run_query params
       unless self.result
         self.build_query(params)
-        self.result = Railsgrid::Result.new(self)
+        self.result = Fancygrid::Result.new(self)
       end
       self.result
     end

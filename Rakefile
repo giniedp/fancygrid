@@ -4,11 +4,11 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "railsgrid"
+    gem.name = "fancygrid"
     gem.summary = %Q{Tables in rails}
     gem.description = %Q{Easy tables in rails}
     gem.email = "giniedp@online.de"
-    gem.homepage = "http://github.com/giniedp/railsgrid"
+    gem.homepage = "http://github.com/giniedp/fancygrid"
     gem.authors = ["Alexander Gräfenstein"]
     # gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
@@ -47,7 +47,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "railsgrid #{version}"
+  rdoc.title = "fancygrid #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

@@ -1,4 +1,4 @@
-railsgrid
+fancygrid
 =====
 
 
@@ -8,12 +8,12 @@ Howto
 =====
 In your gemfile
 
-    gem 'railsgrid', :git => 'git@github.com:giniedp/railsgrid.git', :branch => 'master'
+    gem 'fancygrid', :git => 'git@github.com:giniedp/fancygrid.git', :branch => 'master'
     
 In your controller
 
     def index
-      railsgrid_for :job do |table|
+      fancygrid_for :job do |table|
         table.query.merge!({
           :order => ["created_at DESC"], :group => "jobs.id"
         })
@@ -27,9 +27,9 @@ In your controller
   
 In your job/index.html.haml
 
-    = railsgrid :job
+    = fancygrid :job
   
-In your railsgrid/_cells.html.haml
+In your fancygrid/_cells.html.haml
 
     - if column.column_name == "job[action]"
       = link_to "Edit", edit_job_path(item)

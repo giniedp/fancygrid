@@ -1,50 +1,47 @@
 require 'ftools'
 
-module Railsgrid
+module Fancygrid
   
   module TableHelper    
-    def railsgrid_for name
-      name = name.classname.underscore if name.is_a?(Class)
-      name = name.to_s
-      
-      @railsgrid ||= {}
-      @railsgrid[name] ||= Table.new(name)
+    
+    def fancygrid_for name
+      @fancygrid ||= {}
+      @fancygrid[name] ||= Table.new(name)
       if block_given?
-        yield @railsgrid[name]
+        yield @fancygrid[name]
       end
-      @railsgrid[name].save
+      @fancygrid[name].save
     end
     
-    def railsgrid_results name
-      name = name.to_s
+    def fancygrid_results name
       if block_given?
-        railsgrid_for(name).run_query(params).values.each do |item| yield item end
+        fancygrid_for(name).run_query(params).values.each do |item| yield item end
       else
-        railsgrid_for(name).run_query(params).values
+        fancygrid_for(name).run_query(params).values
       end
     end
     
-    def railsgrid_result_values name, item
-      name = name.to_s
+    def fancygrid_result_values name, item
       if block_given?
-        railsgrid_for(name).values(item, params) do |item, col|
-          render :file => Railsgrid::Table.cells_template, :locals => { :item => item, :column => col }
+        fancygrid_for(name).values(item, params) do |item, col|
+          render :file => Fancygrid::Table.cells_template, :locals => { :resource => item, :table => col.table, :column => col }
         end.each do |value| yield value end
       else
-        railsgrid_for(name).values(item, params)
+        fancygrid_for(name).values(item, params)
       end
     end
     
-    def railsgrid name
-      render :file => Railsgrid::Table.frame_template, :locals => { :railsgrid => railsgrid_for(name) }
+    def fancygrid name
+      render :file => Fancygrid::Table.frame_template, :locals => { :fancygrid => fancygrid_for(name) }
     end
     
-    def railsgrid_page_opts
+    def fancygrid_page_opts
       {
         :selection => [5, 10, 15, 20, 25, 30, 40, 50],
         :selected => (params[:pagination] and params[:pagination][:per_page] or 20)
       }
     end
+    
   end
 
 end

@@ -1,4 +1,4 @@
-module Railsgrid
+module Fancygrid
   class Result
     attr_accessor :values, :total
     
