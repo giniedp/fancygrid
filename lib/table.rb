@@ -7,11 +7,17 @@ module Fancygrid
     #
     #
     #
-    def initialize resource
+    def initialize resource, klass=null
       
       self.name             = resource
-      self.model_class      = resource.to_param.singularize.camelize.constantize
-      self.model_classname  = self.model_class.name.underscore
+      
+      if klass.is_a? Class 
+        self.model_class      = klass 
+        self.model_classname  = klass.name.underscore
+      else
+        self.model_class      = resource.to_param.singularize.camelize.constantize
+        self.model_classname  = self.model_class.name.underscore
+      end
       
       if self.model_class < ActiveRecord::Base
         self.table_name       = self.model_class.table_name

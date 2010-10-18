@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{fancygrid}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Gr\303\244fenstein"]
@@ -37,6 +37,7 @@ Gem::Specification.new do |s|
      "app/public/images/fancygrid/up.png",
      "app/public/images/fancygrid/uup.png",
      "app/public/javascripts/fancygrid.js",
+     "app/public/stylesheets/_fancygrid.scss",
      "app/public/stylesheets/fancygrid.css",
      "app/views/fancygrid/_cells.html.haml",
      "app/views/fancygrid/_controls.html.haml",

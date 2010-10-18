@@ -1,0 +1,165 @@
+$fg_background_system_focus  : none repeat scroll 0 0 #fffae0;
+$fg_background_system        : none repeat scroll 0 0 #f8f8f8;
+$fg_background_system_odd    : none repeat scroll 0 0 #e8e8e8;
+$fg_background_system_hover  : none repeat scroll 0 0 #e0ffff;
+
+$fg_background_control       : none repeat scroll 0 0 #d7d7d7;
+$fg_background_control_hover : none repeat scroll 0 0 #d7d7d7;
+
+$fg_background_round         : #d7d7d7 url('/images/fancygrid/th_bg.png') top repeat-x;
+$fg_border                   : 1px solid #d7d7d7;
+$fg_border_separator1        : 1px solid #cccccc;
+$fg_border_separator2        : 1px solid #ffffff;
+
+.js-fancygrid{
+  .js-tablewrapper{
+  
+    clear       : left;
+    overflow    : auto;
+    margin      : 0px;
+    min-height  : 60px;
+    border-left : $fg_border ;
+    border-right: $fg_border ;
+    
+    table{
+      width         : 100%;
+      border-spacing: 0px;
+      border        : $fg_border;
+      
+      tr{
+        th{
+          text-align  : left;
+          font-weight : bold;
+          padding     : 5px 10px 5px 10px;
+          border-right: $fg_border;
+          background  : $fg_background_control;
+        }
+        td{
+          padding     : 4px 10px 4px 10px;
+          border-right: $fg_border;
+          background  : $fg_background_system;
+          img{ 
+            vertical-align: bottom; 
+          }
+        }
+        .actions{
+          text-align: center;
+          a { 
+            display: none; 
+          }
+        }
+      }
+      tr:nth-child(odd) {
+        td{
+          background: $fg_background_system_odd;
+        }
+      }
+
+      tr:hover{
+        td{
+          background: $fg_background_system_hover;
+        }
+        .actions{
+          text-align: center;
+          a{
+            display: inline;
+          }
+        }
+      }
+      
+      tr.js-search{
+        td{
+          padding   : 4px;
+          background: $fg_background_system;
+          
+          input{
+            display : inline;
+            width   : 98%;
+            height  : 25px;
+            margin  : 0px;
+            padding : 0px;
+            border  : $fg_border;
+          }
+          input:focus{
+            background: $fg_background_system_focus;
+          }
+        }
+      }
+      tr.js-search:hover {
+        td {
+          background: $fg_background_system;
+        }
+      }
+    }
+  }
+
+  ul.js-tablecontrol.top{
+    background: $fg_background_round;
+  }
+  ul.js-tablecontrol.bottom{
+    background: $fg_background_control;
+  }
+  ul.js-tablecontrol {
+    clear        : both;
+    display      : block;
+    text-align   : center;
+    margin       : 0px;
+    padding      : 5px;
+    
+    li {
+      list-style : none;
+      display    : inline;
+      margin     : 0px 2px 0px 2px; 
+      padding    : 0;
+      input, select{
+        width: 60px !important;
+      }
+    }
+    li.button{
+      width  : 20px;
+      height : 20px;
+      cursor : pointer;
+      
+      span{
+        width  : 20px;
+        height : 20px;
+      }
+      
+      .js-first{
+        background: url('/images/fancygrid/first.png') no-repeat;
+      }
+      .js-last{
+        background: url('/images/fancygrid/last.png') no-repeat;
+      }
+      .js-next{
+        background: url('/images/fancygrid/next.png') no-repeat;
+      }
+      .js-previous{
+        background: url('/images/fancygrid/prev.png') no-repeat;
+      }
+      .js-reload{
+        background: url('/images/fancygrid/reload.png') no-repeat;
+      }
+      .js-clear{
+        background: url('/images/fancygrid/clear.png') no-repeat;
+      }
+      .js-magnify{
+        background: url('/images/fancygrid/magnifier.png') no-repeat;
+      }
+      
+      .loading{
+        background: url('/images/fancygrid/loading.gif') no-repeat;
+      }
+      .new{
+        background: url('/images/fancygrid/add.png') no-repeat;
+      }
+    }
+
+    li.separator{
+      border-left  : $fg_border_separator1;
+      border-right : $fg_border_separator2;
+      height       : 30px;
+      margin       : 1px;
+    }
+  }
+}

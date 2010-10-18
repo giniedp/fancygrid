@@ -4,9 +4,9 @@ module Fancygrid
   
   module TableHelper    
     
-    def fancygrid_for name
+    def fancygrid_for name, klass=nil
       @fancygrid ||= {}
-      @fancygrid[name] ||= Table.new(name)
+      @fancygrid[name] ||= Table.new(name, klass)
       if block_given?
         yield @fancygrid[name]
       end
