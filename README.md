@@ -12,7 +12,7 @@ Haml
 Installation
 =====
 In your gemfile
-    gem 'fancygrid', :git => 'git@github.com:giniedp/fancygrid.git', :branch => 'master'
+    gem 'fancygrid', :git => 'git://github.com/giniedp/fancygrid.git'
     
 Run
     bundle install
