@@ -1,7 +1,6 @@
-- case table.name
+- case grid.name
 - when :users
-  - case column.name
+  - case cell.name
   - when :actions
-    = link_to "Show", '#'
-    = link_to "Edit", '#'
-    = link_to "Delete", '#'
+    = link_to "Show", user_path(resource)
+    = link_to "Edit", edit_user_path(resource)

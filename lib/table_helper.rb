@@ -24,7 +24,7 @@ module Fancygrid
     def fancygrid_result_values name, item
       if block_given?
         fancygrid_for(name).values(item, params) do |item, col|
-          render :file => Fancygrid::Table.cells_template, :locals => { :resource => item, :table => col.table, :column => col }
+          render :file => Fancygrid::Table.cells_template, :locals => { :resource => item, :grid => col.table, :cell => col }
         end.each do |value| yield value end
       else
         fancygrid_for(name).values(item, params)
