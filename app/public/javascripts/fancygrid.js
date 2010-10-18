@@ -37,37 +37,60 @@
           // set data
           $this.data('fancygrid', settings);
           
-          // input field changed/focused binding
-          changeActions = {
-            ".js-attribute" : "newSearch",
-            ".js-page"      : "page"
-          }
-          for (var k in clickActions){
-            $this.find(k).bind("change.fancygrid", function(){
-              $(this).parents(".js-fancygrid").fancygrid(clickActions[k]); 
-              return false;
-            }).bind("focus.fancygrid", function(){
-              $(this).select();
-              return false;
-            });
-          }
+          // search attribute changed/focused
+          $this.find(".js-attribute").bind("change.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('newSearch'); 
+            return false;
+          }).bind("focus.fancygrid", function(){
+            $(this).select();
+            return false;
+          });
           
-          // control buttons binding
-          clickActions = {
-            ".js-previous" : "previousPage",
-            ".js-next"     : "nextPage",
-            ".js-reload"   : "reloadPage",
-            ".js-clear"    : "clearSearch",
-            ".js-per-page" : "perPage",
-            ".js-magnify"  : "toggleSearch"
-          }
-          for (var k in clickActions){
-            $this.find(k).bind("click.fancygrid", function(){
-              $(this).parents(".js-fancygrid").fancygrid(clickActions[k]); 
-              return false;
-            });  
-          }
-
+          // search attribute changed/focused
+          $this.find(".js-page").bind("change.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('page', $(this).val()); 
+            return false;
+          }).bind("focus.fancygrid", function(){
+            $(this).select();
+            return false;
+          });
+          
+          // previous page click
+          $this.find(".js-previous").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('previousPage'); 
+            return false;
+          });
+          
+          // next page click
+          $this.find(".js-next").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('nextPage'); 
+            return false;
+          });
+          
+          // reload click
+          $this.find(".js-reload").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('reloadPage'); 
+            return false;
+          });
+          
+          // clear click
+          $this.find(".js-clear").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('clearSearch'); 
+            return false;
+          });
+          
+          // per page change
+          $this.find(".js-per-page").bind("change.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('perPage', $(this).val()); 
+            return false;
+          });
+          
+          // magnifier click
+          $this.find(".js-magnify").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('toggleSearch', $(this).val()); 
+            return false;
+          });
+          
         } else {
           $.extend(data, options);
         }
@@ -202,7 +225,7 @@
       $(this).trigger("action_" + name, value);
     },
     toggleSearch : function(){
-      $(this).find(".js-search").toggle();
+      $(this).find(".js-search").toggle("slow");
     }
   };
 })(jQuery);
