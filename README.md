@@ -34,6 +34,7 @@ In your railsgrid/_cells.html.haml
     - if column.column_name == "job[action]"
       = link_to "Edit", edit_job_path(item)
  
+Or visit http://github.com/nicolai86/flexirails
 
 Copyright
 =====
