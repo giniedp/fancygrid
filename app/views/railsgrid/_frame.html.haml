@@ -1,0 +1,30 @@
+.js-railsgrid{ :class => railsgrid.css_selector }
+  = render :file => Railsgrid::Table.control_template, :locals => { :railsgrid => railsgrid, :html_class => "top" }
+  .js-tablewrapper
+    %table
+      %tr.js-header
+        - railsgrid.columns.each do |column|
+          %th{ :class => column.css_name}
+            = column.human_name
+          
+      %tr.js-search
+        - railsgrid.columns.each do |column|
+          %td{ :class => column.css_name}
+            - if column.searchable
+              %input.js-attribute{ :type => "text", :name => column.column_name, :value => column.search_value }
+      
+      - if params[:pagination]
+        - railsgrid_results(railsgrid.name) do |item|
+          %tr.js-row
+            - railsgrid_result_values(railsgrid.name, item) do |value|
+              %td
+                = value
+  
+  = render :file => Railsgrid::Table.control_template, :locals => { :railsgrid => railsgrid, :html_class => "bottom" }
+  
+:javascript
+  $(function(){
+    $(".js-railsgrid.#{railsgrid.css_selector}").railsgrid({ url : '#{railsgrid.url}'});
+    $(".js-railsgrid.#{railsgrid.css_selector}").railsgrid("reloadPage");
+  });
+  

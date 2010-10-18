@@ -1,0 +1,7 @@
+de:
+  railsgrid:
+    pagination:
+      per_page: 'Ergebnisse pro Seite:'
+      page: 'Seite'
+      of: 'von'
+      results: 'Ergebnisse'

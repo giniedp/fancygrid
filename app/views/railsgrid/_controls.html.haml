@@ -1,0 +1,34 @@
+%ul.js-tablecontrol{ :class => html_class }
+  %li
+    %span
+      = I18n.t("railsgrid.pagination.per_page", :default => "Results per Page")
+    = select(:per_page, :to_i, railsgrid_page_opts[:selection], { :selected => railsgrid_page_opts[:selected] }, :class => "js-per-page")
+  %li.separator
+  %li.button
+    %span.js-previous
+      &nbsp;&nbsp;&nbsp;
+  %li
+    %span
+      = I18n.t("railsgrid.pagination.page", :default => "Page")
+    %input.js-page{ :type => "text", :value => "1"}
+    %span
+      = I18n.t("railsgrid.pagination.of", :default => "of")
+    %span.js-page-total
+      = railsgrid.result and railsgrid.result.total
+  %li.button
+    %span.js-next
+      &nbsp;&nbsp;&nbsp;
+  %li.separator
+  %li.button
+    %span.js-reload
+      &nbsp;&nbsp;&nbsp;
+  %li.button
+    %span.js-clear
+      &nbsp;&nbsp;&nbsp;
+  %li.separator
+  /- if railsgrid.toolbars[:default]
+  /  - railsgrid.toolbars[:default].each do |k, v|
+  /    %li.button
+  /      %span{ :class => k, :onclick => "$(this).parents('.js-railsgrid').railsgrid('action', '#{k}', '#{v}'); return false;" }
+  /        &nbsp;&nbsp;&nbsp;
+  /
