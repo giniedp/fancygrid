@@ -21,12 +21,16 @@ module Fancygrid
       self.searchable      = %(attribute).include? column_type.to_s 
       
       temp = column_name_split.last
-      self.human_name   = model_class.human_attribute_name(temp, :default => temp.camelize) 
+      if model_class.respond_to?(:human_attribute_name)
+        self.human_name   = model_class.human_attribute_name(temp, :default => temp.camelize) 
+      else
+        self.human_name   = temp.camelize
+      end
       self.human_name   = I18n.t("fancygrid.tables.#{column_name_split.join('.')}", :default => human_name)
 
       self.search_value = ""
       
-      if self.model_class < ActiveRecord::Base
+      if self.model_class.respond_to?(:table_name)
         self.table_name = self.model_class.table_name
       else
         self.table_name = self.model_class.name.underscore.pluralize

@@ -9,7 +9,12 @@ module Fancygrid
     #
     def initialize resource, klass=null
       
-      self.name             = resource
+      self.name     = resource
+      self.url      = "/"
+      self.columns  = []
+      self.result   = nil
+      self.toolbars = {}
+      self.query    = {}
       
       if klass.is_a? Class 
         self.model_class      = klass 
@@ -24,21 +29,7 @@ module Fancygrid
       else
         self.table_name       = self.model_classname.camelize.demodulize.underscore.pluralize
       end
-      
-      self.url             = "/"
-      self.columns         = []
-      self.result          = nil
-      self.toolbars        = {}
-      self.query = {
-        :joins      =>  nil, 
-        :limit      =>  nil, 
-        :readonly   =>  false, 
-        :select     =>  nil, 
-        :group      =>  nil, 
-        :offset     =>  nil, 
-        :include    =>  nil, 
-        :conditions =>  nil
-      }
+    
     end
     
     def fields field_type, model_name, names
@@ -66,13 +57,15 @@ module Fancygrid
       #self.toolbars[toolbar_name].button(button_name, button_value)
     end
     
-    def build_query params
+    def build_query params={}
       if params[:pagination]
         self.query[:limit] = params[:pagination][:per_page].to_i
         self.query[:offset] = params[:pagination][:page].to_i * self.query[:limit].to_i
       end
       
-      self.query[:order] = params[:order] if params[:order]
+      unless params[:order].blank?
+        self.query[:order] = params[:order] 
+      end
       
       if params[:conditions]
         params_conditions = {}
@@ -120,7 +113,14 @@ module Fancygrid
           end
         else
           instance = item
-          (value = instance.send(attribute.shift)) and (instance = value) while attribute.length > 0
+          while attribute.length > 0
+            if attribute[0].blank? || !instance.respond_to?(attribute[0])
+              attribute.shift
+            else
+              value = instance.send(attribute.shift)
+              instance = value
+            end
+          end
         end
         
         values << value
