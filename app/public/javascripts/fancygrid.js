@@ -138,10 +138,13 @@
       $control.find(".js-reload").addClass("loading");
       $this.fadeTo(data.searchFadeTime, data.searchFadeOpac);
       
+      queryData = { "fancygrid" : {} };
+      queryData["fancygrid"][data.name] = data.query;
+      
       $.ajax({
         type      : "GET",
         url       : data.url,
-        data      : data.query,
+        data      : queryData,
         dataType  : "html",
         success   : function(result){  
           data.queries -= 1;

@@ -1,30 +1,30 @@
 .js-fancygrid{ :class => fancygrid.name }
-  = render :file => Fancygrid::Table.control_template, :locals => { :fancygrid => fancygrid, :html_class => "top" }
+  = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "top" }
   .js-tablewrapper
     %table
       %tr.js-header
-        - fancygrid.columns.each do |column|
-          %th{ :class => column.css_name}
-            = column.human_name
+        - fancygrid.each_cell do |cell|
+          %th{ :class => cell.name }
+            = cell.human_name
           
       %tr.js-search
-        - fancygrid.columns.each do |column|
-          %td{ :class => column.css_name}
-            - if column.searchable
-              %input.js-attribute{ :type => "text", :name => column.column_name, :value => column.search_value }
+        - fancygrid.each_cell do |cell|
+          %td{ :class => cell.name}
+            - if cell.searchable
+              %input.js-attribute{ :type => "text", :name => cell.tag_name, :value => cell.search_value }
       
-      - if params[:pagination]
-        - fancygrid_results(fancygrid.name) do |item|
+      - if fancygrid.result
+        - fancygrid.result.each do |record|
           %tr.js-row
-            - fancygrid_result_values(fancygrid.name, item) do |value|
+            - fancyrow(fancygrid, record).each do |value|
               %td
                 = value
   
-  = render :file => Fancygrid::Table.control_template, :locals => { :fancygrid => fancygrid, :html_class => "bottom" }
+  = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "bottom" }
   
 :javascript
   $(function(){
-    $(".js-fancygrid.#{fancygrid.name}").fancygrid({ url : '#{fancygrid.url}'});
+    $(".js-fancygrid.#{fancygrid.name}").fancygrid({ url : '#{fancygrid.url}', name : '#{fancygrid.name}'});
     $(".js-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
   });
   

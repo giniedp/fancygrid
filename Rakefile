@@ -5,7 +5,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "fancygrid"
-    gem.summary = %Q{Tables in rails}
+    gem.summary = %Q{Grids in rails}
     gem.description = %Q{Easy tables in rails}
     gem.email = "giniedp@online.de"
     gem.homepage = "http://github.com/giniedp/fancygrid"

@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Gr\303\244fenstein"]
-  s.date = %q{2010-10-19}
+  s.date = %q{2010-10-20}
   s.description = %q{Easy tables in rails}
   s.email = %q{giniedp@online.de}
   s.extra_rdoc_files = [
@@ -45,11 +45,12 @@ Gem::Specification.new do |s|
      "config/locales/fancygrid.de.yml",
      "config/locales/fancygrid.en.yml",
      "fancygrid.gemspec",
-     "lib/column.rb",
      "lib/fancygrid.rb",
+     "lib/field.rb",
+     "lib/field_helper.rb",
+     "lib/grid.rb",
+     "lib/grid_helper.rb",
      "lib/result.rb",
-     "lib/table.rb",
-     "lib/table_helper.rb",
      "lib/tasks/fancygrid.rake",
      "lib/version.rb",
      "test/helper.rb",
@@ -59,7 +60,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{Tables in rails}
+  s.summary = %q{Grids in rails}
   s.test_files = [
     "test/helper.rb",
      "test/test_fancygrid.rb"

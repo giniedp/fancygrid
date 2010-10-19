@@ -1,4 +1,5 @@
-%w(table table_helper result column version).each do |file|
+# require plugin code files
+%w(grid_helper field_helper grid field result version).each do |file|
   require File.join(File.dirname(__FILE__), file)
 end
 
@@ -20,12 +21,12 @@ module Fancygrid
       app_cells_tpl = Rails.root.join("app", "views", "fancygrid", "_cells.html.haml")
       
       # used templates
-      Fancygrid::Table.frame_template = File.exists?(app_frame_tpl) ? app_frame_tpl : plg_frame_tpl
-      Fancygrid::Table.control_template = File.exists?(app_contr_tpl) ? app_contr_tpl : plg_contr_tpl
-      Fancygrid::Table.cells_template = File.exists?(app_cells_tpl) ? app_cells_tpl : plg_cells_tpl
+      Fancygrid::Grid.frame_template = File.exists?(app_frame_tpl) ? app_frame_tpl : plg_frame_tpl
+      Fancygrid::Grid.control_template = File.exists?(app_contr_tpl) ? app_contr_tpl : plg_contr_tpl
+      Fancygrid::Grid.cells_template = File.exists?(app_cells_tpl) ? app_cells_tpl : plg_cells_tpl
 
-      ActionController::Base.send :include, Fancygrid::TableHelper
-      ActionView::Base.send :include, Fancygrid::TableHelper  
+      ActionController::Base.send :include, Fancygrid::GridHelper
+      ActionView::Base.send :include, Fancygrid::GridHelper  
     end
   end
 end
