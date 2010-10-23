@@ -145,7 +145,7 @@ module Fancygrid
         
       elsif self.record_klass < ActiveResource::Base
         self.dataset = self.record_klass.find(:all, :params => self.query)
-        self.pagecount  = self.values.delete_at(values.length - 1).total
+        self.pagecount  = self.dataset.delete_at(self.dataset.length - 1).total
       end
       
       if self.pagecount.respond_to?(:length)
