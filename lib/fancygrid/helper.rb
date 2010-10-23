@@ -31,10 +31,12 @@ module Fancygrid
       end
     end
     
-    def fancygrid(name)
+    def fancygrid(name, data = nil)
+      fancygrid_instance = fancygrid_for(name)
+      fancygrid_instance.data = data if data
       render(
         :file   => Fancygrid::Grid.frame_template, 
-        :locals => { :fancygrid => fancygrid_for(name) })
+        :locals => { :fancygrid => fancygrid_instance })
     end
     
     def fancygrid_page_opts

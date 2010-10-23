@@ -127,8 +127,7 @@ module Fancygrid
     end
     
     def data= data
-      raise ArgumentError, "data must be enumerable" unless data.is_a? Enumerable
-      self.dataset = data
+      self.dataset = data.to_a
       self.pagecount = 1
       self.url = nil
     end
