@@ -42,12 +42,6 @@ $fg_border_separator2        : 1px solid #ffffff;
             vertical-align: bottom; 
           }
         }
-        .actions{
-          text-align: center;
-          a { 
-            display: none; 
-          }
-        }
       }
       tr:nth-child(odd) {
         td{
@@ -58,12 +52,6 @@ $fg_border_separator2        : 1px solid #ffffff;
       tr:hover{
         td{
           background: $fg_background_system_hover;
-        }
-        .actions{
-          text-align: center;
-          a{
-            display: inline;
-          }
         }
       }
       

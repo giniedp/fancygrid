@@ -14,7 +14,7 @@
     %span
       = I18n.t("fancygrid.pagination.of", :default => "of")
     %span.js-page-total
-      = fancygrid.result and fancygrid.result.total or 0
+      = fancygrid.pagecount or 0
   %li.button
     %span.js-next
       &nbsp;&nbsp;&nbsp;

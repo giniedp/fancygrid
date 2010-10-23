@@ -9,7 +9,7 @@ namespace :fancygrid do
   desc "generates needed fancygrid javascript"
   task :javascript => :environment do 
 
-    js_source = File.join(File.dirname(__FILE__), '..', '..', 'app', 'public', 'javascripts', 'fancygrid.js')
+    js_source = File.join(File.dirname(__FILE__), '..', '..', 'public', 'javascripts', 'fancygrid.js')
     js_target = Rails.root.join('public', 'javascripts', 'fancygrid.js')
     js_min = Rails.root.join('public', 'javascripts', 'fancygrid.min.js')
     
@@ -29,7 +29,7 @@ namespace :fancygrid do
   desc "generates minified fancygrid javascript"
   task :javascript_min => [:environment, :javascript] do 
     
-    js_source = File.join(File.dirname(__FILE__), '..', '..', 'app', 'public', 'javascripts', 'fancygrid.js')
+    js_source = File.join(File.dirname(__FILE__), '..', '..', 'public', 'javascripts', 'fancygrid.js')
     js_target = Rails.root.join('public', 'javascripts', 'fancygrid.js')
     js_min = Rails.root.join('public', 'javascripts', 'fancygrid.min.js')
     
@@ -70,7 +70,7 @@ namespace :fancygrid do
     puts "- Copy images"
     FileUtils.mkdir_p(Pathname.new(Rails.public_path).join('images','fancygrid'))
     %w(add.png clear.png ddn.png dn.png first.png loading.gif magnifier.png next.png prev.png reload.png th_bg.png up.png uup.png).each do |filename|
-      plugin_path = File.join(File.dirname(__FILE__), "..", "..", "app", "public", "images", "fancygrid", "#{filename}")
+      plugin_path = File.join(File.dirname(__FILE__), "..", "..", "public", "images", "fancygrid", "#{filename}")
       rails_path = Pathname.new(Rails.public_path).join('images','fancygrid',filename)
       File.copy(plugin_path, rails_path) unless File.exists? rails_path
     end
@@ -78,7 +78,7 @@ namespace :fancygrid do
     puts "- Copy stylesheets"
     FileUtils.mkdir_p(Pathname.new(Rails.public_path).join('stylesheets'))
     %w(fancygrid.css).each do |filename|
-      plugin_path = File.join(File.dirname(__FILE__), "..", "..", "app", "public", "stylesheets", "#{filename}")
+      plugin_path = File.join(File.dirname(__FILE__), "..", "..", "public", "stylesheets", "#{filename}")
       rails_path = Pathname.new(Rails.public_path).join('stylesheets', filename)
       File.copy(plugin_path, rails_path) unless File.exists? rails_path
     end

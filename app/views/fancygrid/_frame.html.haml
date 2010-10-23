@@ -1,30 +1,34 @@
 .js-fancygrid{ :class => fancygrid.name }
-  = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "top" }
+  - unless fancygrid.is_static?
+    = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "top" }
   .js-tablewrapper
     %table
       %tr.js-header
-        - fancygrid.each_cell do |cell|
-          %th{ :class => cell.name }
-            = cell.human_name
-          
-      %tr.js-search
-        - fancygrid.each_cell do |cell|
-          %td{ :class => cell.name}
-            - if cell.searchable
-              %input.js-attribute{ :type => "text", :name => cell.tag_name, :value => cell.search_value }
+        - fancygrid.each_leaf do |leaf|
+          %th{ :class => leaf.css_class }
+            = leaf.human_name
       
-      - if fancygrid.result
-        - fancygrid.result.each do |record|
+      - unless fancygrid.is_static?
+        %tr.js-search
+          - fancygrid.each_leaf do |leaf|
+            %td{ :class => leaf.css_class }
+              - if leaf.searchable
+                %input.js-attribute{ :type => "text", :name => leaf.tag_name, :value => leaf.search_value }
+      
+      - if fancygrid.dataset
+        - fancygrid.dataset.each do |record|
           %tr.js-row
-            - fancyrow(fancygrid, record).each do |value|
-              %td
-                = value
-  
-  = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "bottom" }
-  
-:javascript
-  $(function(){
-    $(".js-fancygrid.#{fancygrid.name}").fancygrid({ url : '#{fancygrid.url}', name : '#{fancygrid.name}'});
-    $(".js-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
-  });
+            - fancygrid.each_leaf do |leaf|
+              %td{ :class => leaf.css_class}
+                = fancyvalue_for(record, leaf)
+                
+  - unless fancygrid.is_static?
+    = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "bottom" }
+
+- unless fancygrid.is_static?
+  :javascript
+    $(function(){
+      $(".js-fancygrid.#{fancygrid.name}").fancygrid({ url : '#{fancygrid.url}', name : '#{fancygrid.name}'});
+      $(".js-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
+    });
   
