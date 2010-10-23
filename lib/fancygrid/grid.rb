@@ -128,7 +128,6 @@ module Fancygrid
     
     def data= data
       raise ArgumentError, "data must be enumerable" unless data.is_a? Enumerable
-      raise "calling 'data=' twice or after 'find' is not allowed" unless data.is_a? Enumerable
       self.dataset = data
       self.pagecount = 1
       self.url = nil
