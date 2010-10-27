@@ -124,7 +124,7 @@ module Fancygrid
     end
     
     def select_name
-      searchable and "#{self.record_table_name}.#{self.name}"
+      (searchable and "#{self.record_table_name}.#{self.name}" or nil)
     end
     
     def css_class
