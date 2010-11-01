@@ -2,7 +2,8 @@ module Fancygrid
 
   class Grid < Fancygrid::Node
     
-    cattr_accessor :frame_template
+    cattr_accessor :table_template
+    cattr_accessor :list_template
     cattr_accessor :control_template
     cattr_accessor :cells_template
     
@@ -13,7 +14,11 @@ module Fancygrid
     attr_accessor :request_params
     attr_accessor :dataset
     attr_accessor :pagecount
-    attr_accessor :template
+    attr_accessor :custom_cells_template
+    attr_accessor :search_enabled
+    
+    # may be one of 'table' or 'list'
+    attr_accessor :grid_type
     
     def initialize(name, klass = nil, table_name = nil, params = nil)
       super(self, nil, name)
@@ -26,7 +31,9 @@ module Fancygrid
       self.toolbars       = {}
       self.query          = {}
       self.request_params = (params || {})
-      self.template       = nil
+      self.custom_cells_template = nil
+      self.grid_type      = "table"
+      self.search_enabled = false
     end
     
     def is_static?
@@ -143,7 +150,7 @@ module Fancygrid
         
       elsif self.record_klass < ActiveResource::Base
         self.dataset = self.record_klass.find(:all, :params => self.query)
-        self.pagecount  = self.dataset.delete_at(self.dataset.length - 1).total
+        self.pagecount = self.dataset.delete_at(self.dataset.length - 1).total
       end
       
       if self.pagecount.respond_to?(:length)
@@ -153,6 +160,24 @@ module Fancygrid
     
     def save
       self
+    end
+    
+    def template= name
+      if name
+        self.custom_cells_template = Rails.root.join("app", "views", "fancygrid", "_#{name}.html.haml")
+      else
+        self.custom_cells_template = nil
+      end
+    end
+    
+    def js_options
+      {
+        :url => self.url,
+        :name => self.name,
+        :isStatic => self.is_static?,
+        :gridType => self.grid_type,
+        :searchEnabled => self.search_enabled
+      }.to_json
     end
   end
 end

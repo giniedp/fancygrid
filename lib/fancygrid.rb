@@ -15,17 +15,20 @@ module Fancygrid
       app_prefix = Rails.root.join("app", "views", "fancygrid")
       
       # plugin templates
-      plg_frame_tpl = File.join(plg_prefix, "_frame.html.haml")
+      plg_table_tpl = File.join(plg_prefix, "_table_frame.html.haml")
+      plg_list_tpl  = File.join(plg_prefix, "_list_frame.html.haml")
       plg_contr_tpl = File.join(plg_prefix, "_controls.html.haml")
       plg_cells_tpl = File.join(plg_prefix, "_cells.html.haml")
       
       # custom templates
-      app_frame_tpl = File.join(app_prefix, "_frame.html.haml")
+      app_table_tpl = File.join(app_prefix, "_table_frame.html.haml")
+      app_list_tpl  = File.join(plg_prefix, "_list_frame.html.haml")
       app_contr_tpl = File.join(app_prefix, "_controls.html.haml")
       app_cells_tpl = File.join(app_prefix, "_cells.html.haml")
       
       # used templates
-      Fancygrid::Grid.frame_template   = File.exists?(app_frame_tpl) ? app_frame_tpl : plg_frame_tpl
+      Fancygrid::Grid.table_template   = File.exists?(app_table_tpl) ? app_table_tpl : plg_table_tpl
+      Fancygrid::Grid.list_template    = File.exists?(app_list_tpl) ? app_list_tpl : plg_list_tpl
       Fancygrid::Grid.control_template = File.exists?(app_contr_tpl) ? app_contr_tpl : plg_contr_tpl
       Fancygrid::Grid.cells_template   = File.exists?(app_cells_tpl) ? app_cells_tpl : plg_cells_tpl
 

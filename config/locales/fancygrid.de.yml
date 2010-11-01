@@ -5,3 +5,10 @@ de:
       page: 'Seite'
       of: 'von'
       results: 'Ergebnisse'
+      
+      prev_page: 'Vorherige Seite'
+      next_page: 'Nächste Seite'
+      reload: 'Seite neu laden'
+    search:
+      clear: 'Suche löschen'
+      toggle: 'Suchleiste zeigen/verstecken'

@@ -69,7 +69,7 @@ namespace :fancygrid do
 
     puts "- Copy images"
     FileUtils.mkdir_p(Pathname.new(Rails.public_path).join('images','fancygrid'))
-    %w(add.png clear.png ddn.png dn.png first.png loading.gif magnifier.png next.png prev.png reload.png th_bg.png up.png uup.png).each do |filename|
+    %w(add.png clear.png ddn.png dn.png first.png loading.gif magnifier.png next.png prev.png reload.png th_bg.png up.png uup.png spacer.gif).each do |filename|
       plugin_path = File.join(File.dirname(__FILE__), "..", "..", "public", "images", "fancygrid", "#{filename}")
       rails_path = Pathname.new(Rails.public_path).join('images','fancygrid',filename)
       File.copy(plugin_path, rails_path) unless File.exists? rails_path

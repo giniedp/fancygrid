@@ -1,0 +1,29 @@
+.js-fancygrid{ :class => fancygrid.name }
+  - unless fancygrid.is_static?
+    = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "top" }
+  .js-tablewrapper
+    - unless fancygrid.is_static?
+      %ul.js-search
+        - fancygrid.each_leaf do |leaf|
+          - if leaf.searchable
+            %li{ :class => leaf.css_class }
+              %label{ :for => leaf.tag_name }
+                = leaf.human_name
+              %input.js-attribute{ :type => "text", :name => leaf.tag_name, :value => leaf.search_value }
+      
+    - if fancygrid.dataset
+      %ul.js-row
+        - fancygrid.dataset.each do |record|
+          %li{ :class => fancygrid.name.to_s.singularize }
+            = fancy_rendering_for(record, fancygrid)
+                
+  - unless fancygrid.is_static?
+    = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "bottom" }
+
+- unless fancygrid.is_static?
+  :javascript
+    $(function(){
+      $(".js-fancygrid.#{fancygrid.name}").fancygrid(#{fancygrid.js_options});
+      $(".js-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
+    });
+  

@@ -13,30 +13,48 @@ module Fancygrid
       @fancygrid[store_name].save
     end
     
-    def fancyvalue_for(record, leaf)      
+    def fancyvalue_for(record, leaf)
       value = leaf.value_from(record)
-      if leaf.formatable
-        template = Fancygrid::Grid.cells_template
-        if leaf.root.template
-          template = Rails.root.join("app", "views", "fancygrid", "_" + leaf.root.template + ".html.haml")
-        end
-        render( 
-          :file => template, 
-          :locals => { 
-            :grid => leaf.root, :record => record, :cell => leaf, :value => value 
-          }
-        )
-      else
-        value
-      end
+      return value unless leaf.formatable
+
+      template = leaf.root.custom_cells_template
+      template ||= Fancygrid::Grid.cells_template
+      render( 
+        :file => template, 
+        :locals => { 
+          :grid => leaf.root, :record => record, :cell => leaf, :value => value 
+        }
+      )
     end
-    
+       
+    def fancy_rendering_for(record, leaf)
+      template = leaf.root.custom_cells_template
+      template ||= Fancygrid::Grid.cells_template
+      render( 
+        :file => template, 
+        :locals => { 
+          :grid => leaf.root, :record => record, :cell => leaf, :value => record
+        }
+      )
+    end
+     
     def fancygrid(name, data = nil)
       fancygrid_instance = fancygrid_for(name)
       fancygrid_instance.data = data if data
-      render(
-        :file   => Fancygrid::Grid.frame_template, 
-        :locals => { :fancygrid => fancygrid_instance })
+
+      case fancygrid_instance.grid_type.to_s
+      when "table"
+        render(
+          :file   => Fancygrid::Grid.table_template, 
+          :locals => { :fancygrid => fancygrid_instance })
+      when "list"
+        render(
+          :file   => Fancygrid::Grid.list_template, 
+          :locals => { :fancygrid => fancygrid_instance })
+      else
+        raise "grid type '#{fancygrid_instance.grid_type}' is not supported. Please specify 'table' or 'list'"
+      end
+
     end
     
     def fancygrid_page_opts

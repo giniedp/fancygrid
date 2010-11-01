@@ -3,10 +3,11 @@
     %span
       = I18n.t("fancygrid.pagination.per_page", :default => "Results per Page")
     = select(:per_page, :to_i, fancygrid_page_opts[:selection], { :selected => fancygrid_page_opts[:selected] }, :class => "js-per-page")
+    
   %li.separator
   %li.button
-    %span.js-previous
-      &nbsp;&nbsp;&nbsp;
+    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-previous', :title => I18n.t("fancygrif.pagination.prev_page", :default => "Previous page"))
+    
   %li
     %span
       = I18n.t("fancygrid.pagination.page", :default => "Page")
@@ -15,20 +16,19 @@
       = I18n.t("fancygrid.pagination.of", :default => "of")
     %span.js-page-total
       = fancygrid.pagecount or 0
+      
   %li.button
-    %span.js-next
-      &nbsp;&nbsp;&nbsp;
+    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-next', :title => I18n.t("fancygrif.pagination.next_page", :default => "Next page"))
   %li.separator
+  
   %li.button
-    %span.js-reload
-      &nbsp;&nbsp;&nbsp;
+    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-reload', :title => I18n.t("fancygrif.pagination.reload", :default => "Reload"))
   %li.button
-    %span.js-clear
-      &nbsp;&nbsp;&nbsp;
+    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-clear', :title => I18n.t("fancygrif.search.clear", :default => "Clear search"))
   %li.button
-    %span.js-magnify
-      &nbsp;&nbsp;&nbsp;
-  %li.separator
+    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-magnify', :title => I18n.t("fancygrif.search.toggle", :default => "Show or hide searchtab"))
+    
+  /%li.separator
   /- if fancygrid.toolbars[:default]
   /  - fancygrid.toolbars[:default].each do |k, v|
   /    %li.button

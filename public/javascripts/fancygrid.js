@@ -13,16 +13,18 @@
   var methods = {
     init : function(options){
       var settings = { 
-        url       : "/", 
-        name      : "", 
-        query     : { 
-          pagination : { page : 0, per_page : 20 }, 
-          conditions : {},
-          order      : {}
+        url             : "/", 
+        name            : "", 
+        query           : { 
+          pagination    : { page : 0, per_page : 20 }, 
+          conditions    : {},
+          order         : {}
         },
         searchFadeTime  : 250,
         searchFadeOpac  : 0.5,
-        queries : 0
+        queries         : 0,
+        isStatic        : false,
+        gridType        : "table"
       }
       options = (options || {});
       $.extend(settings, options);
@@ -36,6 +38,10 @@
           
           // set data
           $this.data('fancygrid', settings);
+          
+          if (!settings.searchEnabled){
+            $this.find(".js-search").hide();
+          }
           
           // search attribute changed/focused
           $this.find(".js-attribute").bind("change.fancygrid", function(){
@@ -149,8 +155,9 @@
         success   : function(result){  
           data.queries -= 1;
           if(data.queries == 0){
-            $content.find(".js-row").detach();
-            $content.find("table").append($(result).find(".js-row"));
+            $this.fancygrid("clearData");
+            $this.fancygrid("attachData", $(result).find(".js-row"));
+            
             $control.find(".js-per-page").val(data.query.pagination.per_page);
             $control.find(".js-page").val(Number(data.query.pagination.page) + 1);
             
@@ -164,6 +171,7 @@
               $control.find(".js-reload").removeClass("loading");
             }); 
           }
+          $this.trigger("loadSuccess");
         },
         error     : function(){
           data.queries -= 1;
@@ -173,8 +181,26 @@
               $control.find(".js-reload").removeClass("loading");
             });
           }
+          $this.trigger("loadError");
         }
       });
+    },
+    clearData : function(){
+      $(this).find(".js-row").detach();
+    },
+    attachData : function(toAttach){
+      var $this = $(this);
+      var $content = $this.find(".js-tablewrapper");
+      var $control = $this.find(".js-tablecontrol");
+      var $search = $this.find(".js-search");
+      
+      var data = $this.data('fancygrid');
+      
+      if(data.gridType == "table"){
+        $content.find("table").append(toAttach);
+      } else {
+        $content.append(toAttach);
+      }
     },
     nextPage : function(){
       var $this = $(this);
@@ -228,7 +254,7 @@
       $(this).trigger("action_" + name, value);
     },
     toggleSearch : function(){
-      $(this).find(".js-search").toggle("slow");
+      $(this).find(".js-search").slideToggle();
     }
   };
 })(jQuery);

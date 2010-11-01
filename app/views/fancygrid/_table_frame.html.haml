@@ -28,7 +28,6 @@
 - unless fancygrid.is_static?
   :javascript
     $(function(){
-      $(".js-fancygrid.#{fancygrid.name}").fancygrid({ url : '#{fancygrid.url}', name : '#{fancygrid.name}'});
+      $(".js-fancygrid.#{fancygrid.name}").fancygrid(#{fancygrid.js_options});
       $(".js-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
     });
-  

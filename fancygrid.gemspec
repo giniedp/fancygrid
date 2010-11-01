@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{fancygrid}
-  s.version = "0.2.2"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Gr\303\244fenstein"]
-  s.date = %q{2010-10-27}
+  s.date = %q{2010-11-01}
   s.description = %q{Enables easy tablerendering in rails applications}
   s.email = %q{giniedp@online.de}
   s.extra_rdoc_files = [
@@ -24,7 +24,8 @@ Gem::Specification.new do |s|
      "VERSION",
      "app/views/fancygrid/_cells.html.haml",
      "app/views/fancygrid/_controls.html.haml",
-     "app/views/fancygrid/_frame.html.haml",
+     "app/views/fancygrid/_list_frame.html.haml",
+     "app/views/fancygrid/_table_frame.html.haml",
      "config/locales/fancygrid.de.yml",
      "config/locales/fancygrid.en.yml",
      "fancygrid.gemspec",
@@ -45,6 +46,7 @@ Gem::Specification.new do |s|
      "public/images/fancygrid/next.png",
      "public/images/fancygrid/prev.png",
      "public/images/fancygrid/reload.png",
+     "public/images/fancygrid/spacer.gif",
      "public/images/fancygrid/th_bg.png",
      "public/images/fancygrid/up.png",
      "public/images/fancygrid/uup.png",
