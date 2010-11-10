@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{fancygrid}
-  s.version = "0.3.0"
+  s.version = "0.3.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Gr\303\244fenstein"]
-  s.date = %q{2010-11-01}
+  s.date = %q{2010-11-10}
   s.description = %q{Enables easy tablerendering in rails applications}
   s.email = %q{giniedp@online.de}
   s.extra_rdoc_files = [
@@ -17,22 +17,28 @@ Gem::Specification.new do |s|
      "README.md"
   ]
   s.files = [
-    ".gitignore",
+    ".bundle/config",
+     ".gitignore",
+     "Gemfile",
+     "Gemfile.lock",
      "LICENSE",
      "README.md",
      "Rakefile",
      "VERSION",
      "app/views/fancygrid/_cells.html.haml",
-     "app/views/fancygrid/_controls.html.haml",
-     "app/views/fancygrid/_list_frame.html.haml",
-     "app/views/fancygrid/_table_frame.html.haml",
+     "app/views/fancygrid/base/_controls.html.haml",
+     "app/views/fancygrid/base/_list_frame.html.haml",
+     "app/views/fancygrid/base/_table_frame.html.haml",
+     "config/initializers/fancygrid.rb",
      "config/locales/fancygrid.de.yml",
      "config/locales/fancygrid.en.yml",
      "fancygrid.gemspec",
+     "init.rb",
      "lib/fancygrid.rb",
      "lib/fancygrid/grid.rb",
      "lib/fancygrid/helper.rb",
      "lib/fancygrid/node.rb",
+     "lib/generators/install_generator.rb",
      "lib/tasks/fancygrid.rake",
      "lib/version.rb",
      "public/images/fancygrid/add.png",
@@ -52,7 +58,6 @@ Gem::Specification.new do |s|
      "public/images/fancygrid/uup.png",
      "public/javascripts/fancygrid.js",
      "public/stylesheets/_fancygrid.scss",
-     "public/stylesheets/fancygrid.css",
      "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/giniedp/fancygrid}

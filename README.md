@@ -18,7 +18,7 @@ Run
     bundle install
     
 and
-    rake fancygrid:install
+    rails g fancygrid:install
     
 then follow the instructions
 

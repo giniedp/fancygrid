@@ -1,7 +1,5 @@
 module Fancygrid
   
-  I18N_PREFIX = "fancygrid.tables"
-  
   class Node
     
     # Top level node. Must be a Fancygrid::Grid instance
@@ -132,7 +130,7 @@ module Fancygrid
     end
     
     def i18n_path
-      prefix = ((parent and parent.i18n_path) or Fancygrid::I18N_PREFIX)
+      prefix = ((parent and parent.i18n_path) or Fancygrid.i18n_tables_prefix)
       "#{prefix}.#{self.name}"
     end
     

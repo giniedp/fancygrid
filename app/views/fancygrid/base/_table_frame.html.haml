@@ -2,20 +2,26 @@
   - unless fancygrid.is_static?
     = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "top" }
   .js-tablewrapper
-    - unless fancygrid.is_static?
-      %ul.js-search
+    %table
+      %tr.js-header
         - fancygrid.each_leaf do |leaf|
-          - if leaf.searchable
-            %li{ :class => leaf.css_class }
-              %label{ :for => leaf.tag_name }
-                = leaf.human_name
-              %input.js-attribute{ :type => "text", :name => leaf.tag_name, :value => leaf.search_value }
+          %th{ :class => leaf.css_class }
+            = leaf.human_name
       
-    - if fancygrid.dataset
-      %ul.js-row
+      - unless fancygrid.is_static?
+        %tr.js-search
+          - fancygrid.each_leaf do |leaf|
+            %td{ :class => leaf.css_class }
+              - if leaf.searchable
+                %input.js-attribute{ :type => "text", :name => leaf.tag_name, :value => leaf.search_value }
+      
+      - if fancygrid.dataset
         - fancygrid.dataset.each do |record|
-          %li{ :class => fancygrid.name.to_s.singularize }
-            = fancy_rendering_for(record, fancygrid)
+          %tr.js-row
+            - fancygrid.each_leaf do |leaf|
+              %td{ :class => leaf.css_class}
+                = fancyvalue_for(record, leaf, &cells_block)
+                  
                 
   - unless fancygrid.is_static?
     = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "bottom" }
@@ -26,4 +32,3 @@
       $(".js-fancygrid.#{fancygrid.name}").fancygrid(#{fancygrid.js_options});
       $(".js-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
     });
-  

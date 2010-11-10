@@ -32,8 +32,8 @@ module Fancygrid
       self.query          = {}
       self.request_params = (params || {})
       self.custom_cells_template = nil
-      self.grid_type      = "table"
-      self.search_enabled = false
+      self.grid_type      = Fancygrid.default_grid_type.to_s
+      self.search_enabled = Fancygrid.search_enabled
     end
     
     def is_static?
