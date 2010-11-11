@@ -13,18 +13,20 @@
   var methods = {
     init : function(options){
       var settings = { 
-        url             : "/", 
-        name            : "", 
-        query           : { 
-          pagination    : { page : 0, per_page : 20 }, 
-          conditions    : {},
-          order         : {}
-        },
-        searchFadeTime  : 250,
-        searchFadeOpac  : 0.5,
-        queries         : 0,
-        isStatic        : false,
-        gridType        : "table"
+        url               : "/", 
+        name              : "", 
+        query             : { 
+          pagination      : { page : 0, per_page : 20 }, 
+          conditions      : {},
+          order           : {}
+        },                
+        searchFadeTime    : 250,
+        searchFadeOpac    : 0.5,
+        queries           : 0,
+        isStatic          : false,
+        gridType          : "table",
+        hideTopControl    : false,
+        hideBottomControl : false
       }
       options = (options || {});
       $.extend(settings, options);
@@ -39,9 +41,18 @@
           // set data
           $this.data('fancygrid', settings);
           
+          // hide search tab and controls if wanted
           if (!settings.searchEnabled){
             $this.find(".js-search").hide();
           }
+          if (settings.hideTopControl){
+            $this.find(".js-tablecontrol.top").hide();
+          }
+          if (settings.hideBottomControl){
+            $this.find(".js-tablecontrol.bottom").hide();
+          }
+          
+          // bind control buttons with functions
           
           // search attribute changed/focused
           $this.find(".js-attribute").bind("change.fancygrid", function(){
@@ -98,6 +109,7 @@
           });
           
         } else {
+          // nothing to do when fancygrid is already initialized
           $.extend(data, options);
         }
       });

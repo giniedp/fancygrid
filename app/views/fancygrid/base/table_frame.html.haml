@@ -1,6 +1,6 @@
 .js-fancygrid{ :class => fancygrid.name }
   - unless fancygrid.is_static?
-    = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "top" }
+    = render :file => Fancygrid.controls_template_path, :locals => { :fancygrid => fancygrid, :html_class => "top" }
   .js-tablewrapper
     %table
       %tr.js-header
@@ -24,11 +24,14 @@
                   
                 
   - unless fancygrid.is_static?
-    = render :file => Fancygrid::Grid.control_template, :locals => { :fancygrid => fancygrid, :html_class => "bottom" }
+    = render :file => Fancygrid.controls_template_path, :locals => { :fancygrid => fancygrid, :html_class => "bottom" }
 
 - unless fancygrid.is_static?
   :javascript
     $(function(){
-      $(".js-fancygrid.#{fancygrid.name}").fancygrid(#{fancygrid.js_options});
-      $(".js-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
+      var fancyOptions = #{fancygrid.js_options};
+      $(".js-fancygrid.#{fancygrid.name}").fancygrid(fancyOptions);
+      if(!fancyOptions.instantFetchData){
+        $(".js-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
+      }
     });

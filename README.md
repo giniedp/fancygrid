@@ -40,7 +40,7 @@ In your Controller e.g. UsersController
         # specify cells that will be rendered with custom code
         grid.rendered(:actions)
         
-        # specify attributes that should be selected but not displayed
+        # specify attributes that should be selected but not rendered
         grid.hidden( :role_id )
         
         # build columns for associations

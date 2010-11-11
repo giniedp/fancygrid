@@ -13,18 +13,12 @@ module Fancygrid
       @fancygrid[store_name].save
     end
        
-    def fancy_rendering_for(record, leaf, value=nil &cells_block)
+    def fancy_rendering_for(record, leaf, value=nil, &cells_block)
       if block_given?
         capture(leaf.root, record, leaf, value, &cells_block)
       else
         template = leaf.root.custom_cells_template
-        template ||= Fancygrid::Grid.cells_template
-        render( 
-          :file => template, 
-          :locals => { 
-            :grid => leaf.root, :record => record, :cell => leaf, :value => value
-          }
-        )
+        render( :file => template, :locals => { :grid => leaf.root, :record => record, :cell => leaf, :value => value } )
       end
     end
     
@@ -38,19 +32,18 @@ module Fancygrid
       fancygrid_instance = fancygrid_for(name)
       fancygrid_instance.data = data if data
       cells_block = block_given? ? block : nil
+      template_path = ""
       
       case fancygrid_instance.grid_type.to_s
       when "table"
-        render(
-          :file   => Fancygrid::Grid.table_template, 
-          :locals => { :fancygrid => fancygrid_instance, :cells_block => cells_block })
+        template_path = Fancygrid.table_template_path
       when "list"
-        render(
-          :file   => Fancygrid::Grid.list_template, 
-          :locals => { :fancygrid => fancygrid_instance, :cells_block => cells_block })
+        template_path = Fancygrid.list_template_path
       else
         raise "grid type '#{fancygrid_instance.grid_type}' is not supported. Please specify 'table' or 'list'"
       end
+      
+      render(:file => template_path, :locals => { :fancygrid => fancygrid_instance, :cells_block => cells_block })
     end
     
     def fancygrid_page_opts

@@ -20,7 +20,12 @@
   %li.button
     = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-next', :title => I18n.t("fancygrif.pagination.next_page", :default => "Next page"))
   %li.separator
-  
+  %li
+    %span
+      = I18n.t("fancygrid.pagination.resultcount", :default => "Total entries")
+    %span.js-result-total
+      = fancygrid.resultcount or 0
+      
   %li.button
     = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-reload', :title => I18n.t("fancygrif.pagination.reload", :default => "Reload"))
   %li.button
