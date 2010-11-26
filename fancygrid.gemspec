@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{fancygrid}
-  s.version = "0.3.2"
+  s.version = "0.3.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Gr\303\244fenstein"]
-  s.date = %q{2010-11-11}
+  s.date = %q{2010-11-26}
   s.description = %q{Enables easy tablerendering in rails applications}
   s.email = %q{giniedp@online.de}
   s.extra_rdoc_files = [
@@ -19,10 +19,12 @@ Gem::Specification.new do |s|
   s.files = [
     ".bundle/config",
      ".gitignore",
+     "CHANGELOG",
      "Gemfile",
      "Gemfile.lock",
      "LICENSE",
      "README.md",
+     "ROADMAP",
      "Rakefile",
      "VERSION",
      "app/views/fancygrid/_cells.html.haml",
