@@ -1,32 +1,51 @@
-# require plugin code files
-%w(grid_helper field_helper grid field result version).each do |file|
-  require File.join(File.dirname(__FILE__), file)
-end
-
-# enables rake tasks in the final application
-Dir["#{Gem.searcher.find('fancygrid').full_gem_path}/**/tasks/*.rake"].each { |ext| load ext }
+pwd = File.expand_path(File.dirname(__FILE__))
+require File.join(pwd, "fancygrid", "helper")
+require File.join(pwd, "fancygrid", "node")
+require File.join(pwd, "fancygrid", "grid")
+require File.join(pwd, "version")
 
 module Fancygrid
+  pwd = File.expand_path(File.dirname(__FILE__))
+  
+  mattr_accessor :table_template_path
+  @@table_template_path = File.join(pwd, "../app/views/fancygrid/base/table_frame.html.haml")
+  
+  mattr_accessor :list_template_path
+  @@list_template_path = File.join(pwd, "../app/views/fancygrid/base/list_frame.html.haml")
+  
+  mattr_accessor :controls_template_path
+  @@controls_template_path = File.join(pwd, "../app/views/fancygrid/base/controls.html.haml")
+
+  mattr_accessor :default_cells_template_name
+  @@default_cells_template_name = "cells"
+  
+  mattr_accessor :use_grid_name_as_cells_template_name
+  @@use_grid_name_as_cells_template_name = false
+  
+  mattr_accessor :search_enabled
+  @@search_enabled = false
+  
+  mattr_accessor :default_grid_type
+  @@default_grid_type = :table
+  
+  mattr_accessor :i18n_tables_prefix
+  @@i18n_tables_prefix = "fancygrid.tables"
+  
+  def self.setup
+    yield self
+  end
+  
   class Railtie < Rails::Railtie
+
+    generators do
+      require File.join(File.dirname(__FILE__), "generators", "install_generator")
+      require File.join(File.dirname(__FILE__), "generators", "views_generator")
+      require File.join(File.dirname(__FILE__), "generators", "scss_generator")
+    end
+
     initializer "fancygrid.initialize" do |app|
-
-      # plugin templates
-      plg_frame_tpl = File.join(File.expand_path(File.dirname(__FILE__)), "..", "app", "views", "fancygrid", "_frame.html.haml")
-      plg_contr_tpl = File.join(File.expand_path(File.dirname(__FILE__)), "..", "app", "views", "fancygrid", "_controls.html.haml")
-      plg_cells_tpl = File.join(File.expand_path(File.dirname(__FILE__)), "..", "app", "views", "fancygrid", "_cells.html.haml")
-      
-      # custom templates
-      app_frame_tpl = Rails.root.join("app", "views", "fancygrid", "_frame.html.haml")
-      app_contr_tpl = Rails.root.join("app", "views", "fancygrid", "_controls.html.haml")
-      app_cells_tpl = Rails.root.join("app", "views", "fancygrid", "_cells.html.haml")
-      
-      # used templates
-      Fancygrid::Grid.frame_template = File.exists?(app_frame_tpl) ? app_frame_tpl : plg_frame_tpl
-      Fancygrid::Grid.control_template = File.exists?(app_contr_tpl) ? app_contr_tpl : plg_contr_tpl
-      Fancygrid::Grid.cells_template = File.exists?(app_cells_tpl) ? app_cells_tpl : plg_cells_tpl
-
-      ActionController::Base.send :include, Fancygrid::GridHelper
-      ActionView::Base.send :include, Fancygrid::GridHelper  
+      ActionController::Base.send :include, Fancygrid::Helper
+      ActionView::Base.send :include, Fancygrid::Helper
     end
   end
 end
