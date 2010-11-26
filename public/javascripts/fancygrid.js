@@ -173,11 +173,12 @@
             $control.find(".js-per-page").val(data.query.pagination.per_page);
             $control.find(".js-page").val(Number(data.query.pagination.page) + 1);
             
-            total = (Number($(result).find(".js-page-total").text()));
+            total = (Number($(result).find(".js-result-total").html()));
             totalPages = total / data.query.pagination.per_page
             totalPages = (totalPages | 0) + 1;
 
             $control.find(".js-page-total").text(totalPages);
+            $control.find(".js-result-total").html(total);
             
             $this.fadeTo(data.searchFadeTime, 1.0, function(){
               $control.find(".js-reload").removeClass("loading");

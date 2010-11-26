@@ -1,0 +1,6 @@
+0.3.3 - Fixed pagination
+0.3.2 - Flexible initilaization
+0.3.1 - Raketask replaced with generators 
+0.3.0 - Grid rendering using blocks is now possible
+0.2.0 - Revisited implementation
+0.1.0 - Initial implementation

@@ -15,7 +15,7 @@ module Fancygrid
        
     def fancy_rendering_for(record, leaf, value=nil, &cells_block)
       if block_given?
-        capture(leaf.root, record, leaf, value, &cells_block)
+        capture(leaf, record, value, &cells_block)
       else
         template = leaf.root.custom_cells_template
         render( :file => template, :locals => { :grid => leaf.root, :record => record, :cell => leaf, :value => value } )

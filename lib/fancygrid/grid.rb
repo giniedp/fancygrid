@@ -24,9 +24,6 @@ module Fancygrid
 
     # 
     attr_accessor :resultcount
-        
-    # 
-    attr_accessor :pagecount
     
     # Path to the template for custom cell rendering of this grid instance
     attr_accessor :custom_cells_template
@@ -57,7 +54,7 @@ module Fancygrid
       self.leafs          = []
       self.dataset        = nil
       self.resultcount    = 0
-      self.pagecount      = 0
+
       self.toolbars       = {}
       self.query          = {}
       self.request_params = (params || {})
@@ -172,7 +169,6 @@ module Fancygrid
     
     def data= data
       self.dataset = data.to_a
-      self.pagecount = 1
       self.url = nil
     end
     
@@ -193,8 +189,7 @@ module Fancygrid
       if self.resultcount.respond_to?(:length)
         self.resultcount  = self.resultcount.length 
       end
-      # TODO: fix the pagecount
-      self.pagecount = "?"
+
     end
     
     def save
