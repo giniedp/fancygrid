@@ -1,42 +1,45 @@
 module Fancygrid
   class QueryGenerator
     attr_accessor :query
-    attr_accessor :leafs
-    
-    attr_accessor :options
+
+    attr_accessor :defaults
         
     # This should be instanciated from Grid so we should receive:
     # :conditions => {
     #   :model => {:conditions}
     # },
     # :order => {...},
-    # :pagination => {}
-    def initialize(query, leafs = nil)
-      @query = query
-      @leafs = leafs
-      self.options = {}
+    # :select => {},
+    # :joins => ...
+    def initialize(defaults = {})
+      self.defaults = defaults
     end
         
     def override(options)
       self.options = options
     end
 
-    def select
-      select = self.options[:select] || []
-      unless @leafs.empty?
-        if select != "*"
-          select = select.to_a
-          select += @leafs.map{ |leaf| leaf.select_name }.compact
-        end
-      end
-      select
+    def select(select = nil)
+      select = Array(select) || []
+      # select = self.defaults[:select] || []
+      # unless @leafs.empty?
+      #   if select != "*"
+      #     select = select.to_a
+      #     select += @leafs.map{ |leaf| leaf.select_name }.compact
+      #   end
+      # end
+      # select
+      select |= Array(self.defaults[:select]) || []
+      select.include?("*") ? "*" : select
     end
     
-    def where
+    def where(conditions_hash = {})
+      conditions_hash ||= {}
+
       conditions = []
       values = []
-      
-      @query[:conditions].each_pair do |k,v|
+
+      conditions_hash.each_pair do |k,v|
         v.each_pair do |sk, sv|
           substring = "#{k}.#{sk}"
           condition = resolve_operator(substring, sv[:value], sv[:operator]) #["a = ?", "value"]
@@ -45,34 +48,33 @@ module Fancygrid
         end
       end
       
-      # we have to concatenate this with options[:conditions] (AND)
+      # we have to concatenate this with defaults[:conditions] (AND)
       conditions = values.unshift(conditions.join(boolean_operator))
     end
     
-    def offset
-      @query[:pagination][:page].to_i * self.limit
+    def offset(pagination = nil)
+      pagination ? pagination[:page].to_i * self.limit(pagination) : 0
     end
     
-    def limit
-      @query[:pagination][:per_page].to_i
+    def limit(pagination = nil)
+      pagination ? pagination[:per_page].to_i : 0
     end
-    
-    def pagination?
-      @query[:pagination].present?
+
+    def order(order = nil)
+      order || self.defaults[:order]
     end
-    
-    def order
-      self.options[:order] || @query[:order]
+
+    def evaluate(query = {})
+      self.query = query
+      {
+        :conditions => where(query[:conditions]),
+        :offset => offset(query[:pagination]),
+        :limit => limit(query[:pagination]),
+        :order => order(query[:order]),
+        :select => select(query[:select])
+      }
     end
-    
-    def order?
-      order.present?
-    end
-    
-    def evaluate
-      {:conditions => where, :offset => offset, :limit => limit, :order => order}
-    end
-    
+
     private
     def resolve_operator(key, value, operator)
       case operator
