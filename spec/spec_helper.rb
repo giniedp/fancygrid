@@ -1,9 +1,7 @@
 $:.unshift(File.join(File.expand_path(File.dirname(__FILE__)), "../lib"))
 
 require 'active_record'
-require 'attribute'
-require 'association_builder'
-require 'query_builder'
+require 'fancygrid/query_generator'
 
 class Ticket < ActiveRecord::Base
   belongs_to :project

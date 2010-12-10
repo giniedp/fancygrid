@@ -2,6 +2,7 @@ pwd = File.expand_path(File.dirname(__FILE__))
 require File.join(pwd, "fancygrid", "helper")
 require File.join(pwd, "fancygrid", "node")
 require File.join(pwd, "fancygrid", "grid")
+require File.join(pwd, "fancygrid", "query_generator")
 require File.join(pwd, "version")
 
 module Fancygrid
