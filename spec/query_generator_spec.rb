@@ -73,10 +73,27 @@ describe Fancygrid::QueryGenerator do
       @generator = Fancygrid::QueryGenerator.new
     end
     
-    it "should evaluate" do
+    it "should evaluate new conditions syntax" do
       @generator.evaluate(@query)[:conditions].should == ["tickets.title = ?", "a string"]
     end
     
+    it "should evaluate old conditions syntax" do
+      query = {
+        :conditions => {
+          :tickets => {
+            :title => "a string"
+          }
+        }
+      }
+      @generator.evaluate(query)[:conditions].should == ["tickets.title LIKE ?", "%a string%"]
+    end                       
+    
+    it "should append default conditions with params conditions" do
+      defaults = {:conditions => ['tickets.open = ?', 1]}
+      @generator = Fancygrid::QueryGenerator.new(defaults)
+      @generator.evaluate(@query)[:conditions].should == ["(tickets.open = ?) AND (tickets.title = ?)", 1, "a string"]
+    end
+        
     it "should join conditions with OR by default" do
       new_condition = {
         :projects => {

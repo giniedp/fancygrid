@@ -15,22 +15,13 @@ module Fancygrid
       self.defaults = defaults
     end
         
-    def override(options)
-      self.options = options
-    end
-
     def select(select = nil)
-      select = Array(select) || []
-      # select = self.defaults[:select] || []
-      # unless @leafs.empty?
-      #   if select != "*"
-      #     select = select.to_a
-      #     select += @leafs.map{ |leaf| leaf.select_name }.compact
-      #   end
-      # end
-      # select
-      select |= Array(self.defaults[:select]) || []
+      select = Array(select) | Array(self.defaults[:select])
       select.include?("*") ? "*" : select
+    end
+    
+    def joins
+      self.defaults[:joins]
     end
     
     def where(conditions_hash = {})
@@ -40,18 +31,44 @@ module Fancygrid
       values = []
 
       conditions_hash.each_pair do |k,v|
+        v.reject!{ |sk, sv| sv.blank? }
         v.each_pair do |sk, sv|
           substring = "#{k}.#{sk}"
-          condition = resolve_operator(substring, sv[:value], sv[:operator]) #["a = ?", "value"]
+          if sv.is_a?(Hash)
+            # new hash conditions
+            condition = resolve_operator(substring, sv[:value], sv[:operator]) #["a = ?", "value"]
+          else
+            # old compatibility
+            condition = ["#{substring} LIKE ?", "%#{sv}%"]
+          end
           conditions << condition.first
           values << condition.last
         end
       end
       
-      # we have to concatenate this with defaults[:conditions] (AND)
-      conditions = values.unshift(conditions.join(boolean_operator))
+      cond_string = conditions.join(boolean_operator)
+      cond_args = values
+      
+      # merging options with params conditions
+      if self.defaults[:conditions]
+        raise ":conditions option expected to be an array" unless self.defaults[:conditions].is_a? Array
+        defaults = self.defaults[:conditions]
+                
+        str = defaults.shift
+        str = "(#{str})"
+        str << " AND (#{cond_string})" unless cond_string.blank?
+        
+        arg = defaults
+        arg += cond_args
+        
+        
+        cond_string = str
+        cond_args = arg
+      end
+
+      ([cond_string] + cond_args)
     end
-    
+        
     def offset(pagination = nil)
       pagination ? pagination[:page].to_i * self.limit(pagination) : 0
     end
@@ -68,6 +85,7 @@ module Fancygrid
       self.query = query
       {
         :conditions => where(query[:conditions]),
+        :joins => joins,
         :offset => offset(query[:pagination]),
         :limit => limit(query[:pagination]),
         :order => order(query[:order]),
@@ -80,6 +98,19 @@ module Fancygrid
       case operator
       when "is_equal_to"
         condition = "#{key} = ?"
+      when "starts_with"
+        condition = "#{key} LIKE ?"
+        value = "#{value}%"
+      when "ends_with"
+        condition = "#{key} LIKE ?"
+        value = "%#{value}"
+      when "is_like"
+        condition = "#{key} LIKE ?"
+        value = "%#{value}%"
+      when "is_greater_than"
+        condition = "#{key} > ?"
+      when "is_lower_than"
+        condition = "#{key} < ?"
       else
         condition = "#{key} = ?"
       end
@@ -88,6 +119,26 @@ module Fancygrid
     
     def boolean_operator
       @query[:all] == "1" ? " AND " : " OR "
+    end
+    
+    def hash_to_array k, v=nil
+      if k.is_a? Hash
+        k.map{ |k2, v2| hash_to_array(k2, v2) }
+      elsif v.is_a? Hash
+        v.map{ |k2, v2| hash_to_array("#{k}.#{k2}", v2) }
+      else
+        [k, v]
+      end
+    end
+    
+    def array_to_hash(array)
+      count = 0
+      hash = Hash.new
+      (array.length / 2).times do
+        hash[array[count]] = array[count+1]
+        count += 2
+      end
+      return hash
     end
   end
 end
