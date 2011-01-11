@@ -1,11 +1,11 @@
 .js-fancygrid{ :class => fancygrid.name }
   - unless fancygrid.is_static?
-    = render :file => Fancygrid.controls_template_path, :locals => { :fancygrid => fancygrid, :html_class => "top" }
+    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :html_class => "top" })
   .js-tablewrapper
     - unless fancygrid.is_static?
       %ul.js-search
-        - fancygrid.each_leaf do |leaf|
-          - if leaf.searchable
+        - if leaf.searchable
+          - fancygrid.each_leaf do |leaf|
             %li{ :class => leaf.css_class }
               %label{ :for => leaf.tag_name }
                 = leaf.human_name
@@ -18,7 +18,7 @@
             = fancy_rendering_for(record, fancygrid, &cells_block)
                 
   - unless fancygrid.is_static?
-    = render :file => Fancygrid.controls_template_path, :locals => { :fancygrid => fancygrid, :html_class => "bottom" }
+    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :html_class => "bottom" })
 
 - unless fancygrid.is_static?
   :javascript

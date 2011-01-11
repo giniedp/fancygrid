@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{fancygrid}
-  s.version = "0.3.3"
+  s.version = "0.3.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Gr\303\244fenstein"]
-  s.date = %q{2010-11-26}
+  s.date = %q{2011-01-11}
   s.description = %q{Enables easy tablerendering in rails applications}
   s.email = %q{giniedp@online.de}
   s.extra_rdoc_files = [
@@ -40,6 +40,7 @@ Gem::Specification.new do |s|
      "lib/fancygrid/grid.rb",
      "lib/fancygrid/helper.rb",
      "lib/fancygrid/node.rb",
+     "lib/fancygrid/query_generator.rb",
      "lib/generators/install_generator.rb",
      "lib/generators/scss_generator.rb",
      "lib/generators/views_generator.rb",
@@ -61,6 +62,7 @@ Gem::Specification.new do |s|
      "public/images/fancygrid/uup.png",
      "public/javascripts/fancygrid.js",
      "public/stylesheets/_fancygrid.scss",
+     "spec/query_generator_spec.rb",
      "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/giniedp/fancygrid}
@@ -69,7 +71,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{Table rendering for rails applications}
   s.test_files = [
-    "spec/spec_helper.rb"
+    "spec/query_generator_spec.rb",
+     "spec/spec_helper.rb"
   ]
 
   if s.respond_to? :specification_version then

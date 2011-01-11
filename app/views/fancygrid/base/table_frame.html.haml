@@ -1,6 +1,6 @@
 .js-fancygrid{ :class => fancygrid.name }
   - unless fancygrid.is_static?
-    = render :file => Fancygrid.controls_template_path, :locals => { :fancygrid => fancygrid, :html_class => "top" }
+    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :html_class => "top" })
   .js-tablewrapper
     %table
       %tr.js-header
@@ -24,7 +24,7 @@
                   
                 
   - unless fancygrid.is_static?
-    = render :file => Fancygrid.controls_template_path, :locals => { :fancygrid => fancygrid, :html_class => "bottom" }
+    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :html_class => "bottom" })
 
 - unless fancygrid.is_static?
   :javascript

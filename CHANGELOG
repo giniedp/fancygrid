@@ -1,3 +1,12 @@
+0.4.0 - Fancygrid is now a Rails Engine instead of a Railtie. This allows us to 
+        use template names for rendering, instead of absolute pathes. This makes
+        it possible to use fancygrid in other rails engines.
+      - Dumping and loading a view state for a grid is now possible. You can
+        dump and save a viewstate when a user leaves a site and load that state
+        when the user comes back.
+      BREAKING CHANGES:
+        - The initializer variable names have changed. Check the new initializer
+          file and compare it to the one in your projects.
 0.3.3 - Fixed pagination
 0.3.2 - Flexible initilaization
 0.3.1 - Raketask replaced with generators 

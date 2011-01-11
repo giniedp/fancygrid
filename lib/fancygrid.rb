@@ -7,21 +7,24 @@ require File.join(pwd, "version")
 
 module Fancygrid
   pwd = File.expand_path(File.dirname(__FILE__))
-  
-  mattr_accessor :table_template_path
-  @@table_template_path = File.join(pwd, "../app/views/fancygrid/base/table_frame.html.haml")
-  
-  mattr_accessor :list_template_path
-  @@list_template_path = File.join(pwd, "../app/views/fancygrid/base/list_frame.html.haml")
-  
-  mattr_accessor :controls_template_path
-  @@controls_template_path = File.join(pwd, "../app/views/fancygrid/base/controls.html.haml")
 
-  mattr_accessor :default_cells_template_name
-  @@default_cells_template_name = "cells"
+  mattr_accessor :table_template
+  @@table_template = "fancygrid/base/table_frame"
   
-  mattr_accessor :use_grid_name_as_cells_template_name
-  @@use_grid_name_as_cells_template_name = false
+  mattr_accessor :list_template
+  @@list_template = "fancygrid/base/list_frame"
+  
+  mattr_accessor :controls_template
+  @@controls_template = "fancygrid/base/controls"
+
+  mattr_accessor :cells_template_prefix
+  @@cells_template_prefix = "fancygrid/"
+
+  mattr_accessor :cells_template
+  @@cells_template = "_cells"
+
+  mattr_accessor :use_grid_name_as_cells_template
+  @@use_grid_name_as_cells_template = false
   
   mattr_accessor :search_enabled
   @@search_enabled = false
@@ -36,7 +39,7 @@ module Fancygrid
     yield self
   end
   
-  class Railtie < Rails::Railtie
+  class Railtie < Rails::Engine
 
     generators do
       require File.join(File.dirname(__FILE__), "generators", "install_generator")

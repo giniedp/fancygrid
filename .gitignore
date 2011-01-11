@@ -18,4 +18,4 @@ coverage
 rdoc
 pkg
 .rvmrc
-
+*.orig

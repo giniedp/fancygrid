@@ -1,4 +1,4 @@
-module Fancygrid
+module Fancygrid#:nodoc:
   
   class Node
     
@@ -11,8 +11,7 @@ module Fancygrid
     # Collection of Fancygrid::Node's that define fields of this node
     attr_accessor :children
     
-    
-    
+        
     # User defined name of this field or table
     attr_accessor :name
     
@@ -21,7 +20,6 @@ module Fancygrid
     
     # Table name of the model holding this field
     attr_accessor :record_table_name
-    
     
     
     # Human name of this field
@@ -39,7 +37,8 @@ module Fancygrid
     # Specifies whether this field is rendered or not
     attr_accessor :visible
     
-    
+    # Specifies the columns position in the table
+    attr_accessor :position
     
     def initialize(root, parent, name)
       self.root         = root
@@ -47,7 +46,6 @@ module Fancygrid
       self.name         = name
       self.children     = nil
     end
-    
     
     
     def columns_for(name, klass = nil, table_name = nil, options = nil, &block)
@@ -68,7 +66,8 @@ module Fancygrid
       
       self.children ||= []
       self.children << node
-      root.leafs    << node
+      root.insert_node(node)
+      #root.leafs    << node
     end
     
     def columns(names, options)

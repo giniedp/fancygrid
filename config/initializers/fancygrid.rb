@@ -1,48 +1,49 @@
 # Use this setup block to configure all options available in Fancygrid.
 Fancygrid.setup do |config|
   
-  # Set the path to the table template. The plugin will use its built in 
-  # template unless you change it here.
+  # The path to the table template which is rendered when the grid type is set to :table
   #
-  #config.table_template_path    = Rails.root.join("app/views/fancygrid/base/table_frame.html.haml")
+  # config.table_template = "fancygrid/base/table_frame"
   
-  # Set the path to the list template. The plugin will use its built in 
-  # template unless you change it here.
+  # The path to the list template which is rendered when the grid type is set to :list
   #
-  #config.list_template_path     = Rails.root.join("app/views/fancygrid/base/list_frame.html.haml")
+  # config.list_template = "fancygrid/base/list_frame"
   
-  # Set the path to the controls template. The plugin will use its built in 
-  # template unless you change it here.
+  # The path to the controls template which is rendered at the top and the bottom of a grid
   #
-  #config.controls_template_path = Rails.root.join("app/views/fancygrid/base/controls.html.haml")
+  # config.controls_template = "fancygrid/base/controls"
+
+  # The prefix that is used for every cells template. Default value is "fancygrid/_"
+  # so every template is expected in the "/app/views/fancygrid" directory
+  #
+  # config.cells_template_prefix = "fancygrid/"
   
-  # Set the default cells template name. Default is "cells". Then you must have
-  # a template at "app/views/fancygrid/_cells.html.haml"
+  # The default cells template name. This is combined with the "default_cells_template_prefix"
+  # to get the full template name
   #
-  #config.default_cells_template_name = "cells"
+  # config.cells_template = "_cells"
   
-  # if set to true you dont need to specify a gridtemplate, it will be automaticly
-  # set to the grids name. For example if your gridname is "foo" you must have
-  # a template at "app/views/fancygrid/_foo.html.haml"
+  # If set to true you dont need to specify a template for your grid, it will be 
+  # automaticly set to the grids name. 
   #
-  #config.use_grid_name_as_cells_template_name = false
+  # config.use_grid_name_as_cells_template = false
   
   # Specify here whether the search is visible or not when the grid is rendered
   # the first time.
   #
-  #config.search_enabled = false
+  # config.search_enabled = false
   
   # Set the default grid type. Available values are :table and :list
-  # :table will render thedata inside a table. Each record will get its own
-  # table row and each attribute its own cell/column.
+  # :table will render the data inside a table. Each record will get its own
+  # table row and each attribute its own cell.
   # :list will render each record inside an unordered list as an li element.
   # you must provide a rendering block or a template to render each record.
   #
-  #config.default_grid_type = :table
+  # config.default_grid_type = :table
   
   # Set the internationalization namespace where the plugin will retrieve the
   # grids column names.
   #
-  #config.i18n_tables_prefix = "fancygrid.tables"
+  # config.i18n_tables_prefix = "fancygrid.tables"
   
 end
