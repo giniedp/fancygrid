@@ -13,6 +13,9 @@ Installation
 =====
 In your gemfile
     gem 'fancygrid', :git => 'git://github.com/giniedp/fancygrid.git'
+
+or for specific tag
+    gem 'fancygrid', :git => 'git://github.com/giniedp/fancygrid.git', :tag => "0.3.3"
     
 Run
     bundle install
