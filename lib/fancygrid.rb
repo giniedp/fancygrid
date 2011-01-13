@@ -35,11 +35,17 @@ module Fancygrid
   mattr_accessor :i18n_tables_prefix
   @@i18n_tables_prefix = "fancygrid.tables"
   
+  mattr_accessor :default_per_page_options
+  @@default_per_page_options = [5, 10, 15, 20, 25, 30, 40, 50]
+  
+  mattr_accessor :default_per_page_selection
+  @@default_per_page_selection = 20
+  
   def self.setup
     yield self
   end
   
-  class Railtie < Rails::Engine
+  class Engine < Rails::Engine#:nodoc:
 
     generators do
       require File.join(File.dirname(__FILE__), "generators", "install_generator")

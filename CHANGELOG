@@ -1,3 +1,7 @@
+0.4.1 - Added a dummy testapplication into spec folder.
+      - Added several tests testing the core functionality.
+      - Added more documentation.
+      - Fixed a bug where not all find options were passed to the final find call.
 0.4.0 - Fancygrid is now a Rails Engine instead of a Railtie. This allows us to 
         use template names for rendering, instead of absolute pathes. This makes
         it possible to use fancygrid in other rails engines.

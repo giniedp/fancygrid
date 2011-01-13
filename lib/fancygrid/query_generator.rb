@@ -1,5 +1,5 @@
 module Fancygrid
-  class QueryGenerator
+  class QueryGenerator#:nodoc:
     attr_accessor :query
 
     attr_accessor :defaults

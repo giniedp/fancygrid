@@ -46,4 +46,11 @@ Fancygrid.setup do |config|
   #
   # config.i18n_tables_prefix = "fancygrid.tables"
   
+  # Default options for number of pages selection
+  #
+  # config.default_per_page_options = [5, 10, 15, 20, 25, 30, 40, 50]
+  
+  # Default value for number of pagers selection
+  #
+  # config.default_per_page_selection = 20
 end

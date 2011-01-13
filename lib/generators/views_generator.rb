@@ -1,7 +1,7 @@
 module Fancygrid
-  module Generators
+  module Generators#:nodoc:
     
-    class ViewsGenerator < Rails::Generators::Base
+    class ViewsGenerator < Rails::Generators::Base#:nodoc:
 
       def copy_views
         %w(controls list_frame table_frame).each do |name|

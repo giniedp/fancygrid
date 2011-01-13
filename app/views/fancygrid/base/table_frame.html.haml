@@ -1,6 +1,6 @@
 .js-fancygrid{ :class => fancygrid.name }
   - unless fancygrid.is_static?
-    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :html_class => "top" })
+    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => "controls top" })
   .js-tablewrapper
     %table
       %tr.js-header
@@ -20,11 +20,11 @@
           %tr.js-row
             - fancygrid.each_leaf do |leaf|
               %td{ :class => leaf.css_class}
-                = fancyvalue_for(record, leaf, &cells_block)
+                = render_fancygrid_leaf(record, leaf, &format_block)
                   
                 
   - unless fancygrid.is_static?
-    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :html_class => "bottom" })
+    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => "controls bottom" })
 
 - unless fancygrid.is_static?
   :javascript

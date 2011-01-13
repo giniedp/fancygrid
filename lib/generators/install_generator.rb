@@ -1,7 +1,7 @@
 module Fancygrid
-  module Generators
+  module Generators#:nodoc:
     
-    class InstallGenerator < Rails::Generators::Base
+    class InstallGenerator < Rails::Generators::Base#:nodoc:
 
       def copy_initializer
         plugin_path = File.join(File.dirname(__FILE__), "../../config/initializers/fancygrid.rb")

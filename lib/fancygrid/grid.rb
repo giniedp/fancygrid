@@ -10,12 +10,10 @@ module Fancygrid#:nodoc:
     # method or a renderable cell of a model
     attr_accessor :leafs
     
-    # The database query that is sent to the database. This is only used for ajax
-    # tables.
+    # The database query that is sent to the database.
     attr_accessor :query
     
-    # Collection of toolbars to render. Toolbars are collection of custom
-    # buttons with custom functionality. (This is currenty not implemented)
+    # Collection of toolbars to render. (This is currenty not implemented)
     attr_accessor :toolbars
     
     # The current POST or GET parameters.
@@ -42,6 +40,10 @@ module Fancygrid#:nodoc:
     # Specifies the rendering strategy. May be one of 'table' or 'list'
     attr_accessor :grid_type
     
+    attr_accessor :per_page_options
+    
+    attr_accessor :per_page_selection
+    
     # Sepcifies whether the data is fetched before the grid is rendered or not
     # If set to false the fancygrid wont query for data and render itself
     # on first call. It will rather send an ajax request to collect and
@@ -51,9 +53,10 @@ module Fancygrid#:nodoc:
     # Order and visibility definition for each column
     attr_accessor :view
     
-    # Initializes the grid using the following parameters
-    # Usually you only have to specify the *name* for the grid. Fancygrid will
-    # try to resolve the models class and its table name.
+    # Debug logger. Fancygrid prints debug information if the logger is not nil
+    attr_accessor :logger
+    
+    # Initializes the root node of the fancygrid tree.
     def initialize(name, klass = nil, table_name = nil, params = nil)
       super(self, nil, name)
       initialize_node(name, klass, table_name)
@@ -72,10 +75,13 @@ module Fancygrid#:nodoc:
       self.search_enabled = Fancygrid.search_enabled
       
       if Fancygrid.use_grid_name_as_cells_template
-        self.template = name.to_s 
+        self.template = Fancygrid.cells_template_prefix + name.to_s
       else
-        self.template = Fancygrid.cells_template
+        self.template = Fancygrid.cells_template_prefix + Fancygrid.cells_template
       end
+      
+      self.per_page_options = Fancygrid.default_per_page_options
+      self.per_page_selection = Fancygrid.default_per_page_selection
     end
     
     # Returns true if the callback url is blank, that is when no ajax 
@@ -91,6 +97,21 @@ module Fancygrid#:nodoc:
     
     # Builds the query sends it to the database if this is an ajax call or
     # *instant_fetch_data* is set to true.
+    #
+    # == Options
+    # The options are the same as in active record finder method
+    # * <tt>:conditions</tt> - An SQL fragment like “administrator = 1”, ["user_name = ?", username], or ["user_name = :user_name", { :user_name => user_name }]
+    # * <tt>:order</tt> - An SQL fragment like “created_at DESC, name”.
+    # * <tt>:group</tt> - An attribute name by which the result should be grouped. Uses the GROUP BY SQL-clause.
+    # * <tt>:having</tt> - Combined with :group this can be used to filter the records that a GROUP BY returns. Uses the HAVING SQL-clause.
+    # * <tt>:limit</tt> - An integer determining the limit on the number of rows that should be returned.
+    # * <tt>:offset</tt> - An integer determining the offset from where the rows should be fetched. So at 5, it would skip rows 0 through 4.
+    # * <tt>:joins</tt> - Either an SQL fragment for additional joins like “LEFT JOIN comments ON comments.post_id = id” (rarely needed), named associations in the same form used for the :include option, which will perform an INNER JOIN on the associated table(s), or an array containing a mixture of both strings and named associations. If the value is a string, then the records will be returned read-only since they will have attributes that do not correspond to the table’s columns. Pass :readonly => false to override.
+    # * <tt>:include</tt> - Names associations that should be loaded alongside. The symbols named refer to already defined associations. See eager loading under Associations.
+    # * <tt>:select</tt> - By default, this is “*” as in “SELECT * FROM”, but can be changed if you, for example, want to do a join but not include the joined columns. Takes a string with the SELECT SQL fragment (e.g. “id, name”).
+    # * <tt>:from</tt> - By default, this is the table name of the class, but can be changed to an alternate table name (or even the name of a database view).
+    # * <tt>:readonly</tt> - Mark the returned records read-only so they cannot be saved or updated.
+    # * <tt>:lock</tt> - An SQL fragment like “FOR UPDATE” or “LOCK IN SHARE MODE”. :lock => true gives connection’s default exclusive lock, usually “FOR UPDATE”.
     def find(options = nil)
       raise "calling 'find' twice or after 'data=' is not allowed" unless dataset.nil?
       options ||= {}
@@ -103,12 +124,17 @@ module Fancygrid#:nodoc:
         :select => self.leafs.map{|leaf| leaf.select_name }.compact,
         :conditions => params[:conditions],
         :pagination => params[:pagination],
-        :order => params[:order]
+        #:order => params[:order]
       }
       generator = Fancygrid::QueryGenerator.new(options)
 
       self.query = generator.evaluate(query)
-
+      # pass through the user defined options.
+      # TODO: these should be handeled inside the query generator
+      [:select, :order, :group, :having, :joins, :include, :from, :readonly, :lock].each do |option|
+        self.query[option] = options[option] if options[option]
+      end
+      
       query_for_data if (!params.empty? || self.instant_fetch_data)
     end
 
@@ -121,8 +147,8 @@ module Fancygrid#:nodoc:
       end
     end
     
-    # Sets a custom dataset that should be rendered. Also blanks out the
-    # callback url so no ajax request will be made.
+    # Sets a custom dataset that should be rendered.Blanks out the
+    # callback <tt>url</tt> so no ajax request will be made.
     def data= data
       leafs.compact!
       
@@ -130,8 +156,13 @@ module Fancygrid#:nodoc:
       self.url = nil
     end
     
-    # Runs the current query and caches the result data
+    # Runs the current query and caches the resulting data
     def query_for_data
+      if logger
+        log "Query for data:"
+        log self.query.inspect
+      end
+      
       if self.record_klass < ActiveRecord::Base
         self.dataset = self.record_klass.find(:all, self.query)
         
@@ -149,15 +180,21 @@ module Fancygrid#:nodoc:
         self.resultcount  = self.resultcount.length 
       end
 
+      if logger
+        log "Query result:"
+        log self.dataset.to_yaml
+      end
     end
     
     # Inserts a given node into the leafs collection. If a view is loaded
     # the node will be inserted in its right place.
     def insert_node(node)
       raise "Node must be a leaf" unless node.is_leaf?
-      if (self.view && self.view[node.trace].is_a?(Hash))
-        node_opts = self.view[node.trace]
-        
+      if (self.view.is_a?(Hash) && 
+          self.view[:columns].is_a?(Hash) && 
+          self.view[:columns][node.trace_path].is_a?(Hash))
+          
+        node_opts = self.view[:columns][node.trace_path]
         node.search_value = node_opts[:value].to_s
         node.position = node_opts[:position].to_i
         node.visible = node_opts[:visible] && node.visible
@@ -171,7 +208,10 @@ module Fancygrid#:nodoc:
     def load_view view
       raise "a Hash was expected but #{view.class} given" unless view.is_a? Hash
       self.view = view
+      self.per_page_options = view[:per_page_options] if view[:per_page_options].is_a?(Array)
+      self.per_page_selection = view[:per_page_selection] if view[:per_page_selection].is_a?(Fixnum)
       
+      # reorder current leafs
       new_leafs = self.leafs
       self.leafs = []
       new_leafs.each do |leaf|
@@ -202,14 +242,18 @@ module Fancygrid#:nodoc:
       dump = {}
       position = 0
       self.leafs.each do |node|
-        dump[node.trace] = {
+        dump[node.trace_path] = {
           :position => position,
           :visible => node.visible,
           :value => search_value_mapping[node.tag_name]
         }
         position += 1
       end
-      
+      dump = { 
+        :columns => dump,
+        :per_page_options => self.per_page_options,
+        :per_page_selection => self.per_page_selection,
+      }
       dump
     end
     
@@ -225,6 +269,12 @@ module Fancygrid#:nodoc:
         :hideBottomControl => self.hide_bottom_control,
         :instantFetchData => self.instant_fetch_data
       }.to_json
+    end
+    
+    def log(message)#:nodoc:
+      if self.logger
+        self.logger.debug("[FANCYGRID] " + message)
+      end
     end
   end
 end

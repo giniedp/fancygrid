@@ -1,8 +1,8 @@
-%ul.js-tablecontrol{ :class => html_class }
+%ul.js-tablecontrol{ :class => css_class }
   %li
     %span
       = I18n.t("fancygrid.pagination.per_page", :default => "Results per Page")
-    = select(:per_page, :to_i, fancygrid_page_opts[:selection], { :selected => fancygrid_page_opts[:selected] }, :class => "js-per-page")
+    = select(:per_page, :to_i, fancygrid.per_page_options, { :selected => fancygrid.per_page_selection }, :class => "js-per-page")
     
   %li.separator
   %li.button

@@ -1,16 +1,11 @@
-## MAC OS
+
 .DS_Store
 .rvmrc
-## TEXTMATE
 *.tmproj
 tmtags
-
-## EMACS
 *~
 \#*
 .\#*
-
-## VIM
 *.swp
 
 ## PROJECT::GENERAL
@@ -19,3 +14,9 @@ rdoc
 pkg
 .rvmrc
 *.orig
+.bundle/
+Gemfile.lock
+log/*.log
+spec/dummy/db/*.sqlute3
+spec/dummy/log/*,log
+spec/dummy/tmp/
