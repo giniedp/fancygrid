@@ -90,11 +90,6 @@ module Fancygrid#:nodoc:
       self.url.blank?
     end
     
-    # Adds a button that should be rendered in the control bars. (Currently not supportde)
-    def button toolbar_name, button_name, button_value
-      # Buttons are currently not supported
-    end
-    
     # Builds the query sends it to the database if this is an ajax call or
     # *instant_fetch_data* is set to true.
     #

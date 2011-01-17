@@ -48,7 +48,7 @@ module Fancygrid
       [:data, :template, :url, :search_enabled, :hide_top_control, 
        :hide_bottom_control, :grid_type
       ].each do |option|
-        fancygrid_instance.send(option + "=", options[option]) if options[option]
+        fancygrid_instance.send(option.to_s + "=", options[option]) if options[option]
       end
       
       format_block = block_given? ? block : nil
@@ -83,7 +83,7 @@ module Fancygrid
     # the value. The result is a column cell content.
     def render_fancygrid_leaf(record, leaf, &format_block)
       value = leaf.value_from(record)
-      return value unless leaf.formatable
+      return value if(!leaf.formatable && leaf.root.grid_type == :table)
       format_fancygrid_value(record, leaf, value, &format_block)
     end
     alias :fancyvalue_for :render_fancygrid_leaf # backward compatibility

@@ -32,11 +32,5 @@
     = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-clear', :title => I18n.t("fancygrif.search.clear", :default => "Clear search"))
   %li.button
     = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-magnify', :title => I18n.t("fancygrif.search.toggle", :default => "Show or hide searchtab"))
-    
-  /%li.separator
-  /- if fancygrid.toolbars[:default]
-  /  - fancygrid.toolbars[:default].each do |k, v|
-  /    %li.button
-  /      %span{ :class => k, :onclick => "$(this).parents('.js-fancygrid').fancygrid('action', '#{k}', '#{v}'); return false;" }
-  /        &nbsp;&nbsp;&nbsp;
-  /
+  %li.separator
+  = yield :fancygrid_buttons

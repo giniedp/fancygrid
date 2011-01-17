@@ -4,8 +4,8 @@
   .js-tablewrapper
     - unless fancygrid.is_static?
       %ul.js-search
-        - if leaf.searchable
-          - fancygrid.each_leaf do |leaf|
+        - fancygrid.each_leaf do |leaf|
+          - if leaf.searchable
             %li{ :class => leaf.css_class }
               %label{ :for => leaf.tag_name }
                 = leaf.human_name

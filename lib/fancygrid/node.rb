@@ -205,6 +205,7 @@ module Fancygrid#:nodoc:
     # * <tt>:searchable => false</tt>
     # * <tt>:formatable => false</tt>
     # * <tt>:visible => true</tt>
+    # * <tt>:selectable => false</tt>
     # * <tt>:proc => proc</tt>
     # === Example
     #     
@@ -216,8 +217,9 @@ module Fancygrid#:nodoc:
     #
     #     node.column(:status, {
     #       :searchable => false,
-    #       :searchable => false,
-    #       :searchable => true,
+    #       :formatable => false,
+    #       :visible => true,
+    #       :selectable => false,
     #       :proc => Proc.new { |record| record.status }
     #     })
     def proc(name, options=nil)
@@ -226,6 +228,7 @@ module Fancygrid#:nodoc:
       options[:searchable] = false  if options[:searchable].nil?
       options[:formatable] = false if options[:formatable].nil?
       options[:visible]    = true if options[:visible].nil?
+      options[:selectable] = false  if options[:selectable].nil?
       options[:proc]       = Proc.new
       column(name, options)
     end
