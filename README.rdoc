@@ -266,6 +266,27 @@ callback url, so the callback gets the same filter value
       end
     end
 
+==== Order your conditions
+If you have a large condition to make or you want to use a condition that depends on a users role, for example when
+some of your users are not allowed to see specific data, then you can give the find method a block and use the query generator
+
+===== Example
+    fancygrid_for :users do |grid|
+      
+      # ...
+      
+      grid.find do |query|
+        # all the conditions are joined with an AND operator
+        query.conditions(["users.first_name = ?", "some name"])
+        query.conditions(["users.last_name = ?", "some name"])
+        
+        # use other finder options as methods
+        query.select #...
+        query.order  #...
+        # ...
+      end
+    end
+    
 ==== Caching the view state
 To make your users life easier you can enable the view state caching. This way
 the user can search for data, leave the site, come back and have his last

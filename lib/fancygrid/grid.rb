@@ -40,8 +40,10 @@ module Fancygrid#:nodoc:
     # Specifies the rendering strategy. May be one of 'table' or 'list'
     attr_accessor :grid_type
     
+    # Spcified the select options for per page drop down
     attr_accessor :per_page_options
     
+    # Spcified theselected value in the per page drop down
     attr_accessor :per_page_selection
     
     # Sepcifies whether the data is fetched before the grid is rendered or not
@@ -90,6 +92,19 @@ module Fancygrid#:nodoc:
       self.url.blank?
     end
     
+    # Evaluates the css class for a table row by using the passed record and the ccs_proc of this grid
+    #
+    def evaluate_css_for(record)
+      @css_proc and @css_proc.call(record) or ""
+    end
+    
+    # If a block is given a new Proc is created for later css evaluation
+    #
+    def css_proc
+      @css_proc = Proc.new if block_given?
+      @css_proc
+    end
+    
     # Builds the query sends it to the database if this is an ajax call or
     # *instant_fetch_data* is set to true.
     #
@@ -107,32 +122,32 @@ module Fancygrid#:nodoc:
     # * <tt>:from</tt> - By default, this is the table name of the class, but can be changed to an alternate table name (or even the name of a database view).
     # * <tt>:readonly</tt> - Mark the returned records read-only so they cannot be saved or updated.
     # * <tt>:lock</tt> - An SQL fragment like “FOR UPDATE” or “LOCK IN SHARE MODE”. :lock => true gives connection’s default exclusive lock, usually “FOR UPDATE”.
-    def find(options = nil)
+    def find(options={})
       raise "calling 'find' twice or after 'data=' is not allowed" unless dataset.nil?
-      options ||= {}
+      
+      # don not process same or equal leafs twice
       leafs.compact!
       
+      # get the parameters for this grid instance, they are mapped like this { :fancygrid => { :gird_name => ..options.. }}
       params = request_params["fancygrid"] || {}
       params = params[self.name] || {}
-      # Query generator
-      query = {
+      
+      # build default query hash
+      url_options = {
         :select => self.leafs.map{|leaf| leaf.select_name }.compact,
         :conditions => params[:conditions],
-        :pagination => params[:pagination],
-        #:order => params[:order]
+        :pagination => params[:pagination]
       }
-      generator = Fancygrid::QueryGenerator.new(options)
-
-      self.query = generator.evaluate(query)
-      # pass through the user defined options.
-      # TODO: these should be handeled inside the query generator
-      [:select, :order, :group, :having, :joins, :include, :from, :readonly, :lock].each do |option|
-        self.query[option] = options[option] if options[option]
-      end
+      
+      # yield the generator to enable the caller to manipulate that. Useful for large queries
+      generator = Fancygrid::QueryGenerator.new(url_options)
+      generator.parse_options(options)
+      yield(generator) if block_given?
+      self.query = generator.query
       
       query_for_data if (!params.empty? || self.instant_fetch_data)
     end
-
+    
     # Iterates over all leafs and yields only when a leaf is visible
     def each_leaf
       leafs.compact!

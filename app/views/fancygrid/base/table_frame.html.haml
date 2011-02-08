@@ -17,9 +17,9 @@
       
       - if fancygrid.dataset
         - fancygrid.dataset.each do |record|
-          %tr.js-row
+          %tr.js-row{ :class => fancygrid.evaluate_css_for(record) }
             - fancygrid.each_leaf do |leaf|
-              %td{ :class => leaf.css_class}
+              %td{ :class => leaf.css_class }
                 = render_fancygrid_leaf(record, leaf, &format_block)
                   
                 

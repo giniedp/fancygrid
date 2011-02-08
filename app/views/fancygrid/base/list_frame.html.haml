@@ -12,7 +12,7 @@
               %input.js-attribute{ :type => "text", :name => leaf.tag_name, :value => leaf.search_value }
       
     - if fancygrid.dataset
-      %ul.js-row
+      %ul.js-row{ :class => fancygrid.evaluate_css_for(record) }
         - fancygrid.dataset.each do |record|
           %li{ :class => fancygrid.name.to_s.singularize }
             = render_fancygrid_leaf(record, fancygrid, &format_block)
