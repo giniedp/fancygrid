@@ -1,22 +1,19 @@
+require "active_support/hash_with_indifferent_access"
+
 module Fancygrid
   class QueryGenerator#:nodoc:
     
     attr_accessor :query
 
-    # This should be instanciated from Grid so we should receive:
-    # :conditions => {
-    #   :model => {:conditions}
-    # },
-    # :order => {...},
-    # :select => {},
-    # :joins => ...
     def initialize(options=nil)
       options ||= {}
+      options = ActiveSupport::HashWithIndifferentAccess.new(options)
       
       self.query = {}
       
       self.select(options[:select])
       self.apply_pagination(options[:pagination])
+      # TODO:
       self.apply_search_conditions(options[:operator] || :and, options[:conditions])
       self.apply_sort_order(options[:order])
     end
@@ -33,6 +30,7 @@ module Fancygrid
     #
     def apply_pagination(options=nil)
       options ||= {}
+      options = ActiveSupport::HashWithIndifferentAccess.new(options)
       self.limit(options[:per_page].to_i)
       self.offset(options[:page].to_i * self.limit())
     end
@@ -44,7 +42,7 @@ module Fancygrid
       self.order("#{options[:column]} #{options[:order].to_s.upcase}") if options
     end
     
-    # Takes an operator and an conditions hash like { :<table> => { :<column> => { :oparator => <op>, :value => <value> } } }
+    # Takes an operator and an conditions hash like { :<table> => { :<column> => [{ :oparator => <op>, :value => <value> }] } }
     # and converts them into a query joined by the given operator
     #
     def apply_search_conditions(operator, search_conditions)
@@ -59,8 +57,48 @@ module Fancygrid
       search_conditions = search_conditions.map do |table, columns|
         columns.map do |column, value|
           if value.is_a?(Hash)
-            { :column => "#{table}.#{column}", :operator => value[:operator], :value => value[:value] } 
+            if value.keys.all? { |key| key.to_s.match(/^\d+$/) }
+              # for hashes like this
+              # :<table> => { 
+              #   :<column> => {
+              #     "0" => { :oparator => <op>, :value => <value> },
+              #     "1" => { :oparator => <op>, :value => <value> },
+              #     "2" => { :oparator => <op>, :value => <value> }
+              #   } 
+              # }
+              #
+              value.map{ |key, opts|
+                { :column => "#{table}.#{column}", :operator => opts[:operator], :value => opts[:value] } 
+              }
+            else
+              # for hashes like this
+              # :<table> => { 
+              #   :<column> => {
+              #     :oparator => <op>, :value => <value>
+              #   } 
+              # }
+              #
+              { :column => "#{table}.#{column}", :operator => value[:operator], :value => value[:value] } 
+            end
+          elsif value.is_a?(Array)
+              # for hashes like this
+              # :<table> => { 
+              #   :<column> => {
+              #     [{ :oparator => <op>, :value => <value> },
+              #      { :oparator => <op>, :value => <value> },
+              #      { :oparator => <op>, :value => <value> }]
+              #   } 
+              # }
+              #
+            value.map{ |opts|
+              { :column => "#{table}.#{column}", :operator => opts[:operator], :value => opts[:value] } 
+            }
           else
+              # for hashes like this
+              # :<table> => { 
+              #   :<column> => <value>
+              # }
+              #
             unless value.blank?
               { :column => "#{table}.#{column}", :operator => :like, :value => value } 
             else 
@@ -223,84 +261,6 @@ module Fancygrid
       self.query[:lock]
     end
     
-    
-    
-    
-    
-    
-    #def joins
-    #  self.defaults[:joins]
-    #end
-    #
-    #def where(conditions_hash = {})
-    #  conditions_hash ||= {}
-    #
-    #  conditions = []
-    #  values = []
-    #
-    #  conditions_hash.each_pair do |k,v|
-    #    v.reject!{ |sk, sv| sv.blank? }
-    #    v.each_pair do |sk, sv|
-    #      substring = "#{k}.#{sk}"
-    #      if sv.is_a?(Hash)
-    #        # new hash conditions
-    #        condition = resolve_operator(substring, sv[:value], sv[:operator]) #["a = ?", "value"]
-    #      else
-    #        # old compatibility
-    #        condition = ["#{substring} LIKE ?", "%#{sv}%"]
-    #      end
-    #      conditions << condition.first
-    #      values << condition.last
-    #    end
-    #  end
-    #  
-    #  cond_string = conditions.join(boolean_operator)
-    #  cond_args = values
-    #  
-    #  # merging options with params conditions
-    #  if self.defaults[:conditions]
-    #    raise ":conditions option expected to be an array" unless self.defaults[:conditions].is_a? Array
-    #    defaults = self.defaults[:conditions]
-    #            
-    #    str = defaults.shift
-    #    str = "(#{str})"
-    #    str << " AND (#{cond_string})" unless cond_string.blank?
-    #    
-    #    arg = defaults
-    #    arg += cond_args
-    #    
-    #    
-    #    cond_string = str
-    #    cond_args = arg
-    #  end
-    #
-    #  ([cond_string] + cond_args)
-    #end
-    #    
-    #def offset(pagination = nil)
-    #  pagination ? pagination[:page].to_i * self.limit(pagination) : 0
-    #end
-    #
-    #def limit(pagination = nil)
-    #  pagination ? pagination[:per_page].to_i : 0
-    #end
-    #
-    #def order(order = nil)
-    #  order || self.defaults[:order]
-    #end
-    #
-    #def evaluate(query = {})
-    #  self.query = query
-    #  {
-    #    :conditions => where(query[:conditions]),
-    #    :joins => joins,
-    #    :offset => offset(query[:pagination]),
-    #    :limit => limit(query[:pagination]),
-    #    :order => order(query[:order]),
-    #    :select => select(query[:select])
-    #  }
-    #end
-
     private
     def comparison_operator(column, operator, value)
       operator = case operator.to_s
@@ -317,10 +277,10 @@ module Fancygrid
       when "greater_equal"
         ">="
       when "starts_with"
-        value = "%#{value.to_param}"
+        value = "#{value.to_param}%"
         "LIKE"
       when "ends_with"
-        value = "#{value.to_param}%"
+        value = "%#{value.to_param}"
         "LIKE"
       when "like"
         value = "%#{value.to_param}%"
@@ -368,51 +328,5 @@ module Fancygrid
       end
     end
     
-    #def resolve_operator(key, value, operator)
-    #  case operator
-    #  when "is_equal_to"
-    #    condition = "#{key} = ?"
-    #  when "starts_with"
-    #    condition = "#{key} LIKE ?"
-    #    value = "#{value}%"
-    #  when "ends_with"
-    #    condition = "#{key} LIKE ?"
-    #    value = "%#{value}"
-    #  when "is_like"
-    #    condition = "#{key} LIKE ?"
-    #    value = "%#{value}%"
-    #  when "is_greater_than"
-    #    condition = "#{key} > ?"
-    #  when "is_lower_than"
-    #    condition = "#{key} < ?"
-    #  else
-    #    condition = "#{key} = ?"
-    #  end
-    #  [condition, value]
-    #end
-    
-    #def boolean_operator
-    #  @query[:all] == "1" ? " AND " : " OR "
-    #end
-    
-    #def hash_to_array k, v=nil
-    #  if k.is_a? Hash
-    #    k.map{ |k2, v2| hash_to_array(k2, v2) }
-    #  elsif v.is_a? Hash
-    #    v.map{ |k2, v2| hash_to_array("#{k}.#{k2}", v2) }
-    #  else
-    #    [k, v]
-    #  end
-    #end
-    #
-    #def array_to_hash(array)
-    #  count = 0
-    #  hash = Hash.new
-    #  (array.length / 2).times do
-    #    hash[array[count]] = array[count+1]
-    #    count += 2
-    #  end
-    #  return hash
-    #end
   end
 end

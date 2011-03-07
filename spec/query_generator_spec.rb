@@ -22,6 +22,52 @@ describe Fancygrid::QueryGenerator do
     })
   end
   
+  def build_generator_with_array
+    Fancygrid::QueryGenerator.new({
+      :pagination => {
+        :page => 5,
+        :per_page => 10
+      },
+      :order => {
+        :column => "users.name",
+        :order => "asc"
+      },
+      :operator => :all,
+      :conditions => {
+        :table_name => {
+          :a => [
+            { :operator => :equal, :value => "value_a" },
+            { :operator => :equal, :value => "value_a2" }
+          ],
+          :b => { :operator => :not_equal, :value => "value_b" }
+        }
+      }
+    })
+  end
+  
+  def build_generator_with_pseudo_array
+    Fancygrid::QueryGenerator.new({
+      :pagination => {
+        :page => 5,
+        :per_page => 10
+      },
+      :order => {
+        :column => "users.name",
+        :order => "asc"
+      },
+      :operator => :all,
+      :conditions => {
+        :table_name => {
+          :a => {
+            "0" => { :operator => :equal, :value => "value_a" },
+            "1" => { :operator => :equal, :value => "value_a2" },
+          },
+          :b => { :operator => :not_equal, :value => "value_b" }
+        }
+      }
+    })
+  end
+  
   it "should be an instance of Fancygrid::Query" do
     generator = build_generator
     generator.should be_an_instance_of Fancygrid::QueryGenerator
@@ -145,6 +191,15 @@ describe Fancygrid::QueryGenerator do
     })
     query.conditions.should == ["( events.name LIKE (?) ) AND ( events.id LIKE (?) )", "%a%", "%b%"]
   end
+  
+  it "should generate query using array" do
+    build_generator_with_array.conditions.should == ["( table_name.a = (?) ) AND ( table_name.a = (?) ) AND ( table_name.b != (?) )", "value_a", "value_a2", "value_b"]
+  end
+  
+  it "should generate query using pseudo array" do
+    build_generator_with_pseudo_array.conditions.should == ["( table_name.a = (?) ) AND ( table_name.a = (?) ) AND ( table_name.b != (?) )", "value_a", "value_a2", "value_b"]
+  end
+  
   #it "should evaluate" do
   #  @query = {
   #    :conditions => {
