@@ -167,7 +167,7 @@ module Fancygrid#:nodoc:
     end
     
     def serachable_leafs
-      leafs.map { |leaf| (leaf && leaf.searchable ? leaf : nil) }.compact
+      leafs.map { |leaf| (leaf && leaf.searchable && leaf.visible ? leaf : nil) }.compact
     end
     
     # Sets a custom dataset that should be rendered.Blanks out the
