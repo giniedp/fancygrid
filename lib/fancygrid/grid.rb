@@ -31,6 +31,9 @@ module Fancygrid#:nodoc:
     # Enables or disables the input fields for simple search.
     attr_accessor :search_enabled
     
+    # Specifies the type of the search. Must be one of "simple" or "complex"
+    attr_accessor :search_type
+    
     # Enables or disables the rendering of the top control bar.
     attr_accessor :hide_top_control
     
@@ -75,6 +78,7 @@ module Fancygrid#:nodoc:
       
       self.grid_type      = Fancygrid.default_grid_type
       self.search_enabled = Fancygrid.search_enabled
+      self.search_type    = Fancygrid.search_type
       
       if Fancygrid.use_grid_name_as_cells_template
         self.template = Fancygrid.cells_template_prefix + name.to_s
@@ -136,7 +140,8 @@ module Fancygrid#:nodoc:
       url_options = {
         :select => self.leafs.map{|leaf| leaf.select_name }.compact,
         :conditions => params[:conditions],
-        :pagination => params[:pagination]
+        :pagination => params[:pagination],
+        :operator => params[:operator]
       }
       
       # yield the generator to enable the caller to manipulate that. Useful for large queries
@@ -275,6 +280,7 @@ module Fancygrid#:nodoc:
         :isStatic => self.is_static?,
         :gridType => self.grid_type,
         :searchEnabled => self.search_enabled,
+        :searchType => self.search_type,
         :hideTopControl => self.hide_top_control,
         :hideBottomControl => self.hide_bottom_control,
         :instantFetchData => self.instant_fetch_data

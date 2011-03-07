@@ -16,6 +16,9 @@ module Fancygrid
   
   mattr_accessor :controls_template
   @@controls_template = "fancygrid/base/controls"
+  
+  mattr_accessor :extended_search_template
+  @@extended_search_template = "fancygrid/base/extended_search"
 
   mattr_accessor :cells_template_prefix
   @@cells_template_prefix = "fancygrid/"
@@ -29,6 +32,9 @@ module Fancygrid
   mattr_accessor :search_enabled
   @@search_enabled = false
   
+  mattr_accessor :search_type
+  @@search_type = "simple"
+  
   mattr_accessor :default_grid_type
   @@default_grid_type = :table
   
@@ -40,6 +46,9 @@ module Fancygrid
   
   mattr_accessor :default_per_page_selection
   @@default_per_page_selection = 20
+  
+  mattr_accessor :extended_search_operators
+  @@extended_search_operators = [:equal, :not_equal, :less, :less_equal, :greater, :greater_equal, :starts_with, :ends_with, :like, :null, :not_null, :true, :not_true, :false, :not_false, :in, :not_in]
   
   def self.setup
     yield self

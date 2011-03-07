@@ -1,0 +1,26 @@
+.js-extendedsearch#extended_search
+  .extended_search_top
+    %span
+    = I18n.t("fancygrid.extendedsearch.introduction", :default => 'If %{AllOrAnySelect} of the following conditions are met:', :AllOrAnySelect => select(:fulfill_all_conditions, "id", { I18n.t("fancygrid.extendedsearch.any", :default => "any") => "any", I18n.t("fancygrid.extendedsearch.all", :default => "any") => "all"}, { :selected => :any }, :class => "js-fulfill_all_conditions")).html_safe
+    %span
+  %ul#extended_search_criteria
+  .extended_search_bottom
+    %button{ :id => "extended_search_remove_all_rows"}
+      =I18n.t("fancygrid.extendedsearch.remove_all", :default => 'remove all') 
+    %button{ :id => "extended_search_submit"}
+      =I18n.t("fancygrid.extendedsearch.search", :default => 'search')
+.extended_search_row_tpl 
+  - searchable_columns = {}
+  - search_operators = {}
+  - fancygrid.each_leaf do |leaf|
+    - if leaf.searchable
+      - searchable_columns[leaf.human_name] = leaf.tag_name
+  - Fancygrid.extended_search_operators.each do |op|
+    - search_operators[I18n.t("fancygrid.extendedsearch.op_"+op.to_s , :default => op.to_s )] = op.to_s 
+  = select_tag("column_name", options_for_select(searchable_columns), { :id => nil})    
+  = select_tag("operator", options_for_select(search_operators ), { :id => nil})
+  %input{ :type=>"text", :name=>"column_value", :value=>"" }
+  %button{ :value => "extended_search_remove_row"}
+    \-
+  %button{ :value => "extended_search_add_row"}
+    +

@@ -1,6 +1,8 @@
 .js-fancygrid{ :class => fancygrid.name }
   - unless fancygrid.is_static?
-    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => "controls top" })
+    = render(:template => Fancygrid.extended_search_template, :locals => { :fancygrid => fancygrid })
+    - if fancygrid.search_type.to_s == "complex"
+      = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => "controls top" })
   .js-tablewrapper
     %table
       %tr.js-header
@@ -8,7 +10,7 @@
           %th{ :class => leaf.css_class }
             = leaf.human_name
       
-      - unless fancygrid.is_static?
+      - if !fancygrid.is_static? && fancygrid.search_type.to_s == "simple"
         %tr.js-search
           - fancygrid.each_leaf do |leaf|
             %td{ :class => leaf.css_class }

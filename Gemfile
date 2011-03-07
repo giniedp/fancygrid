@@ -1,6 +1,9 @@
 source "http://rubygems.org"
 
-gem "rails", ">=3.0.3"
+group :development do
+  gem "rails", ">=3.0.3"
+  gem "jeweler"
+end
 
 group :test do
   gem "capybara", ">= 0.4.0"
@@ -9,4 +12,4 @@ group :test do
   gem "rspec-rails", ">= 2.0.0.beta"
 end
 
-gem "jeweler"
+
