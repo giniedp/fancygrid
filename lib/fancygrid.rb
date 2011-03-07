@@ -33,7 +33,7 @@ module Fancygrid
   @@search_enabled = false
   
   mattr_accessor :search_type
-  @@search_type = "simple"
+  @@search_type = :simple
   
   mattr_accessor :default_grid_type
   @@default_grid_type = :table
@@ -48,7 +48,7 @@ module Fancygrid
   @@default_per_page_selection = 20
   
   mattr_accessor :extended_search_operators
-  @@extended_search_operators = [:equal, :not_equal, :less, :less_equal, :greater, :greater_equal, :starts_with, :ends_with, :like, :null, :not_null, :true, :not_true, :false, :not_false, :in, :not_in]
+  @@extended_search_operators = Fancygrid::QueryGenerator::OPERATOR_NAMES
   
   def self.setup
     yield self

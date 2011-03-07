@@ -3,6 +3,11 @@ require "active_support/hash_with_indifferent_access"
 module Fancygrid
   class QueryGenerator#:nodoc:
     
+    OPERATOR_NAMES = [
+      :equal, :not_equal, :less, :less_equal, :greater, :greater_equal, :starts_with, :ends_with, 
+      :like, :null, :not_null, :true, :not_true, :false, :not_false, :in, :not_in
+    ]
+    
     attr_accessor :query
 
     def initialize(options=nil)
@@ -304,9 +309,11 @@ module Fancygrid
         value = nil
         "IS NOT FALSE"
       when "in"
-        "IS IN"
+        value = value.split(",")
+        "IN"
       when "not_in"
-        "IS NOT IN"
+        value = value.split(",")
+        "NOT IN"
       else
         "="
       end

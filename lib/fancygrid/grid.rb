@@ -34,6 +34,9 @@ module Fancygrid#:nodoc:
     # Specifies the type of the search. Must be one of "simple" or "complex"
     attr_accessor :search_type
     
+    # Specifies a set of enabled search operators
+    attr_accessor :extended_search_operators
+    
     # Enables or disables the rendering of the top control bar.
     attr_accessor :hide_top_control
     
@@ -79,6 +82,7 @@ module Fancygrid#:nodoc:
       self.grid_type      = Fancygrid.default_grid_type
       self.search_enabled = Fancygrid.search_enabled
       self.search_type    = Fancygrid.search_type
+      self.extended_search_operators = Fancygrid.extended_search_operators
       
       if Fancygrid.use_grid_name_as_cells_template
         self.template = Fancygrid.cells_template_prefix + name.to_s
@@ -160,6 +164,10 @@ module Fancygrid#:nodoc:
       leafs.each do |leaf|
         yield leaf if leaf.visible
       end
+    end
+    
+    def serachable_leafs
+      leafs.map { |leaf| (leaf && leaf.searchable ? leaf : nil) }.compact
     end
     
     # Sets a custom dataset that should be rendered.Blanks out the
