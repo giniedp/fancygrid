@@ -18,7 +18,6 @@ module Fancygrid
       
       self.select(options[:select])
       self.apply_pagination(options[:pagination])
-      # TODO:
       self.apply_search_conditions(options[:operator] || :and, options[:conditions])
       self.apply_sort_order(options[:order])
     end

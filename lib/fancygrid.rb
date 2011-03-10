@@ -1,12 +1,12 @@
-pwd = File.expand_path(File.dirname(__FILE__))
-require File.join(pwd, "fancygrid", "helper")
-require File.join(pwd, "fancygrid", "node")
-require File.join(pwd, "fancygrid", "grid")
-require File.join(pwd, "fancygrid", "query_generator")
-require File.join(pwd, "version")
+require "fancygrid"
+require "version"
+require "fancygrid/helper"
+require "fancygrid/node"
+require "fancygrid/grid"
+require "fancygrid/query_generator"
+require "fancygrid/view"
 
 module Fancygrid
-  pwd = File.expand_path(File.dirname(__FILE__))
 
   mattr_accessor :table_template
   @@table_template = "fancygrid/base/table_frame"
@@ -20,26 +20,26 @@ module Fancygrid
   mattr_accessor :extended_search_template
   @@extended_search_template = "fancygrid/base/extended_search"
 
-  mattr_accessor :cells_template_prefix
-  @@cells_template_prefix = "fancygrid/"
-
+  mattr_accessor :cells_template_directory
+  @@cells_template_directory = "fancygrid/"
+  
   mattr_accessor :cells_template
   @@cells_template = "_cells"
 
+  mattr_accessor :i18n_scope
+  @@i18n_scope = "fancygrid"
+  
   mattr_accessor :use_grid_name_as_cells_template
   @@use_grid_name_as_cells_template = false
   
-  mattr_accessor :search_enabled
-  @@search_enabled = false
+  mattr_accessor :search_visible
+  @@search_visible = false
   
-  mattr_accessor :search_type
-  @@search_type = :simple
+  mattr_accessor :default_search_type
+  @@default_search_type = :simple
   
   mattr_accessor :default_grid_type
   @@default_grid_type = :table
-  
-  mattr_accessor :i18n_tables_prefix
-  @@i18n_tables_prefix = "fancygrid.tables"
   
   mattr_accessor :default_per_page_options
   @@default_per_page_options = [5, 10, 15, 20, 25, 30, 40, 50]

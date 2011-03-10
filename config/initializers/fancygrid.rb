@@ -1,37 +1,45 @@
-# Use this setup block to configure all options available in Fancygrid.
 Fancygrid.setup do |config|
   
-  # The path to the table template which is rendered when the grid type is set to :table
+  # The path to the table template which is rendered when the grid type is set
+  # to :table
   #
   # config.table_template = "fancygrid/base/table_frame"
   
-  # The path to the list template which is rendered when the grid type is set to :list
+  # The path to the list template which is rendered when the grid type is set 
+  # to :list
   #
   # config.list_template = "fancygrid/base/list_frame"
   
-  # The path to the controls template which is rendered at the top and the bottom of a grid
+  # The path to the controls template which is rendered at the top and the 
+  # bottom of a grid
   #
   # config.controls_template = "fancygrid/base/controls"
 
-  # The prefix that is used for every cells template. Default value is "fancygrid/_"
-  # so every template is expected in the "/app/views/fancygrid" directory
+  # The prefix that is used for every cells template. Default value is 
+  # "fancygrid/" so every template is expected in the "/app/views/fancygrid"
+  # directory
   #
-  # config.cells_template_prefix = "fancygrid/"
+  # config.cells_template_directory = "fancygrid/"
   
-  # The default cells template name. This is combined with the "default_cells_template_prefix"
-  # to get the full template name
+  # The default cells template name. This is combined with the 
+  # "default_cells_template_directory" to get the full template name
   #
   # config.cells_template = "_cells"
   
-  # If set to true you dont need to specify a template for your grid, it will be 
-  # automaticly set to the grids name. 
+  # Specifies the the internationalization namespace where the plugin will 
+  # lookup for translations.
+  #
+  # config.i18n_scope = "fancygrid"
+  
+  # Value specifying whether the grid name is automatily used as cells template
+  # name.
   #
   # config.use_grid_name_as_cells_template = false
   
-  # Specify here whether the search is visible or not when the grid is rendered
-  # the first time.
+  # Value specifying whether the search is visible or not when the grid is 
+  # rendered for the first time.
   #
-  # config.search_enabled = false
+  # config.search_visible = false
   
   # Set the default grid type. Available values are :table and :list
   # :table will render the data inside a table. Each record will get its own
@@ -40,11 +48,6 @@ Fancygrid.setup do |config|
   # you must provide a rendering block or a template to render each record.
   #
   # config.default_grid_type = :table
-  
-  # Set the internationalization namespace where the plugin will retrieve the
-  # grids column names.
-  #
-  # config.i18n_tables_prefix = "fancygrid.tables"
   
   # Default options for number of pages selection
   #

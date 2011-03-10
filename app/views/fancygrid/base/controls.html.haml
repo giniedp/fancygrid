@@ -2,7 +2,7 @@
   %li
     %span
       = I18n.t("fancygrid.pagination.per_page", :default => "Results per Page")
-    = select(:per_page, :to_i, fancygrid.per_page_options, { :selected => fancygrid.per_page_selection }, :class => "js-per-page")
+    = select_tag(:per_page, options_for_select(fancygrid.per_page_options, fancygrid.view.get_pagination_per_page), :class => "js-per-page")
     
   %li.separator
   %li.button
@@ -11,7 +11,7 @@
   %li
     %span
       = I18n.t("fancygrid.pagination.page", :default => "Page")
-    %input.js-page{ :type => "text", :value => "1"}
+    %input.js-page{ :type => "text", :value => fancygrid.view.get_pagination_page + 1 }
     %span
       = I18n.t("fancygrid.pagination.of", :default => "of")
     %span.js-page-total

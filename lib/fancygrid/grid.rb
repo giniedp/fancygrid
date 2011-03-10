@@ -13,9 +13,6 @@ module Fancygrid#:nodoc:
     # The database query that is sent to the database.
     attr_accessor :query
     
-    # Collection of toolbars to render. (This is currenty not implemented)
-    attr_accessor :toolbars
-    
     # The current POST or GET parameters.
     attr_accessor :request_params
     
@@ -29,7 +26,7 @@ module Fancygrid#:nodoc:
     attr_accessor :template
     
     # Enables or disables the input fields for simple search.
-    attr_accessor :search_enabled
+    attr_accessor :search_visible
     
     # Specifies the type of the search. Must be one of "simple" or "complex"
     attr_accessor :search_type
@@ -74,24 +71,25 @@ module Fancygrid#:nodoc:
       self.dataset        = nil
       self.resultcount    = 0
 
-      self.toolbars       = {}
       self.query          = {}
       self.request_params = (params || {})
       self.instant_fetch_data = false
       
       self.grid_type      = Fancygrid.default_grid_type
-      self.search_enabled = Fancygrid.search_enabled
-      self.search_type    = Fancygrid.search_type
+      self.search_visible = Fancygrid.search_visible
+      self.search_type    = Fancygrid.default_search_type
       self.extended_search_operators = Fancygrid.extended_search_operators
       
       if Fancygrid.use_grid_name_as_cells_template
-        self.template = Fancygrid.cells_template_prefix + name.to_s
+        self.template = Fancygrid.cells_template_directory + name.to_s
       else
-        self.template = Fancygrid.cells_template_prefix + Fancygrid.cells_template
+        self.template = Fancygrid.cells_template_directory + Fancygrid.cells_template
       end
       
       self.per_page_options = Fancygrid.default_per_page_options
       self.per_page_selection = Fancygrid.default_per_page_selection
+      
+      self.load_view(self.request_params)
     end
     
     # Returns true if the callback url is blank, that is when no ajax 
@@ -111,6 +109,16 @@ module Fancygrid#:nodoc:
     def css_proc
       @css_proc = Proc.new if block_given?
       @css_proc
+    end
+    
+    def load_view_proc
+      @load_view_proc = Proc.new if block_given?
+      @load_view_proc
+    end
+    
+    def store_view_proc
+      @store_view_proc = Proc.new if block_given?
+      @store_view_proc
     end
     
     # Builds the query sends it to the database if this is an ajax call or
@@ -137,12 +145,12 @@ module Fancygrid#:nodoc:
       leafs.compact!
       
       # get the parameters for this grid instance, they are mapped like this { :fancygrid => { :gird_name => ..options.. }}
-      params = request_params["fancygrid"] || {}
+      params = request_params[:fancygrid] || {}
       params = params[self.name] || {}
       
       # build default query hash
       url_options = {
-        :select => self.leafs.map{|leaf| leaf.select_name }.compact,
+        :select => self.leafs.map{ |leaf| leaf.select_name }.compact,
         :conditions => params[:conditions],
         :pagination => params[:pagination],
         :operator => params[:operator]
@@ -192,16 +200,14 @@ module Fancygrid#:nodoc:
         count_query = self.query.reject do |k, v| 
           [:limit, :offset, :order].include?(k.to_sym )
         end
-        self.resultcount  = self.record_klass.count(:all, count_query)
+        self.resultcount = self.record_klass.count(:all, count_query)
         
       elsif self.record_klass < ActiveResource::Base
         self.dataset = self.record_klass.find(:all, :params => self.query)
         self.resultcount = self.dataset.delete_at(self.dataset.length - 1).total
       end
       
-      if self.resultcount.respond_to?(:length)
-        self.resultcount  = self.resultcount.length 
-      end
+      self.resultcount = self.resultcount.length  if self.resultcount.respond_to?(:length)
 
       if logger
         log "Query result:"
@@ -213,14 +219,9 @@ module Fancygrid#:nodoc:
     # the node will be inserted in its right place.
     def insert_node(node)
       raise "Node must be a leaf" unless node.is_leaf?
-      if (self.view.is_a?(Hash) && 
-          self.view[:columns].is_a?(Hash) && 
-          self.view[:columns][node.trace_path].is_a?(Hash))
-          
-        node_opts = self.view[:columns][node.trace_path]
-        node.search_value = node_opts[:value].to_s
-        node.position = node_opts[:position].to_i
-        node.visible = node_opts[:visible] && node.visible
+      if (self.view)        
+        node.position = self.view.get_node_position(node)
+        node.visible = self.view.get_node_visibility(node) && node.visible
         leafs.insert(node.position, node)
       else
         leafs << node
@@ -228,11 +229,11 @@ module Fancygrid#:nodoc:
     end
     
     # Takes the given view hash and aligns the leafs respecting the view definitions
-    def load_view view
-      raise "a Hash was expected but #{view.class} given" unless view.is_a? Hash
-      self.view = view
-      self.per_page_options = view[:per_page_options] if view[:per_page_options].is_a?(Array)
-      self.per_page_selection = view[:per_page_selection] if view[:per_page_selection].is_a?(Fixnum)
+    def load_view options
+      options ||= {}
+      options = options[:fancygrid] || options
+      options = options[self.name] || options
+      self.view = Fancygrid::View.new(options)
       
       # reorder current leafs
       new_leafs = self.leafs
@@ -242,44 +243,6 @@ module Fancygrid#:nodoc:
       end
     end
     
-    # Creates a view hash of the current grid state and current search request
-    # You can use that hash to load the grids view state
-    def dump_view
-      leafs.compact!
-      
-      # get the current condition url parameters
-      params = request_params["fancygrid"] || {}
-      params = params[self.name] || {}
-      params = params["conditions"] || {}
-      
-      # create the search value mapping
-      search_value_mapping = {}
-      params.each do |table_name, columns|
-        columns.each do |cell_name, cell_value|
-          tag_name = "#{table_name}[#{cell_name}]"
-          search_value_mapping[tag_name] = cell_value
-        end
-      end
-      
-      # build the view state from current leafs using the search value mapping
-      dump = {}
-      position = 0
-      self.leafs.each do |node|
-        dump[node.trace_path] = {
-          :position => position,
-          :visible => node.visible,
-          :value => search_value_mapping[node.tag_name]
-        }
-        position += 1
-      end
-      dump = { 
-        :columns => dump,
-        :per_page_options => self.per_page_options,
-        :per_page_selection => self.per_page_selection,
-      }
-      dump
-    end
-    
     # Builds the javascript options for the javascript part of fancygrid
     def js_options
       {
@@ -287,11 +250,13 @@ module Fancygrid#:nodoc:
         :name => self.name,
         :isStatic => self.is_static?,
         :gridType => self.grid_type,
-        :searchEnabled => self.search_enabled,
+        :searchEnabled => self.search_visible,
         :searchType => self.search_type,
         :hideTopControl => self.hide_top_control,
         :hideBottomControl => self.hide_bottom_control,
-        :instantFetchData => self.instant_fetch_data
+        :instantFetchData => self.instant_fetch_data,
+        :paginationPage => self.view.get_pagination_page,
+        :paginationPerPage => self.view.get_pagination_per_page,
       }.to_json
     end
     

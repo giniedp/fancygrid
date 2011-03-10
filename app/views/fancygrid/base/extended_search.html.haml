@@ -12,19 +12,28 @@
 .js-extendedsearch#extended_search
   .extended_search_top
     %span
-      = select(:fulfill_all_conditions, "id", fullfill_conditions, { :selected => :any }, :class => "js-fulfill_all_conditions")
+      = select(:fulfill_all_conditions, "id", fullfill_conditions, { :selected => fancygrid.view.get_search_operator }, :class => "js-fulfill_all_conditions")
     %span
       = I18n.t("fancygrid.extendedsearch.introduction", :default => 'of the following conditions must be met:')
       
-  %ul#extended_search_criteria
+  %ul.js-extended_search_criteria
+    - fancygrid.each_leaf do |leaf|
+      - fancygrid.view.get_node_search_conditions(leaf).each do |condition|
+        %li
+          = select_tag(:column_name, options_for_select(searchable_columns, leaf.tag_name))    
+          = select_tag(:operator, options_for_select(search_operators, condition[:operator]))
+          %input{ :type => :text, :name => :column_value, :value => condition[:value] }
+          %button.js-extended_search_remove_row= "-"
+          %button.js-extended_search_add_row= "+"
+  
   .extended_search_bottom
-    %button{ :id => "extended_search_remove_all_rows"}
+    %button.js-clear
       =I18n.t("fancygrid.extendedsearch.remove_all", :default => 'remove all') 
-    %button{ :id => "extended_search_submit"}
+    %button.js-search_submit
       =I18n.t("fancygrid.extendedsearch.search", :default => 'search')
 .extended_search_row_tpl 
-  = select_tag("column_name", options_for_select(searchable_columns), { :id => nil})    
-  = select_tag("operator", options_for_select(search_operators ), { :id => nil})
-  %input{ :type=>"text", :name=>"column_value", :value=>"" }
-  %button#extended_search_remove_row= "-"
-  %button#extended_search_add_row= "+"
+  = select_tag(:column_name, options_for_select(searchable_columns))    
+  = select_tag(:operator, options_for_select(search_operators ))
+  %input{ :type => :text, :name => :column_value, :value => "" }
+  %button.js-extended_search_remove_row= "-"
+  %button.js-extended_search_add_row= "+"

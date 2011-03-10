@@ -1,5 +1,3 @@
-require 'ftools'
-
 module Fancygrid
   
   module Helper    
@@ -34,18 +32,27 @@ module Fancygrid
     # * <tt>data</tt> - The data to render
     # * <tt>template</tt> - The template to use for custom rendering columns
     # * <tt>url</tt> - The callback url for ajax
-    # * <tt>search_enabled</tt> - If true, the search will be visible
+    # * <tt>search_visible</tt> - If true, the search will be visible
     # * <tt>hide_top_control</tt> - If true, the top control bar will be hidden
     # * <tt>hide_bottom_control</tt> - If true, the bottom control bar will be hidden
     # * <tt>grid_type</tt> - may be one of <tt>:list</tt> table <tt>:table</tt> to render a list or a table
     def fancygrid(name, options=nil, &block)#:yields: column, record, value
-      
       store_name = name.to_s
       raise "Missing fancygrid for name '#{store_name}'" if(@fancygrid.nil? || @fancygrid[store_name].nil?)
       fancygrid_instance = @fancygrid[store_name]
       
+      if params[:fancygrid]
+        if fancygrid_instance.store_view_proc.is_a?(Proc)
+          fancygrid_instance.store_view_proc.call(fancygrid_instance, fancygrid_instance.view.dump)
+        end
+      else
+        if fancygrid_instance.load_view_proc.is_a?(Proc)
+          fancygrid_instance.view.load(fancygrid_instance.load_view_proc.call(fancygrid_instance))
+        end
+      end
+      
       options ||= {}
-      [:data, :template, :url, :search_enabled, :hide_top_control, 
+      [:data, :template, :url, :search_visible, :hide_top_control, 
        :hide_bottom_control, :grid_type
       ].each do |option|
         fancygrid_instance.send(option.to_s + "=", options[option]) if options[option]

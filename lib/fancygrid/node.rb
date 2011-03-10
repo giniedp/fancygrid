@@ -309,10 +309,10 @@ module Fancygrid#:nodoc:
     # Returns the internationalization path for this node if it is a leaf.
     # Otherwise returns nil. The <tt>i18n_path</tt> is used to lookup the <tt>human_name</tt>
     # of this node and is the <tt>trace_path</tt> preceded with the value from 
-    # <tt>Fancygrid.i18n_tables_prefix</tt>
+    # <tt>Fancygrid.i18n_scope</tt>
     def i18n_path
       if is_leaf? && @i18n_path.nil?
-        @i18n_path = "#{Fancygrid.i18n_tables_prefix}.#{self.trace_path}"
+        @i18n_path = "#{Fancygrid.i18n_scope}.tables.#{self.trace_path}"
       end
       @i18n_path
     end

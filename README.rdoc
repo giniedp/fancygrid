@@ -1,12 +1,12 @@
-=== Fancygrid
+= Fancygrid
 Fancygrid is under heavy development. Things may change frequently.
 
-=== Requirements
+= Requirements
 * jQuery >= 1.4.2
 * Rails 3
 * Haml
 
-=== Installation
+= Installation
 In your gemfile
     gem 'fancygrid', :git => 'git://github.com/giniedp/fancygrid.git'
 
@@ -21,14 +21,14 @@ and
     
 then follow the instructions
 
-=== Getting started
+= Getting started
 
-==== Basic Setup
+== Basic Setup
 In any controller in any action you can define a fancygrid for a specific model.
 A controller is the place where you define what data should be queried from
 the database and what columns will be visible. For example you could define
 a table for your users like this:
-===== Example
+=== Example
     # UsersController
     def index
       # setup fancygrid to display users
@@ -48,14 +48,14 @@ a table for your users like this:
   
 In your View you have to render the fancygrid. Use the name that you have used
 in your controller
-===== Example
+=== Example
     # app/views/users/index.html.haml
     = fancygrid :users
 
-==== Static tables
+== Static tables
 If you dont want to have an ajax table, you can set the data directly without
 providing a callback url. 
-===== Example
+=== Example
     def index
       fancygrid_for :users do |user|
         
@@ -68,12 +68,12 @@ providing a callback url.
       end
     end
    
-==== Table names and model names
+== Table names and model names
 Usually fancygrid takes the passed name and tries to resolve the models class
 and its database table name. If you need to use a name that is different
 from your models name which is the case when you have namespaced models, you can 
 pass the models constant and its table name to fancygrid
-===== Example
+=== Example
     def index
       fancygrid_for :user, Namespace::User, "users" do |user|
         
@@ -82,10 +82,10 @@ pass the models constant and its table name to fancygrid
       end
     end
     
-=== Using methods on records
+= Using methods on records
 You are not limited to the models attributes to display in the fancygrid. You can
 provide method names to display a models properties
-===== Example
+=== Example
     def index  
       fancygrid_for :users do |user|
       
@@ -100,7 +100,7 @@ provide method names to display a models properties
     end
     
 You can even pass a proc to a single column
-===== Example
+=== Example
     def index  
       fancygrid_for :users do |user|
       
@@ -117,10 +117,10 @@ You can even pass a proc to a single column
     
 For more complex output you must have to render a column with custom template
 
-==== Rendering columns with templates
+== Rendering columns with templates
 For custom cell rendering create a template at some place like *app/views/fancygrid/users.html.haml*
 In your fancygrid definition do:
-===== Example
+=== Example
     def index  
       fancygrid_for :users do |user|
       
@@ -139,7 +139,7 @@ In your fancygrid definition do:
 
 In your template you can use the following locals: <tt>table</tt>, <tt>column</tt>, <tt>record</tt> and <tt>value</tt>
 so you can render your cell like this:
-===== Example
+=== Example
     - case table.name
     - when :users
       - case column.name
@@ -147,19 +147,19 @@ so you can render your cell like this:
         = link_to "Show", user_path(record)
         = link_to "Edit", edit_user_path(record)
 
-==== Rendering columns with a haml block
+== Rendering columns with a haml block
 In your view you can give a grid a block that should be used for rendering
-===== Example
+=== Example
     = fancygrid(:users) do |column, record, value|
       - case column.name
       - when :actions
         = link_to "Show", user_path(record)
         = link_to "Edit", edit_user_path(record)
         
-==== Display associated data (belongs_to or has_one)
+== Display associated data (belongs_to or has_one)
 To display an associated data you have to build the nodes for that data and
 specify the include option for the find method
-===== Example
+=== Example
     def index  
       fancygrid_for :users do |user|
       
@@ -178,7 +178,7 @@ specify the include option for the find method
     
 If your association name is different from the models name pass the model 
 constant into the columns_for method.
-===== Example
+=== Example
     def index  
       fancygrid_for :users do |user|
       
@@ -195,10 +195,10 @@ constant into the columns_for method.
       end
     end
     
-==== Display associated data (has_many or has_and_belongs_to_many)
+== Display associated data (has_many or has_and_belongs_to_many)
 Similar to the previous example you have to build the nodes for the associations
 and specify the include option
-===== Example
+=== Example
     def index  
       fancygrid_for :users do |user|
       
@@ -220,7 +220,7 @@ which would call <tt>name</tt> on a collection of roles.
 
 Instead you should rather define a <tt>proc</tt> to return all role names or 
 render that cell with custom code.
-===== Example      
+=== Example      
     def index  
       fancygrid_for :users do |user|
       
@@ -235,13 +235,13 @@ render that cell with custom code.
       end
     end
     
-==== Conditional output (Implementing a filter)
+== Conditional output (Implementing a filter)
 The find options are the same like you put into the find method of an ActiveRecord model
 
     User.find(:first, <find_options>)
     
 So you can use the conditions to find the wanted data.
-===== Example
+=== Example
     # shows all users with a specific role
     def index  
       fancygrid_for :users do |user|
@@ -255,7 +255,7 @@ So you can use the conditions to find the wanted data.
 
 If you have a filter that comes as an url parameter, you can pass it to the
 callback url, so the callback gets the same filter value
-===== Example
+=== Example
     def index  
       fancygrid_for :users do |user|
       
@@ -266,11 +266,11 @@ callback url, so the callback gets the same filter value
       end
     end
 
-==== Order your conditions
+== Order your conditions
 If you have a large condition to make or you want to use a condition that depends on a users role, for example when
 some of your users are not allowed to see specific data, then you can give the find method a block and use the query generator
 
-===== Example
+=== Example
     fancygrid_for :users do |grid|
       
       # ...
@@ -287,11 +287,11 @@ some of your users are not allowed to see specific data, then you can give the f
       end
     end
     
-==== Caching the view state
+== Caching the view state
 To make your users life easier you can enable the view state caching. This way
 the user can search for data, leave the site, come back and have his last
 search back on screen. Here is an example of how to store the view in the users session:
-===== Example
+=== Example
     # ensure that there is a hash in the session
     session[:users_table_view_state] ||= {}
     
@@ -299,27 +299,20 @@ search back on screen. Here is an example of how to store the view in the users 
       
       # ...
       
-      # load the view state into the grid
-      grid.load_view(session[:users_table_view_state])
+      # specify a proc to load the view state
+      grid.load_view_proc do |grid_instance|
+        session["fancygrid_users"] || {}
+      end
       
-      # dump the view state and store back in session
-      session[:users_table_view_state] = grid.dump_view()
+      # specify a proc to store the view state
+      grid.store_view_proc do |grid_instance, dump|
+        session["fancygrid_users"] = dump
+      end
+
     end
     
-Its up to you where and how you store the view state. If you have lots of tables 
+Its up to your business logic where and how you store the dumped view state. If you have lots of tables 
 i would recommend to enable database session store.
-
-In a future release fancygrid will allow columns sorting. But you can already
-use a part of that feature. Create a view state like this:
-===== Example
-      session[:users_table_view_state] ||= {
-        :columns => {
-          "users.id" => { :position => 0, :visible => true },
-          "users.email" => { :position => 2, :visible => true },
-          "contacts.name" => { :position => 1, :visible => true },        
-        }
-      }
-
    
-=== Copyright
+= Copyright
 Copyright (c) 2010 Alexander Graefenstein. See LICENSE for details.

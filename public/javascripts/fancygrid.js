@@ -16,11 +16,14 @@
         url               : "/", 
         name              : "", 
         query             : { 
-          pagination      : { page : 0, per_page : 20 }, 
+          pagination      : { 
+            page : (options.paginationPage || 0), 
+            per_page : options.paginationPerPage
+          }, 
           conditions      : {},
           order           : {}
         },                
-        searchFadeTime    : 250,
+        searchFadeTime    : 25,
         searchFadeOpac    : 0.5,
         searchType        : "simple",
         queries           : 0,
@@ -105,28 +108,33 @@
           
           // magnifier click
           $this.find(".js-magnify").bind("click.fancygrid", function(){
-            $(this).parents(".js-fancygrid").fancygrid('toggleSearch', $(this).val()); 
-            return false;
-          });
-          
-             //extended search remove all rows
-          $this.find("#extended_search_remove_all_rows").bind("click.fancygrid", function(){
-            $(this).parents(".js-fancygrid").fancygrid('clearSearch', $(this).val()); 
+            $(this).parents(".js-fancygrid").fancygrid('toggleSearch'); 
             return false;
           });
           
           //extended search submit
-          $this.find("#extended_search_submit").bind("click.fancygrid", function(){
-            $(this).parents(".js-fancygrid").fancygrid('newExtendedSearch', $(this).val()); 
+          $this.find(".js-search_submit").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('newExtendedSearch'); 
             return false;
           });
           
           //extended search: hide criterion row template
           $this.find(".extended_search_row_tpl").hide();
           
-          //extended search: insert first criterion-row
-          $(this).fancygrid('extendedSearchAddCriterionRow', $(this).val());
-          
+    	    //button remove
+    	    $this.find(".js-extended_search_remove_row").click(function(){
+    	      $this.fancygrid("extendedSearchRemoveCriterionRow", $(this).parent());
+    	    });
+    	    
+    	    //button add new criterion
+    	    $this.find(".js-extended_search_add_row").click(function(){
+    	      $this.fancygrid("extendedSearchAddCriterionRow");
+    	    });
+    	
+    	    //extended search: insert first criterion-row
+    	    if ($this.find("ul.js-extended_search_criteria li").length == 0 ){
+    		    $this.fancygrid("extendedSearchAddCriterionRow");
+    	    }
         } else {
           // nothing to do when fancygrid is already initialized
           $.extend(data, options);
@@ -269,6 +277,7 @@
       data = $this.data('fancygrid');
       $this.fancygrid("setupPagination", data.query.pagination.page, data.query.pagination.per_page);
       $this.fancygrid("setupConditions");
+      $this.fancygrid("setupConditionsForExtendedSearch");
       $this.fancygrid("search");
     },
     newSearch : function(){
@@ -305,50 +314,53 @@
     },
     extendedSearchRemoveAll : function(){
       var $this = $(this);
-    	$this.find("#extended_search_criteria li").each(function(){
-    			$(this).remove();
-    	});
+    	$this.find("ul.js-extended_search_criteria li").detach();
     	
-    	//One criterion row has to be visible
-    	if ($this.find("#extended_search_criteria li").length == 0 ){
-    		$(this).fancygrid("extendedSearchAddCriterionRow");
+    	// One criterion row has to be visible
+    	if ($this.find("ul.js-extended_search_criteria li").length == 0 ){
+    		$this.fancygrid("extendedSearchAddCriterionRow");
     	}
     }, 
     extendedSearchRemoveCriterionRow : function(row){
+      var $this = $(this);
     	row.remove();
     	
-    	//One criterion row has to be visible
-    	if ($(this).find("#extended_search_criteria li").length == 0 ){
-    		$(this).fancygrid("extendedSearchAddCriterionRow");
+    	// One criterion row has to be visible
+    	if ($this.find("ul.js-extended_search_criteria li").length == 0 ){
+    		$this.fancygrid("extendedSearchAddCriterionRow");
     	}
     },
     extendedSearchAddCriterionRow : function(){
     	var $this = $(this);
-    	//add criterion row
-    	$this.find("#extended_search_criteria").append("<li>"+$this.find(".extended_search_row_tpl").html()+"</li>");
+    	var row = $("<li>" + $this.find(".extended_search_row_tpl").html() + "</li>");
     	
-    	//Find added criterion row
-    	var row = $this.find("#extended_search_criteria li").last();
+    	//add criterion row
+    	$this.find("ul.js-extended_search_criteria").append(row);
     	
     	//button remove
-    	row.find("button[value='extended_search_remove_row']").click(function(){
+    	row.find(".js-extended_search_remove_row").click(function(){
     	  $this.fancygrid("extendedSearchRemoveCriterionRow", row);
     	});
     	
     	//button add new criterion
-    	row.find("button[value='extended_search_add_row']").click(function(){
+    	row.find(".js-extended_search_add_row").click(function(){
     	  $this.fancygrid("extendedSearchAddCriterionRow");
     	});
     },
     setupConditionsForExtendedSearch : function(){
+      if ($(".js-extendedsearch").length == 0){
+        // do nothing when no extended search is available
+        return;
+      }
+      
       var $this = $(this);
       var data = $this.data('fancygrid');
       
-      var allOrAnyOperator = $this.find("#fulfill_all_conditions_id").val();
+      var allOrAnyOperator = $this.find(".js-fulfill_all_conditions").val();
       
       data.query.operator = allOrAnyOperator;
       data.query.conditions = {};
-      $(this).find("#extended_search_criteria li").each(function(){
+      $this.find("ul.js-extended_search_criteria li").each(function(){
         var column_name = $(this).find("select[name='column_name']").val();
         var operator  = $(this).find("select[name='operator']").val();
         var value = $(this).find("input[name='column_value']").val();

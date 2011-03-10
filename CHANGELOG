@@ -1,3 +1,5 @@
+0.5.1 - Fixed the complex search and improved viewstate caching.
+0.5.0 - Initial implementation of the complex search.
 0.4.2 - Ability to define a block for print out a custom css class for each table row. Check out the 'css_proc' method
       - Implemented flexible query generator. You dont have to clutter all your conditions into a single place anymore
 0.4.1 - Added a dummy testapplication into spec folder.
