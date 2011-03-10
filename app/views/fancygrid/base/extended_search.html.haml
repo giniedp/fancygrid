@@ -12,9 +12,9 @@
 .js-extendedsearch#extended_search
   .extended_search_top
     %span
-      = select(:fulfill_all_conditions, "id", fullfill_conditions, { :selected => fancygrid.view.get_search_operator }, :class => "js-fulfill_all_conditions")
+      = check_box_tag(:all, :all, fancygrid.view.get_search_operator.to_s == "all", :class => "js-fulfill_all_conditions")
     %span
-      = I18n.t("fancygrid.extendedsearch.introduction", :default => 'of the following conditions must be met:')
+      = I18n.t("fancygrid.extendedsearch.introduction", :default => 'All conditions must met:')
       
   %ul.js-extended_search_criteria
     - fancygrid.each_leaf do |leaf|
@@ -24,16 +24,16 @@
           = select_tag(:operator, options_for_select(search_operators, condition[:operator]))
           %input{ :type => :text, :name => :column_value, :value => condition[:value] }
           %button.js-extended_search_remove_row= "-"
-          %button.js-extended_search_add_row= "+"
   
   .extended_search_bottom
     %button.js-clear
       =I18n.t("fancygrid.extendedsearch.remove_all", :default => 'remove all') 
     %button.js-search_submit
       =I18n.t("fancygrid.extendedsearch.search", :default => 'search')
+    %button.js-extended_search_add_row
+      = "+"
 .extended_search_row_tpl 
   = select_tag(:column_name, options_for_select(searchable_columns))    
   = select_tag(:operator, options_for_select(search_operators ))
   %input{ :type => :text, :name => :column_value, :value => "" }
   %button.js-extended_search_remove_row= "-"
-  %button.js-extended_search_add_row= "+"

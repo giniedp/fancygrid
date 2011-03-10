@@ -131,10 +131,14 @@
     	      $this.fancygrid("extendedSearchAddCriterionRow");
     	    });
     	
-    	    //extended search: insert first criterion-row
-    	    if ($this.find("ul.js-extended_search_criteria li").length == 0 ){
-    		    $this.fancygrid("extendedSearchAddCriterionRow");
-    	    }
+    	    $this.find("input[name=column_value]").bind("change.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('newExtendedSearch'); 
+            return false;
+          }).bind("focus.fancygrid", function(){
+            $(this).select();
+            return false;
+          });
+          
         } else {
           // nothing to do when fancygrid is already initialized
           $.extend(data, options);
@@ -294,7 +298,7 @@
       $this.fancygrid("simpleSearchRemoveAll");
       $this.fancygrid("extendedSearchRemoveAll");
       
-      $this.fancygrid("setupPagination", 0, data.query.pagination.per_page);
+      //$this.fancygrid("setupPagination", 0, data.query.pagination.per_page);
       $this.fancygrid("setupEmptyConditions");
       $this.fancygrid("search");
     },
@@ -322,13 +326,7 @@
     	}
     }, 
     extendedSearchRemoveCriterionRow : function(row){
-      var $this = $(this);
     	row.remove();
-    	
-    	// One criterion row has to be visible
-    	if ($this.find("ul.js-extended_search_criteria li").length == 0 ){
-    		$this.fancygrid("extendedSearchAddCriterionRow");
-    	}
     },
     extendedSearchAddCriterionRow : function(){
     	var $this = $(this);
@@ -342,10 +340,13 @@
     	  $this.fancygrid("extendedSearchRemoveCriterionRow", row);
     	});
     	
-    	//button add new criterion
-    	row.find(".js-extended_search_add_row").click(function(){
-    	  $this.fancygrid("extendedSearchAddCriterionRow");
-    	});
+      row.find("input[name=column_value]").bind("change.fancygrid", function(){
+        $(this).parents(".js-fancygrid").fancygrid('newExtendedSearch'); 
+        return false;
+      }).bind("focus.fancygrid", function(){
+        $(this).select();
+        return false;
+      });
     },
     setupConditionsForExtendedSearch : function(){
       if ($(".js-extendedsearch").length == 0){
@@ -356,7 +357,7 @@
       var $this = $(this);
       var data = $this.data('fancygrid');
       
-      var allOrAnyOperator = $this.find(".js-fulfill_all_conditions").val();
+      var allOrAnyOperator = $this.find(".js-fulfill_all_conditions:checked").val() || "any";
       
       data.query.operator = allOrAnyOperator;
       data.query.conditions = {};

@@ -5,7 +5,7 @@ module Fancygrid
     
     OPERATOR_NAMES = [
       :equal, :not_equal, :less, :less_equal, :greater, :greater_equal, :starts_with, :ends_with, 
-      :like, :null, :not_null, :true, :not_true, :false, :not_false, :in, :not_in
+      :like, :is_null, :is_not_null, :is_true, :is_not_true, :is_false, :is_not_false, :in, :not_in
     ]
     
     attr_accessor :query
@@ -289,22 +289,22 @@ module Fancygrid
       when "like"
         value = "%#{value.to_param}%"
         "LIKE"
-      when "null"
+      when "is_null"
         value = nil
         "IS NULL"
-      when "not_null"
+      when "is_not_null"
         value = nil
         "IS NOT NULL"
-      when "true"
+      when "is_true"
         value = nil
         "IS TRUE"
-      when "not_true"
+      when "is_not_true"
         value = nil
         "IS NOT TRUE"
-      when "false"
+      when "is_false"
         value = nil
         "IS FALSE"
-      when "not_false"
+      when "is_not_false"
         value = nil
         "IS NOT FALSE"
       when "in"
