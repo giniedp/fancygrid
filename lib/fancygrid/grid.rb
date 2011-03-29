@@ -174,6 +174,22 @@ module Fancygrid#:nodoc:
       end
     end
     
+    def each_visible_leaf
+      leafs.compact!
+      
+      leafs.each do |leaf|
+        yield leaf if leaf.visible
+      end
+    end
+    
+    def each_hidden_leaf
+      leafs.compact!
+      
+      leafs.each do |leaf|
+        yield leaf if !leaf.visible
+      end
+    end
+    
     def serachable_leafs
       leafs.map { |leaf| (leaf && leaf.searchable && leaf.visible ? leaf : nil) }.compact
     end
@@ -222,6 +238,7 @@ module Fancygrid#:nodoc:
       if (self.view)        
         node.position = self.view.get_node_position(node)
         node.visible = self.view.get_node_visibility(node) && node.visible
+        node.search_value = self.view.get_node_search_value(node)
         leafs.insert(node.position, node)
       else
         leafs << node

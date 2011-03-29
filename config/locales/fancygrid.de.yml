@@ -9,13 +9,14 @@ de:
       prev_page: 'Vorherige Seite'
       next_page: 'Nächste Seite'
       reload: 'Seite neu laden'
+    sort:
+      submit: "Spalten sortieren"
     search:
+      submit: 'Suchen'
       clear: 'Suche löschen'
       toggle: 'Suchleiste zeigen/verstecken'
-    extendedsearch: 
-      introduction: 'Alle Bedingungen müssen erfüllt sein:'
-      search: 'Suchen'
-      remove_all: 'Alle löschen'
+      conditions: 'Alle Bedingungen müssen erfüllt sein:'
+      
       operator:
         equal: 'gleich'
         not_equal: 'ungleich'

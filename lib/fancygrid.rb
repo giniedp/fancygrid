@@ -16,9 +16,12 @@ module Fancygrid
   
   mattr_accessor :controls_template
   @@controls_template = "fancygrid/base/controls"
-  
-  mattr_accessor :extended_search_template
-  @@extended_search_template = "fancygrid/base/extended_search"
+
+  mattr_accessor :sort_template
+  @@sort_template = "fancygrid/base/sort"
+    
+  mattr_accessor :search_template
+  @@search_template = "fancygrid/base/search"
 
   mattr_accessor :cells_template_directory
   @@cells_template_directory = "fancygrid/"

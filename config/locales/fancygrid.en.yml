@@ -9,13 +9,14 @@ en:
       prev_page: 'Pervious pagee'
       next_page: 'Next page'
       reload: 'Reload'
+    sort:
+      submit: "Sort columns"
     search:
+      submit: 'search'
       clear: 'Clear search'
       toggle: 'Show/Hide searchtab'
-    extendedsearch: 
-      introduction: 'All conditions must be met:'
-      search: 'search'
-      remove_all: 'remove all'
+      conditions: 'All conditions must be met:'
+      
       operator:
         equal: 'equal'
         not_equal: 'not equal'

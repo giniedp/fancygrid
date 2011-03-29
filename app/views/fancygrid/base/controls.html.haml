@@ -22,7 +22,7 @@
   %li.separator
   %li
     %span
-      = I18n.t("fancygrid.pagination.resultcount", :default => "Total entries")
+      = I18n.t("fancygrid.pagination.results", :default => "Total entries")
     %span.js-result-total
       = fancygrid.resultcount or 0
   %li.button
@@ -30,7 +30,9 @@
   %li.button
     = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-clear', :title => I18n.t("fancygrif.search.clear", :default => "Clear search"))
   %li.button
-    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-magnify', :title => I18n.t("fancygrif.search.toggle", :default => "Show or hide searchtab"))
+    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-magnify', :title => I18n.t("fancygrif.search.toggle", :default => "Toggle Search"))
+  %li.button
+    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-sort', :title => I18n.t("fancygrif.sort.submit", :default => "Sort columns"))
   %li.separator
   
   = yield :fancygrid_buttons

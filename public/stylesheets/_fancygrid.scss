@@ -1,30 +1,30 @@
 $fg_background_system_focus  : none repeat scroll 0 0 #fffae0;
 $fg_background_system        : none repeat scroll 0 0 #f8f8f8;
 $fg_background_system_odd    : none repeat scroll 0 0 #e8e8e8;
-$fg_background_system_hover  : none repeat scroll 0 0 #e0ffff;
+$fg_background_system_hover  : none repeat scroll 0 0 #dedede;
 
-$fg_background_control       : none repeat scroll 0 0 #d7d7d7;
-$fg_background_control_hover : none repeat scroll 0 0 #d7d7d7;
+$fg_background_control       : transparent;
+$fg_background_control_hover : transparent;
 
-$fg_background_round         : #d7d7d7 url('/images/fancygrid/th_bg.png') top repeat-x;
-$fg_border                   : 1px solid #d7d7d7;
+$fg_background_round         : transparent;
+$fg_border                   : 1px solid #cccccc;
 $fg_border_separator1        : 1px solid #cccccc;
 $fg_border_separator2        : 1px solid #ffffff;
 
 .js-fancygrid{
+
   .js-tablewrapper{
   
     clear       : left;
     overflow    : auto;
     margin      : 0px;
     min-height  : 60px;
-    border-left : $fg_border ;
-    border-right: $fg_border ;
+    border      : $fg_border;
     
     table{
       width         : 100%;
       border-spacing: 0px;
-      border        : $fg_border;
+      font-size: 90%;
       
       tr{
         th{
@@ -32,8 +32,8 @@ $fg_border_separator2        : 1px solid #ffffff;
           font-weight : bold;
           padding     : 5px 10px 5px 10px;
           border-right: $fg_border;
-          background  : $fg_background_control;
         }
+
         td{
           padding     : 4px 10px 4px 10px;
           border-right: $fg_border;
@@ -42,7 +42,13 @@ $fg_border_separator2        : 1px solid #ffffff;
             vertical-align: bottom; 
           }
         }
+
+        th:last-child, td:last-child {
+          border-right: none;
+        }
+
       }
+
       tr:nth-child(odd) {
         td{
           background: $fg_background_system_odd;
@@ -62,12 +68,13 @@ $fg_border_separator2        : 1px solid #ffffff;
           
           input{
             display : inline;
-            width   : 98%;
+            width   : 99%;
             height  : 25px;
             margin  : 0px;
             padding : 0px;
             border  : $fg_border;
           }
+
           input:focus{
             background: $fg_background_system_focus;
           }
@@ -81,11 +88,35 @@ $fg_border_separator2        : 1px solid #ffffff;
     }
   }
 
+  .js-extendedsearch{
+    padding: 5px;
+    input, select{
+      width: 80px;
+    }
+    ul {
+      margin: 5px 0px;
+      padding: 0px;
+      li{
+        margin: 0px 0px 3px 0px;
+        padding: 0px;
+        list-style: none;
+      }
+      li.button{
+        width  : 20px;
+        height : 20px;
+        cursor: pointer;
+        .loading{
+          background: url('/images/fancygrid/loading.gif') no-repeat;
+        }
+      }
+    }
+  }
+  
   ul.js-tablecontrol.top{
     background: $fg_background_round;
   }
   ul.js-tablecontrol.bottom{
-    background: $fg_background_control;
+    background: $fg_background_round;
   }
   ul.js-tablecontrol {
     clear        : both;
@@ -111,35 +142,42 @@ $fg_border_separator2        : 1px solid #ffffff;
         padding-bottom: 7px;
       }
       
-      width  : 20px;
-      height : 20px;
-      cursor : pointer;
-      
       .js-first{
         background: url('/images/fancygrid/first.png') no-repeat;
       }
+
       .js-last{
         background: url('/images/fancygrid/last.png') no-repeat;
       }
+
       .js-next{
         background: url('/images/fancygrid/next.png') no-repeat;
       }
+
       .js-previous{
         background: url('/images/fancygrid/prev.png') no-repeat;
       }
+
       .js-reload{
         background: url('/images/fancygrid/reload.png') no-repeat;
       }
+
       .js-clear{
         background: url('/images/fancygrid/clear.png') no-repeat;
       }
+
       .js-magnify{
         background: url('/images/fancygrid/magnifier.png') no-repeat;
+      }
+      
+      .js-sort{
+        background: url('/images/fancygrid/order.png') no-repeat;
       }
       
       .loading{
         background: url('/images/fancygrid/loading.gif') no-repeat;
       }
+
       .new{
         background: url('/images/fancygrid/add.png') no-repeat;
       }
@@ -148,49 +186,58 @@ $fg_border_separator2        : 1px solid #ffffff;
     li.separator{
       border-left  : $fg_border_separator1;
       border-right : $fg_border_separator2;
-      height       : 30px;
-      margin       : 1px;
+      height       : 50px;
+      margin       : 1px 8px;
     }
   }
-  ul.js-extended_search {
-    clear        : both;
-    display      : block;
-    text-align   : center;
-    margin       : 0px;
-    padding      : 5px;
+
+  .actions img, .deadline img {
+    padding-bottom: 3px;
+    margin-right: 3px;
+  }
+
+  .js-sortable-visible{
+    float: left;
+  }
+  .js-sortable-hidden{
+    float: right;
+  }
+  .js-sortable-visible, .js-sortable-hidden { 
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0; 
+    width: 49%; 
+    display: inline;
+    background: $fg_background_system;
     
     li {
-      list-style : none;
-      //display    : inline;
-      margin     : 0px 2px 0px 2px; 
-      padding    : 0;
-      input, select{
-        width: 60px !important;
-      }
-    }
-    li.button{
-      cursor: pointer;
-
-      img {
-        vertical-align: bottom;
-        padding-bottom: 7px;
-      }
+      margin: 0 3px 3px 3px; 
+      padding: 0.4em; 
+      padding-left: 1.5em; 
+      font-size: 1.4em; 
+      height: 18px;
       
-      width  : 20px;
-      height : 20px;
-      cursor : pointer;
-      
-      .loading{
-        background: url('/images/fancygrid/loading.gif') no-repeat;
+      span {
+        position: absolute; 
+        margin-left: -1.3em;
       }
-    }
-
-    li.separator{
-      border-left  : $fg_border_separator1;
-      border-right : $fg_border_separator2;
-      height       : 30px;
-      margin       : 1px;
+      h4{
+        margin: 0px;
+        padding: 0px;
+      }
     }
   }
-  
+	
+	.js-sort-content{
+	  margin: 5%;
+	  position: fixed;
+	  top: 0px;
+	  width: 90%;
+	  height: 90%;
+	}
+	.js-sort-save{
+	  position: absolute;
+	  top: -30px;
+	  right: -30px;
+	}
 }

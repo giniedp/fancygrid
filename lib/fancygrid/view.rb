@@ -43,6 +43,11 @@ module Fancygrid#:nodoc:
       end
     end
     
+    def get_node_search_value(node)
+      hash = get_node_search_conditions(node).first
+      hash and hash[:value]
+    end
+    
     def get_node_search_conditions(node)
       opts = self.view[:search] || {}
       opts = self.view[:conditions] || {}

@@ -19,10 +19,12 @@
           pagination      : { 
             page : (options.paginationPage || 0), 
             per_page : options.paginationPerPage
-          }, 
+          },
+          columns         : {}, 
           conditions      : {},
+          operator        : "any",
           order           : {}
-        },                
+        },
         searchFadeTime    : 25,
         searchFadeOpac    : 0.5,
         searchType        : "simple",
@@ -56,10 +58,13 @@
             $this.find(".js-tablecontrol.bottom").hide();
           }
           
+          // Hide the helper stuff
+          $(".js-sort-window, .js-sort-content, .js-search-template").hide();
+          
           // bind control buttons with functions
           
           // search attribute changed/focused
-          $this.find(".js-attribute").bind("change.fancygrid", function(){
+          $this.find(".js-search input[type='text']").bind("change.fancygrid", function(){
             $(this).parents(".js-fancygrid").fancygrid('newSearch'); 
             return false;
           }).bind("focus.fancygrid", function(){
@@ -112,31 +117,31 @@
             return false;
           });
           
-          //extended search submit
-          $this.find(".js-search_submit").bind("click.fancygrid", function(){
-            $(this).parents(".js-fancygrid").fancygrid('newExtendedSearch'); 
+          // sort click
+          $this.find(".js-sort").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('showSortWindow'); 
             return false;
           });
           
-          //extended search: hide criterion row template
-          $this.find(".extended_search_row_tpl").hide();
+          //extended search submit
+          $this.find(".js-search-submit").bind("click.fancygrid", function(){
+            $(this).parents(".js-fancygrid").fancygrid('newSearch'); 
+            return false;
+          });
           
     	    //button remove
-    	    $this.find(".js-extended_search_remove_row").click(function(){
-    	      $this.fancygrid("extendedSearchRemoveCriterionRow", $(this).parent());
+    	    $this.find(".js-search-criterion-remove").click(function(){
+    	      $(this).parents(".js-search-criterion").remove();
     	    });
     	    
     	    //button add new criterion
-    	    $this.find(".js-extended_search_add_row").click(function(){
-    	      $this.fancygrid("extendedSearchAddCriterionRow");
+    	    $this.find(".js-search-criterion-add").click(function(){
+    	      $this.fancygrid("addCriterionRow");
     	    });
-    	
-    	    $this.find("input[name=column_value]").bind("change.fancygrid", function(){
-            $(this).parents(".js-fancygrid").fancygrid('newExtendedSearch'); 
-            return false;
-          }).bind("focus.fancygrid", function(){
-            $(this).select();
-            return false;
+          
+          //
+          $this.find(".js-sort-save").click(function(){
+            $this.fancygrid("closeSortWindow");
           });
           
         } else {
@@ -145,6 +150,9 @@
         }
       });
     },
+    //
+    // removes the plugin and clears the attached data
+    //
     destroy : function(){
       return this.each(function(){
         var $this = $(this);
@@ -153,21 +161,58 @@
         $this.removeData('fancygrid');
       });
     },
+    //
+    // Fills the fancygrid query data with search conditions
+    //
     setupConditions : function(){
       var $this = $(this);
       var data = $this.data('fancygrid');
       
+      var $this = $(this);
+      data = $this.data('fancygrid');
       data.query.conditions = {};
-      $(this).find(".js-attribute").each(function(){
-        data.query.conditions[$(this).attr("name")] = $(this).val();
-      });
+      
+      if (data.searchType == "simple"){
+        
+        // process simple search
+        
+        $(this).find(".js-attribute").each(function(){
+          data.query.conditions[$(this).attr("name")] = $(this).val();
+        });
+      } else {
+        
+        // process complex search
+        
+        data.query.operator = $this.find(".js-search-conditions:checked").val() || "any";
+
+        $this.find("ul.js-search-criteria li.js-search-criterion").each(function(){
+          var column_name = $(this).find("select[name='column_name']").val();
+          var operator  = $(this).find("select[name='operator']").val();
+          var value = $(this).find("input[name='column_value']").val();
+          
+          if (typeof(data.query.conditions[column_name]) == "undefined"){
+            data.query.conditions[column_name] = [];
+          }
+          
+          data.query.conditions[column_name].push({
+            operator : operator,
+            value : value
+          })
+        }); 
+      }
     },
+    //
+    // Fills the fancygrid query data with emputy search conditions
+    //
     setupEmptyConditions : function(){
       var $this = $(this);
       var data = $this.data('fancygrid');
       
       data.query.conditions = {};
     },
+    //
+    // Fills the fancygrid query data with pagination conditions
+    //
     setupPagination : function(page, perPage){
       var $this = $(this);
       var data = $this.data('fancygrid');
@@ -179,6 +224,35 @@
       if (!isNaN(Number(perPage)) && Number(perPage) > 0){
         data.query.pagination.per_page = perPage;
       }
+    },
+    //
+    // Fills the fancygrid query data with column order and column visibility conditions
+    //
+    setupColumns : function(){
+      var $this = $(this);
+      var data = $this.data('fancygrid');
+      var columns = {}
+      
+      var visibleArray = $this.find('.js-sortable-visible li:not(.js-not-sortable)');
+      var hiddenArray = $this.find('.js-sortable-hidden li:not(.js-not-sortable)');
+      
+      var index = 0;
+      $(visibleArray).each(function(){
+        columns[$(this).attr("id")] = {
+          visible : true,
+          position : index
+        };
+        index += 1;
+      });
+      $(hiddenArray).each(function(){
+        columns[$(this).attr("id")] = {
+          visible : false,
+          position : index
+        };
+        index += 1;
+      });
+      
+      data.query.columns = columns;
     },
     order : function(){
       return "";
@@ -204,8 +278,7 @@
         success   : function(result){  
           data.queries -= 1;
           if(data.queries == 0){
-            $this.fancygrid("clearData");
-            $this.fancygrid("attachData", $(result).find(".js-row"));
+            $this.fancygrid("replaceContent", $(result).find(".js-tablewrapper"));
             
             $control.find(".js-per-page").val(data.query.pagination.per_page);
             $control.find(".js-page").val(Number(data.query.pagination.page) + 1);
@@ -235,22 +308,20 @@
         }
       });
     },
-    clearData : function(){
-      $(this).find(".js-row").detach();
-    },
-    attachData : function(toAttach){
+    replaceContent : function(newContent){
       var $this = $(this);
-      var $content = $this.find(".js-tablewrapper");
-      var $control = $this.find(".js-tablecontrol");
-      var $search = $this.find(".js-search");
       
-      var data = $this.data('fancygrid');
+      // replace the content
+      $this.find(".js-tablewrapper").replaceWith(newContent);
       
-      if(data.gridType == "table"){
-        $content.find("table").append(toAttach);
-      } else {
-        $content.append(toAttach);
-      }
+      // rebind events to search input fields
+      $this.find(".js-tablewrapper").find(".js-search input[type='text']").bind("change.fancygrid", function(){
+        $(this).parents(".js-fancygrid").fancygrid('newSearch'); 
+        return false;
+      }).bind("focus.fancygrid", function(){
+        $(this).select();
+        return false;
+      });
     },                           
     nextPage : function(){
       var $this = $(this);
@@ -281,7 +352,7 @@
       data = $this.data('fancygrid');
       $this.fancygrid("setupPagination", data.query.pagination.page, data.query.pagination.per_page);
       $this.fancygrid("setupConditions");
-      $this.fancygrid("setupConditionsForExtendedSearch");
+      $this.fancygrid("setupColumns");
       $this.fancygrid("search");
     },
     newSearch : function(){
@@ -289,14 +360,20 @@
       data = $this.data('fancygrid');
       $this.fancygrid("setupPagination", 0, data.query.pagination.per_page);
       $this.fancygrid("setupConditions");
+      $this.fancygrid("setupColumns");
       $this.fancygrid("search");
     },
     clearSearch : function(){
       var $this = $(this);
       data = $this.data('fancygrid');
       
-      $this.fancygrid("simpleSearchRemoveAll");
-      $this.fancygrid("extendedSearchRemoveAll");
+      // clear simple search
+      $this.find(".js-attribute").each(function(){
+        $(this).val("");
+      });
+      
+      // clear complex search
+      $this.find("ul.js-search-criteria li.js-search-criterion").detach();
       
       //$this.fancygrid("setupPagination", 0, data.query.pagination.per_page);
       $this.fancygrid("setupEmptyConditions");
@@ -307,79 +384,43 @@
     },
     toggleSearch : function(){
       $(this).find(".js-search").toggle();
-      $(this).find(".js-extendedsearch").toggle();
     },
-    simpleSearchRemoveAll : function(){
-      var $this = $(this);
-      data = $this.data('fancygrid');
-      $this.find(".js-attribute").each(function(){
-        $(this).val("");
-      });
-    },
-    extendedSearchRemoveAll : function(){
-      var $this = $(this);
-    	$this.find("ul.js-extended_search_criteria li").detach();
-    	
-    	// One criterion row has to be visible
-    	if ($this.find("ul.js-extended_search_criteria li").length == 0 ){
-    		$this.fancygrid("extendedSearchAddCriterionRow");
-    	}
-    }, 
-    extendedSearchRemoveCriterionRow : function(row){
-    	row.remove();
-    },
-    extendedSearchAddCriterionRow : function(){
+    addCriterionRow : function(){
     	var $this = $(this);
-    	var row = $("<li>" + $this.find(".extended_search_row_tpl").html() + "</li>");
+    	var row = $($this.find(".js-search-template").html());
     	
-    	//add criterion row
-    	$this.find("ul.js-extended_search_criteria").append(row);
+    	// add criterion row
+    	$this.find("ul.js-search-criteria").append(row);
     	
-    	//button remove
-    	row.find(".js-extended_search_remove_row").click(function(){
-    	  $this.fancygrid("extendedSearchRemoveCriterionRow", row);
+    	// button remove
+    	row.find(".js-search-criterion-remove").click(function(){
+    	  $(this).parents(".js-search-criterion").remove();
     	});
     	
-      row.find("input[name=column_value]").bind("change.fancygrid", function(){
-        $(this).parents(".js-fancygrid").fancygrid('newExtendedSearch'); 
+      row.find("input[type='text']").bind("change.fancygrid", function(){
+        $(this).parents(".js-fancygrid").fancygrid('newSearch'); 
         return false;
       }).bind("focus.fancygrid", function(){
         $(this).select();
         return false;
       });
     },
-    setupConditionsForExtendedSearch : function(){
-      if ($(".js-extendedsearch").length == 0){
-        // do nothing when no extended search is available
-        return;
-      }
-      
+    showSortWindow : function(){
       var $this = $(this);
-      var data = $this.data('fancygrid');
       
-      var allOrAnyOperator = $this.find(".js-fulfill_all_conditions:checked").val() || "any";
+      $(".js-sort-window").show();
+      $(".js-sort-content").show();
       
-      data.query.operator = allOrAnyOperator;
-      data.query.conditions = {};
-      $this.find("ul.js-extended_search_criteria li").each(function(){
-        var column_name = $(this).find("select[name='column_name']").val();
-        var operator  = $(this).find("select[name='operator']").val();
-        var value = $(this).find("input[name='column_value']").val();
-        if (typeof(data.query.conditions[column_name]) == "undefined"){
-          data.query.conditions[column_name] = [];
-        }
-        data.query.conditions[column_name].push({
-          operator : operator,
-          value : value
-        })
-      });
+      $this.find(".js-sortable-visible, .js-sortable-hidden").sortable({
+        connectWith: ".js-connectedSortable",
+        items: "li:not(.js-not-sortable)"
+      })
     },
-    newExtendedSearch : function(){
+    closeSortWindow : function(){
       var $this = $(this);
-      data = $this.data('fancygrid');
-      $this.fancygrid("setupPagination", 0, data.query.pagination.per_page);
-      $this.fancygrid("setupConditionsForExtendedSearch");
-      $this.fancygrid("search");
-    },
+      $(".js-sort-window").hide();
+      $(".js-sort-content").hide();
+      $this.fancygrid("newSearch");
+    }
   };
 })(jQuery);

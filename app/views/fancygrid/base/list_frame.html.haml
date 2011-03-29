@@ -1,7 +1,7 @@
 .js-fancygrid{ :class => fancygrid.name }
   - unless fancygrid.is_static?
     - if fancygrid.search_type.to_s != "simple"
-      = render(:template => Fancygrid.extended_search_template, :locals => { :fancygrid => fancygrid })
+      = render(:template => Fancygrid.search_template, :locals => { :fancygrid => fancygrid })
     = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => "controls top" })
   .js-tablewrapper
     - unless fancygrid.is_static?
