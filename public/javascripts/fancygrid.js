@@ -49,13 +49,7 @@
           
           // hide search tab and controls if wanted
           if (!settings.searchEnabled){
-            $this.find(".js-search").hide();
-          }
-          if (settings.hideTopControl){
-            $this.find(".js-tablecontrol.top").hide();
-          }
-          if (settings.hideBottomControl){
-            $this.find(".js-tablecontrol.bottom").hide();
+            //$this.find(".js-search").hide();
           }
           
           // Hide the helper stuff
@@ -139,9 +133,12 @@
     	      $this.fancygrid("addCriterionRow");
     	    });
           
-          //
-          $this.find(".js-sort-save").click(function(){
+          // close the sort window if user clicked outside the sortable lists
+          $this.find(".js-sort-content").click(function(){
             $this.fancygrid("closeSortWindow");
+          });
+          $this.find(".js-sortable").click(function(e){
+            e.stopPropagation();
           });
           
         } else {
@@ -224,6 +221,20 @@
       if (!isNaN(Number(perPage)) && Number(perPage) > 0){
         data.query.pagination.per_page = perPage;
       }
+    },
+    setupOrder : function(){
+      var $this = $(this);
+      var data = $this.data('fancygrid');
+      var order = {};
+      var column = $this.find("th.js-orderable[order='ASC'], th.js-orderable[order='DESC']");
+      
+      if (column.length > 0){
+        order.table = column.attr("table");
+        order.column = column.attr("column");
+        order.direction = column.attr("order");        
+      }
+
+      data.query.order = order;
     },
     //
     // Fills the fancygrid query data with column order and column visibility conditions
@@ -322,6 +333,10 @@
         $(this).select();
         return false;
       });
+      
+      $this.find("th.js-orderable").click(function(){
+        $this.fancygrid("orderBy", $(this));
+      });
     },                           
     nextPage : function(){
       var $this = $(this);
@@ -353,6 +368,7 @@
       $this.fancygrid("setupPagination", data.query.pagination.page, data.query.pagination.per_page);
       $this.fancygrid("setupConditions");
       $this.fancygrid("setupColumns");
+      $this.fancygrid("setupOrder");
       $this.fancygrid("search");
     },
     newSearch : function(){
@@ -361,6 +377,7 @@
       $this.fancygrid("setupPagination", 0, data.query.pagination.per_page);
       $this.fancygrid("setupConditions");
       $this.fancygrid("setupColumns");
+      $this.fancygrid("setupOrder");
       $this.fancygrid("search");
     },
     clearSearch : function(){
@@ -379,11 +396,9 @@
       $this.fancygrid("setupEmptyConditions");
       $this.fancygrid("search");
     },
-    action : function(name, value){
-      $(this).trigger("action_" + name, value);
-    },
     toggleSearch : function(){
-      $(this).find(".js-search").toggle();
+      // toggle only the simple search
+      $(this).find(".js-tablewrapper .js-search").toggle();
     },
     addCriterionRow : function(){
     	var $this = $(this);
@@ -408,19 +423,34 @@
     showSortWindow : function(){
       var $this = $(this);
       
-      $(".js-sort-window").show();
-      $(".js-sort-content").show();
+      $this.find(".js-sort-window").show();
+      $this.find(".js-sort-content").show();
       
-      $this.find(".js-sortable-visible, .js-sortable-hidden").sortable({
-        connectWith: ".js-connectedSortable",
+      $this.find(".js-sortable").sortable({
+        connectWith: ".js-sortable",
         items: "li:not(.js-not-sortable)"
       })
     },
     closeSortWindow : function(){
       var $this = $(this);
-      $(".js-sort-window").hide();
-      $(".js-sort-content").hide();
-      $this.fancygrid("newSearch");
+      $this.find(".js-sort-window").hide();
+      $this.find(".js-sort-content").hide();
+      $this.fancygrid("reloadPage");
+    },
+    orderBy : function(column){
+      $this = $(this);
+      
+      var old_order = column.attr("order");
+      
+      $this.find("th.js-orderable").removeAttr("order");
+      
+      if (old_order == "DESC"){
+        column.attr("order", "ASC");
+      } else {
+        column.attr("order", "DESC");
+      }
+
+      $this.fancygrid("reloadPage");
     }
   };
 })(jQuery);

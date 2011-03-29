@@ -11,6 +11,9 @@ en:
       reload: 'Reload'
     sort:
       submit: "Sort columns"
+      info: "You can sort the columns using drag&drop. Drag the columns you want to be visible into the left list and all other into the right list. To submit just click somwhere outside the two lists."
+      header_visible: "Visible columns"
+      header_hidden: "Hidden columns"
     search:
       submit: 'search'
       clear: 'Clear search'

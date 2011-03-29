@@ -301,9 +301,25 @@ module Fancygrid#:nodoc:
     #     end
     def css_class
       if is_leaf? && @css_class.nil?
-        @css_class = "#{self.record_table_name} #{self.name}"
+        @css_class = []
+        @css_class << self.record_table_name
+        @css_class << self.name
+        @css_class << "js-orderable" if self.searchable
       end
       @css_class
+    end
+    
+    def applied_sort_order
+      return "" unless root.view
+      
+      # get the sort order from the view. it may look like this: "table.column ASC"
+      sort_order = root.view.get_sort_order.to_s
+      sort_order = sort_order.gsub(self.select_name.to_s, "").gsub(" ", "")
+      if %w(ASC DESC).include?(sort_order)
+        sort_order
+      else
+        ""
+      end
     end
     
     # Returns the internationalization path for this node if it is a leaf.

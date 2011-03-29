@@ -1,32 +1,33 @@
 .js-fancygrid{ :class => fancygrid.name }
-  - unless fancygrid.is_static?
-    - if fancygrid.search_type.to_s != "simple"
-      = render(:template => Fancygrid.search_template, :locals => { :fancygrid => fancygrid })
+  - if fancygrid.has_complex_search?
+    = render(:template => Fancygrid.search_template, :locals => { :fancygrid => fancygrid })
+  - if fancygrid.has_top_control?
     = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => "controls top" })
+  
   .js-tablewrapper
     %table
       %tr.js-header
-        - fancygrid.each_leaf do |leaf|
-          %th{ :class => leaf.css_class }
+        - fancygrid.each_visible_leaf do |leaf|
+          %th{ :class => leaf.css_class, :table => leaf.record_table_name, :column => leaf.name, :order => leaf.applied_sort_order }
             = leaf.human_name
+            .js-order-tag
       
-      - if !fancygrid.is_static? && fancygrid.search_type.to_s == "simple"
+      - if fancygrid.has_simple_search?
         %tr.js-search
-          - fancygrid.each_leaf do |leaf|
+          - fancygrid.each_visible_leaf do |leaf|
             %td{ :class => leaf.css_class }
               - if leaf.searchable
                 %input.js-attribute{ :type => "text", :name => leaf.tag_name, :value => leaf.search_value }
       
-      - if fancygrid.dataset
-        - fancygrid.dataset.each do |record|
-          %tr.js-row{ :class => fancygrid.evaluate_css_for(record) }
-            - fancygrid.each_leaf do |leaf|
-              %td{ :class => leaf.css_class }
-                = render_fancygrid_leaf(record, leaf, &format_block)
-                  
+      - fancygrid.each_record do |record|
+        %tr.js-row{ :class => fancygrid.evaluate_css_for(record) }
+          - fancygrid.each_leaf do |leaf|
+            %td{ :class => leaf.css_class }
+              = render_fancygrid_leaf(record, leaf, &format_block)
                 
-  - unless fancygrid.is_static?
+  - if fancygrid.has_bottom_control?
     = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => "controls bottom" })
+  - if fancygrid.has_sort_window?
     = render(:template => Fancygrid.sort_template, :locals => { :fancygrid => fancygrid })
     
 - unless fancygrid.is_static?
@@ -34,7 +35,7 @@
     $(function(){
       var fancyOptions = #{fancygrid.js_options};
       $(".js-fancygrid.#{fancygrid.name}").fancygrid(fancyOptions);
-      if(!fancyOptions.instantFetchData){
+      if(!fancyOptions.isStatic){
         $(".js-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
       }
     });

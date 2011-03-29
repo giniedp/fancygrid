@@ -4,6 +4,7 @@ module Fancygrid#:nodoc:
   
   class View
     
+    attr_accessor :grid
     attr_accessor :view
     
     def initialize(view)

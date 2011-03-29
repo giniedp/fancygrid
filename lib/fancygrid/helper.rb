@@ -1,6 +1,17 @@
+require "active_support/hash_with_indifferent_access"
+
 module Fancygrid
   
   module Helper    
+    
+    def fancygrid_params(name)
+      opts = params[:fancygrid] || HashWithIndifferentAccess.new({})
+      opts[name]
+    end
+    
+    def fancygrid_remote_call?(name)
+      !fancygrid_params(name).nil?
+    end
     
     # Creates a fancygrid instance for the given model name, its class and
     # its table name.
@@ -18,12 +29,38 @@ module Fancygrid
     #      
     #    end
     def fancygrid_for(name, klass = nil, table_name = nil)#:yields: grid
-      store_name = name.to_s
-      @fancygrid ||= {}
-      @fancygrid[store_name] ||= Grid.new(name, klass, table_name, params)
-      yield @fancygrid[store_name] if block_given?
+      raise "block missing" unless block_given?
+      
+      @fancygrid ||= HashWithIndifferentAccess.new({})
+      @fancygrid[name] ||= Grid.new(name, klass, table_name, params)
+      
+      fancygrid_instance = @fancygrid[name]
+      
+      yield fancygrid_instance
 
-      @fancygrid[store_name]
+      view_opts = fancygrid_params(name)
+      
+      unless view_opts
+        # this is the first call on fancygrid without ajax parameters
+        # need to load view parameters using proc if defined
+        if fancygrid_instance.load_view_proc.is_a?(Proc)
+          view_opts = fancygrid_instance.load_view_proc.call(fancygrid_instance)
+        end
+      end
+        
+      # load the fancygrid view
+      fancygrid_instance.load_view(view_opts || {})
+      
+      # store the fancygrid view
+      if fancygrid_instance.store_view_proc.is_a?(Proc)
+        fancygrid_instance.store_view_proc.call(fancygrid_instance, fancygrid_instance.view.dump)
+      end
+
+      # now the fancygrid setup is complete and the view is loaded
+      # run the database query as a last step
+      if !fancygrid_instance.is_static? && fancygrid_remote_call?(name)
+        fancygrid_instance.query_for_data
+      end
     end
     
     # Renders an existing fancygrid for the given name. You can append a rendering block
@@ -41,15 +78,15 @@ module Fancygrid
       raise "Missing fancygrid for name '#{store_name}'" if(@fancygrid.nil? || @fancygrid[store_name].nil?)
       fancygrid_instance = @fancygrid[store_name]
       
-      if params[:fancygrid]
-        if fancygrid_instance.store_view_proc.is_a?(Proc)
-          fancygrid_instance.store_view_proc.call(fancygrid_instance, fancygrid_instance.view.dump)
-        end
-      else
-        if fancygrid_instance.load_view_proc.is_a?(Proc)
-          fancygrid_instance.view.load(fancygrid_instance.load_view_proc.call(fancygrid_instance))
-        end
-      end
+      #if params[:fancygrid]
+      #  if fancygrid_instance.store_view_proc.is_a?(Proc)
+      #    fancygrid_instance.store_view_proc.call(fancygrid_instance, fancygrid_instance.view.dump)
+      #  end
+      #else
+      #  if fancygrid_instance.load_view_proc.is_a?(Proc)
+      #    fancygrid_instance.view.load(fancygrid_instance.load_view_proc.call(fancygrid_instance))
+      #  end
+      #end
       
       options ||= {}
       [:data, :template, :url, :search_visible, :hide_top_control, 

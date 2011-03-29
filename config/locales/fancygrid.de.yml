@@ -11,6 +11,9 @@ de:
       reload: 'Seite neu laden'
     sort:
       submit: "Spalten sortieren"
+      info: "Sie können die Spalten per Drag&Drop sortieren. Ziehen Sie die Spalten die Sie sehen möchten in die linke Liste, alle anderen in die rechte Liste. Klicken Sie zum Abschluss in den abgedunkelten Bereich."
+      header_visible: "Sichtbare Spalten"
+      header_hidden: "Versteckte Spalten"
     search:
       submit: 'Suchen'
       clear: 'Suche löschen'

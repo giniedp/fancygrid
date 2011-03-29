@@ -49,17 +49,8 @@ module Fancygrid#:nodoc:
     # Spcified theselected value in the per page drop down
     attr_accessor :per_page_selection
     
-    # Sepcifies whether the data is fetched before the grid is rendered or not
-    # If set to false the fancygrid wont query for data and render itself
-    # on first call. It will rather send an ajax request to collect and
-    # display the data in the background.
-    attr_accessor :instant_fetch_data
-    
     # Order and visibility definition for each column
     attr_accessor :view
-    
-    # Debug logger. Fancygrid prints debug information if the logger is not nil
-    attr_accessor :logger
     
     # Initializes the root node of the fancygrid tree.
     def initialize(name, klass = nil, table_name = nil, params = nil)
@@ -73,7 +64,6 @@ module Fancygrid#:nodoc:
 
       self.query          = {}
       self.request_params = (params || {})
-      self.instant_fetch_data = false
       
       self.grid_type      = Fancygrid.default_grid_type
       self.search_visible = Fancygrid.search_visible
@@ -89,13 +79,47 @@ module Fancygrid#:nodoc:
       self.per_page_options = Fancygrid.default_per_page_options
       self.per_page_selection = Fancygrid.default_per_page_selection
       
-      self.load_view(self.request_params)
+      view_opts = self.request_params[:fancygrid] || {}
+      view_opts = view_opts[self.name]
+            
+      self.load_view(view_opts || {})
     end
     
     # Returns true if the callback url is blank, that is when no ajax 
     # functionality is wanted.
     def is_static?
       self.url.blank?
+    end
+    
+    def has_simple_search?
+      self.search_type.to_s == "simple" && !self.is_static?
+    end
+    
+    def has_complex_search?
+      self.search_type.to_s == "complex" && !self.is_static?
+    end
+    
+    def has_top_control?
+      !self.hide_top_control && !self.is_static?
+    end
+    
+    def has_bottom_control?
+      !self.hide_bottom_control && !self.is_static?
+    end
+    
+    def has_sort_window?
+      !self.is_static? && !self.is_static?
+    end
+    
+    def enable_state_caching!
+      load_view_proc do |instance|
+        opts = session[:fancygrid] || {}
+        opts[instance.name.to_s] || {}
+      end
+      load_view_proc do |instance, dump|
+        session[:fancygrid] ||= {}
+        session[:fancygrid][instance.name.to_s] = dump
+      end
     end
     
     # Evaluates the css class for a table row by using the passed record and the ccs_proc of this grid
@@ -111,18 +135,37 @@ module Fancygrid#:nodoc:
       @css_proc
     end
     
+    # Gets and sets a proc for loading a dumped view from session, database or whatever place
+    #
+    # == Example
+    #
+    #    fancygrid_for :companies do |g|
+    #      g.load_view_proc do |instance|
+    #        # load a hash from session, fancygrid will use that to initiate its view
+    #        session["fancygrid_#{instance.name.to_s}"] || {}
+    #      end
+    #    end
     def load_view_proc
       @load_view_proc = Proc.new if block_given?
       @load_view_proc
     end
     
+    # Gets and sets a proc for storing a dumped view to session, database or whatever place
+    #
+    # == Example
+    #
+    #    fancygrid_for :companies do |g|
+    #      g.store_view_proc do |instance, dump|
+    #        # store the dump to. The dump comes from the fancygrid view
+    #        session["fancygrid_#{instance.name.to_s}"] = dump
+    #      end
+    #    end
     def store_view_proc
       @store_view_proc = Proc.new if block_given?
       @store_view_proc
     end
     
-    # Builds the query sends it to the database if this is an ajax call or
-    # *instant_fetch_data* is set to true.
+    # Yields a query generator which should be used to build a find query
     #
     # == Options
     # The options are the same as in active record finder method
@@ -156,16 +199,17 @@ module Fancygrid#:nodoc:
         :operator => params[:operator]
       }
       
-      # yield the generator to enable the caller to manipulate that. Useful for large queries
+      # yield the generator to allow the caller to manipulate that. Useful for large queries
       generator = Fancygrid::QueryGenerator.new(url_options)
       generator.parse_options(options)
       yield(generator) if block_given?
-      self.query = generator.query
       
-      query_for_data if (!params.empty? || self.instant_fetch_data)
+      generator.order(self.view.get_sort_order)
+      
+      self.query = generator.query
     end
     
-    # Iterates over all leafs and yields only when a leaf is visible
+    # Yields each leaf that is visible
     def each_leaf
       leafs.compact!
       
@@ -174,6 +218,7 @@ module Fancygrid#:nodoc:
       end
     end
     
+    # Yields each leaf that is visible
     def each_visible_leaf
       leafs.compact!
       
@@ -182,6 +227,7 @@ module Fancygrid#:nodoc:
       end
     end
     
+    # Yields each leaf that is not visible
     def each_hidden_leaf
       leafs.compact!
       
@@ -192,6 +238,13 @@ module Fancygrid#:nodoc:
     
     def serachable_leafs
       leafs.map { |leaf| (leaf && leaf.searchable && leaf.visible ? leaf : nil) }.compact
+    end
+    
+    def each_record
+      return unless self.dataset
+      self.dataset.each do |record|
+        yield record
+      end
     end
     
     # Sets a custom dataset that should be rendered.Blanks out the
@@ -205,11 +258,6 @@ module Fancygrid#:nodoc:
     
     # Runs the current query and caches the resulting data
     def query_for_data
-      if logger
-        log "Query for data:"
-        log self.query.inspect
-      end
-      
       if self.record_klass < ActiveRecord::Base
         self.dataset = self.record_klass.find(:all, self.query)
         
@@ -225,10 +273,6 @@ module Fancygrid#:nodoc:
       
       self.resultcount = self.resultcount.length  if self.resultcount.respond_to?(:length)
 
-      if logger
-        log "Query result:"
-        log self.dataset.to_yaml
-      end
     end
     
     # Inserts a given node into the leafs collection. If a view is loaded
@@ -271,16 +315,13 @@ module Fancygrid#:nodoc:
         :searchType => self.search_type,
         :hideTopControl => self.hide_top_control,
         :hideBottomControl => self.hide_bottom_control,
-        :instantFetchData => self.instant_fetch_data,
         :paginationPage => self.view.get_pagination_page,
         :paginationPerPage => self.view.get_pagination_per_page,
       }.to_json
     end
     
     def log(message)#:nodoc:
-      if self.logger
-        self.logger.debug("[FANCYGRID] " + message)
-      end
+      #Rails.logger.debug("[FANCYGRID] #{message.to_s}")
     end
   end
 end

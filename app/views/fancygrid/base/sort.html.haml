@@ -1,18 +1,19 @@
 .js-sort-window.ui-widget-overlay
 .js-sort-content
-  %span.js-sort-save.ui-state-default.ui-icon.ui-icon-closethick.ui-corner-all
-  %ul.js-sortable-visible.js-connectedSortable.ui-widget-content.ui-corner-all
+  .ui-state-highlight.ui-corner-all
+    = t(:"fancygrid.sort.info")
+  %ul.js-sortable-visible.js-sortable.ui-widget-content.ui-corner-all
     %li.js-not-sortable
       %h4
-        Sichtbar
+        = t(:"fancygrid.sort.header_visible")
     - fancygrid.each_visible_leaf do |leaf|
       %li.ui-state-default.ui-widget-header.ui-corner-all{ :class =>  leaf.css_class, :id => leaf.tag_name} 
         %span.ui-icon.ui-icon-arrowthick-2-n-s
         = leaf.human_name
-  %ul.js-sortable-hidden.js-connectedSortable.ui-widget-content.ui-corner-all
+  %ul.js-sortable-hidden.js-sortable.ui-widget-content.ui-corner-all
     %li.js-not-sortable
       %h4
-        Unsichtbar
+        = t(:"fancygrid.sort.header_hidden")
     - fancygrid.each_hidden_leaf do |leaf|
       %li.ui-state-default.ui-widget-header.ui-corner-all{ :class =>  leaf.css_class, :id => leaf.tag_name} 
         %span.ui-icon.ui-icon-arrowthick-2-n-s
