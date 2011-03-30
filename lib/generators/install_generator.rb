@@ -21,8 +21,16 @@ module Fancygrid
         copy_file(js_source, js_target)
       end
       
+      def copy_css
+        %w(css scss).each do |ext|
+          js_source = File.join(File.dirname(__FILE__), "../../public/stylesheets/fancygrid.#{ext}")
+          js_target = Rails.root.join("public/stylesheets/fancygrid.#{ext}")
+          copy_file(js_source, js_target)
+        end
+      end
+      
       def copy_images
-        %w(add.png clear.png ddn.png dn.png first.png loading.gif magnifier.png next.png prev.png reload.png th_bg.png up.png uup.png spacer.gif).each do |filename|
+        %w(add.png clear.png ddn.png dn.png dots.png loading.gif magnifier.png next.png order.png prev.png reload.png remove.png spacer.gif submit.png th_bg.png up.png uup.png).each do |filename|
           plugin_path = File.join(File.dirname(__FILE__), "../../public/images/fancygrid", filename)
           rails_path = Rails.root.join('public/images/fancygrid', filename)
           copy_file(plugin_path, rails_path)

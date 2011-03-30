@@ -1,7 +1,7 @@
 de:
   fancygrid:
     pagination:
-      per_page: 'Ergebnisse pro Seite:'
+      per_page: 'Pro Seite:'
       page: 'Seite'
       of: 'von'
       results: 'Ergebnisse'
@@ -15,6 +15,7 @@ de:
       header_visible: "Sichtbare Spalten"
       header_hidden: "Versteckte Spalten"
     search:
+      title: 'Suche'
       submit: 'Suchen'
       clear: 'Suche löschen'
       toggle: 'Suchleiste zeigen/verstecken'

@@ -15,14 +15,22 @@ Fancygrid.setup do |config|
   #
   # config.controls_template = "fancygrid/base/controls"
 
+  # The path to the sort template which defines the view of the column sorting window
+  #
+  # config.sort_template = "fancygrid/base/sort"
+  
+  # The path to the search template which defines the view of the complex search
+  #
+  # config.search_template = "fancygrid/base/search"
+  
   # The prefix that is used for every cells template. Default value is 
-  # "fancygrid/" so every template is expected in the "/app/views/fancygrid"
+  # "fancygrid" so every template is expected in the "/app/views/fancygrid"
   # directory
   #
-  # config.cells_template_directory = "fancygrid/"
+  # config.cells_template_directory = "fancygrid"
   
   # The default cells template name. This is combined with the 
-  # "default_cells_template_directory" to get the full template name
+  # 'default_cells_template_directory' to get the full template name
   #
   # config.cells_template = "_cells"
   
@@ -31,8 +39,8 @@ Fancygrid.setup do |config|
   #
   # config.i18n_scope = "fancygrid"
   
-  # Value specifying whether the grid name is automatily used as cells template
-  # name.
+  # Value specifying whether the grid name is automatily used as template name
+  # to render a grids cells
   #
   # config.use_grid_name_as_cells_template = false
   
@@ -41,7 +49,7 @@ Fancygrid.setup do |config|
   #
   # config.search_visible = false
   
-  # Set the default grid type. Available values are :table and :list
+  # Specifies the default grid type. Available values are :table and :list
   # :table will render the data inside a table. Each record will get its own
   # table row and each attribute its own cell.
   # :list will render each record inside an unordered list as an li element.

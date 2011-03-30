@@ -1,0 +1,305 @@
+$fg_background_system_focus  : none repeat scroll 0 0 #fffae0;
+$fg_background_system        : none repeat scroll 0 0 #f8f8f8;
+$fg_background_system_odd    : none repeat scroll 0 0 #e8e8e8;
+$fg_background_system_hover  : none repeat scroll 0 0 #dedede;
+
+$fg_background_control       : transparent;
+$fg_background_control_hover : transparent;
+
+$fg_background_round         : transparent;
+$fg_border                   : 1px solid #cccccc;
+$fg_border_separator1        : 1px solid #cccccc;
+$fg_border_separator2        : 1px solid #ffffff;
+
+.fg-fancygrid {
+
+  .fg-tablewrapper {
+    clear       : left;
+    overflow    : auto;
+    margin      : 0px;
+    border      : $fg_border;
+    
+    table {
+      width          : 100%;
+      border-spacing : 0px;
+      font-size      : 90%;
+      
+      tr {
+        th {
+          text-align  : left;
+          font-weight : bold;
+          padding     : 5px 10px 5px 10px;
+          border-right: $fg_border;
+          background  : url('/images/fancygrid/th_bg.png');
+          
+          .fg-order-tag {
+            display: none;
+            float: right;
+            width: 16px;
+            height: 16px;
+          }
+        }
+        th.fg-orderable{
+          .fg-order-tag {
+            display: block;
+            background: url('/images/fancygrid/dots.png') no-repeat scroll 50% 50% transparent;
+          }        
+        }
+        th[order='ASC'] {
+          .fg-order-tag {
+            display: block;
+            background: url('/images/fancygrid/dn.png') no-repeat scroll 50% 50% transparent;
+          }
+        }
+        th[order='ASC']:hover {
+          .fg-order-tag{
+            background: url('/images/fancygrid/ddn.png') no-repeat scroll 50% 50% transparent;
+          }
+        }
+        th[order='DESC'] {
+          .fg-order-tag{
+            display: block;
+            background: url('/images/fancygrid/up.png') no-repeat scroll 50% 50% transparent;
+          }
+        }
+        th[order='DESC']:hover {
+          .fg-order-tag{
+            background: url('/images/fancygrid/uup.png') no-repeat scroll 50% 50% transparent;
+          }
+        }
+        th:last-child, td:last-child {
+          border-right: none;
+        }
+        
+        td {
+          padding     : 4px 10px 4px 10px;
+          border-right: $fg_border;
+          background  : $fg_background_system;
+          img{ 
+            vertical-align: bottom; 
+          }
+        }
+        
+        &:nth-child(odd) {
+          td{
+            background: $fg_background_system_odd;
+          }
+        }
+        
+        &:hover{
+          td{
+            background: $fg_background_system_hover;
+          }
+        }        
+      }
+
+
+      tr.fg-search {
+        td {
+          padding   : 4px;
+          background: $fg_background_system;
+          
+          input {
+            display : inline;
+            width   : 99%;
+            height  : 25px;
+            margin  : 0px;
+            padding : 0px;
+            border  : $fg_border;
+          }
+          input:focus{
+            background: $fg_background_system_focus;
+          }
+          
+          select {
+            width   : 100%;
+            display : inline;
+            margin  : 0px;
+            padding : 2px;
+          }
+        }
+        &:hover{
+          td {
+            background: $fg_background_system;
+          }
+        }
+      }
+    }
+  }
+  
+  fieldset.fg-search{
+    display: inline;
+    .fg-search-controls{
+      margin: 5px;
+      margin-bottom: 15px;
+	    input[type='checkbox'] {
+	      width: 16px;
+	      height: 16px;
+	    }
+    }
+
+    ul.fg-search-criteria {
+      margin: 5px;
+      padding: 0px;
+      
+      li.fg-search-criterion{
+        margin: 0px 0px 3px 0px;
+        padding: 0px;
+        list-style: none;
+        select{
+          width: 80px;
+          padding: 2px;
+        }
+        input[type='text']{
+          width: 100px;
+          padding: 2px;
+        }
+      }
+    }
+  }
+  
+  ul.fg-control-bar.top{
+    background: $fg_background_round;
+  }
+  ul.fg-control-bar.bottom{
+    background: $fg_background_round;
+  }
+  ul.fg-control-bar {
+    clear        : both;
+    display      : block;
+    text-align   : center;
+    margin       : 0px;
+    padding      : 5px;
+    
+    li {
+      list-style : none;
+      display    : inline;
+      margin     : 0px 2px 0px 2px; 
+      padding    : 0;
+      select {
+        padding: 2px;
+        width : 60px;
+      }
+      input{
+        padding: 0px;
+        width: 40px !important;
+      }
+    }
+
+    li.separator{
+      border-left  : $fg_border_separator1;
+      border-right : $fg_border_separator2;
+      height       : 50px;
+      margin       : 1px 8px;
+    }
+  }
+  
+  img.fg-button {
+    cursor: pointer;
+    vertical-align: bottom;
+    padding-bottom: 3px;
+    
+    &.fg-first{
+      background: url('/images/fancygrid/first.png') no-repeat;
+    }
+    
+    &.fg-last{
+      background: url('/images/fancygrid/last.png') no-repeat;
+    }
+    
+    &.fg-next{
+      background: url('/images/fancygrid/next.png') no-repeat;
+    }
+    
+    &.fg-previous{
+      background: url('/images/fancygrid/prev.png') no-repeat;
+    }
+    
+    &.fg-reload{
+      background: url('/images/fancygrid/reload.png') no-repeat;
+    }
+    
+    &.fg-clear{
+      background: url('/images/fancygrid/clear.png') no-repeat;
+    }
+    
+    &.fg-magnify{
+      background: url('/images/fancygrid/magnifier.png') no-repeat;
+    }
+    
+    &.fg-sort{
+      background: url('/images/fancygrid/order.png') no-repeat;
+    }
+    
+    &.loading{
+      background: url('/images/fancygrid/loading.gif') no-repeat;
+    }
+    
+    &.new{
+      background: url('/images/fancygrid/add.png') no-repeat;
+    }
+    
+    &.fg-search-add{
+      background: url('/images/fancygrid/add.png') no-repeat;
+    }
+    
+    &.fg-search-remove{
+      background: url('/images/fancygrid/remove.png') no-repeat;
+    }
+    
+    &.fg-search-submit{
+      background: url('/images/fancygrid/submit.png') no-repeat;
+    }
+  }
+
+	
+  .fg-sortable-visible{
+    float: left;
+  }
+  .fg-sortable-hidden{
+    float: right;
+  }
+  .fg-sortable { 
+    list-style-type : none; 
+    margin          : 0; 
+    padding         : 5px; 
+    width           : 48%; 
+    display         : inline;
+    background      : $fg_background_system;
+    
+    li {
+      margin       : 3px; 
+      padding      : 3px; 
+      padding-left : 20px; 
+      font-size    : 14px; 
+      height       : 18px;
+      
+      span {
+        position: absolute; 
+        margin-left: -17px;
+      }
+      h4 {
+        margin: 0px;
+        padding: 0px;
+      }
+      
+      cursor       : move;
+      &.fg-not-sortable{
+        cursor       : default;
+      }
+    }
+  }
+	
+	.fg-sort-content{
+	  margin   : 5%;
+	  position : fixed;
+	  top      : 0px;
+	  width    : 90%;
+	  height   : 90%;
+	}
+	
+	.ui-state-highlight{
+	  margin-bottom: 10px;
+	  padding: 10px;
+	}
+}

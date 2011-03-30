@@ -37,27 +37,18 @@ module Fancygrid
       fancygrid_instance = @fancygrid[name]
       
       yield fancygrid_instance
-
-      view_opts = fancygrid_params(name)
       
-      unless view_opts
-        # this is the first call on fancygrid without ajax parameters
-        # need to load view parameters using proc if defined
-        if fancygrid_instance.load_view_proc.is_a?(Proc)
-          view_opts = fancygrid_instance.load_view_proc.call(fancygrid_instance)
-        end
-      end
-        
+      view_opts = fancygrid_params(name)
+      view_opts ||= fancygrid_instance.load_view_proc_evaluate
+      
       # load the fancygrid view
       fancygrid_instance.load_view(view_opts || {})
       
-      # store the fancygrid view
-      if fancygrid_instance.store_view_proc.is_a?(Proc)
-        fancygrid_instance.store_view_proc.call(fancygrid_instance, fancygrid_instance.view.dump)
-      end
+      # store the view right back
+      fancygrid_instance.store_view_proc_evaluate
 
       # now the fancygrid setup is complete and the view is loaded
-      # run the database query as a last step
+      # run the database query when we are in the remote state
       if !fancygrid_instance.is_static? && fancygrid_remote_call?(name)
         fancygrid_instance.query_for_data
       end
@@ -122,6 +113,11 @@ module Fancygrid
     end
     alias :fancyvalue_for :render_fancygrid_leaf # backward compatibility
 
+    def fancygrid_button name, translate_scope, default, alt=nil
+      title = I18n.t(translate_scope, :default => default, :scope => Fancygrid.i18n_scope)
+      alt ||= title
+      image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => "#{name} fg-button", :title => title, :alt => title ).html_safe
+    end
   end
 
 end

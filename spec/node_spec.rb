@@ -185,24 +185,24 @@ describe Fancygrid::Node do
     
     grid = build_testgrid
     grid.find_by_path("ticket").css_class.should == nil
-    grid.find_by_path("ticket.title").css_class.should == "tickets title"
-    grid.find_by_path("ticket.description").css_class.should == "tickets description"
-    grid.find_by_path("ticket.status").css_class.should == "tickets status"
+    grid.find_by_path("ticket.title").css_class.should == "tickets title fg-orderable"
+    grid.find_by_path("ticket.description").css_class.should == "tickets description fg-orderable"
+    grid.find_by_path("ticket.status").css_class.should == "tickets status fg-orderable"
     grid.find_by_path("ticket.is_finished?").css_class.should == "tickets is_finished?"
     grid.find_by_path("ticket.actions").css_class.should == "tickets actions"
-    grid.find_by_path("ticket.project_id").css_class.should == "tickets project_id"
+    grid.find_by_path("ticket.project_id").css_class.should == "tickets project_id fg-orderable"
     
     grid.find_by_path("ticket.project").css_class.should == nil
-    grid.find_by_path("ticket.project.title").css_class.should == "projects title"
+    grid.find_by_path("ticket.project.title").css_class.should == "projects title fg-orderable"
     grid.find_by_path("ticket.project.class").css_class.should == "projects class"
     grid.find_by_path("ticket.project.actions").css_class.should == "projects actions"
-    grid.find_by_path("ticket.project.id").css_class.should == "projects id"
+    grid.find_by_path("ticket.project.id").css_class.should == "projects id fg-orderable"
     
     grid.find_by_path("ticket.project.foo").css_class.should == nil
-    grid.find_by_path("ticket.project.foo.title").css_class.should == "projects title"
+    grid.find_by_path("ticket.project.foo.title").css_class.should == "projects title fg-orderable"
     grid.find_by_path("ticket.project.foo.foo").css_class.should == "projects foo"
     grid.find_by_path("ticket.project.foo.bar").css_class.should == "projects bar"
-    grid.find_by_path("ticket.project.foo.id").css_class.should == "projects id"
+    grid.find_by_path("ticket.project.foo.id").css_class.should == "projects id fg-orderable"
     
   end
   
@@ -304,14 +304,6 @@ describe Fancygrid::Node do
     grid = Fancygrid::Grid.new(:ticket)
     grid.column(:title, :searchable => false )
     grid.find_by_path("ticket.title").searchable.should be false
-  end
-  
-  it "should pass the serach value option to node" do
-    
-    grid = Fancygrid::Grid.new(:ticket)
-    grid.column(:title, :search_value => "title" )
-    grid.find_by_path("ticket.title").search_value.should == "title"
-    
   end
   
   it "should pass the human name option to node" do

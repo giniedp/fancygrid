@@ -1,12 +1,11 @@
 en:
   fancygrid:
     pagination:
-      per_page: 'Results per Page:'
+      per_page: 'Per page:'
       page: 'Page'
       of: 'of'
       results: 'Results'
-      
-      prev_page: 'Pervious pagee'
+      prev_page: 'Pervious page'
       next_page: 'Next page'
       reload: 'Reload'
     sort:
@@ -15,9 +14,10 @@ en:
       header_visible: "Visible columns"
       header_hidden: "Hidden columns"
     search:
-      submit: 'search'
+      title: 'Search'
+      submit: 'Apply search'
       clear: 'Clear search'
-      toggle: 'Show/Hide searchtab'
+      toggle: 'Show/Hide search'
       conditions: 'All conditions must be met:'
       
       operator:

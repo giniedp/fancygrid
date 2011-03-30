@@ -1,36 +1,36 @@
-.js-fancygrid{ :class => fancygrid.name }
+.fg-fancygrid{ :class => fancygrid.name }
   - if fancygrid.has_complex_search?
     = render(:template => Fancygrid.search_template, :locals => { :fancygrid => fancygrid })
   - if fancygrid.has_top_control?
-    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => "controls top" })
+    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => :"controls top" })
   
-  .js-tablewrapper
+  .fg-tablewrapper
     %table
-      %tr.js-header
+      %tr.fg-header
         - fancygrid.each_visible_leaf do |leaf|
           %th{ :class => leaf.css_class, :table => leaf.record_table_name, :column => leaf.name, :order => leaf.applied_sort_order }
             = leaf.human_name
-            .js-order-tag
+            .fg-order-tag
       
       - if fancygrid.has_simple_search?
-        %tr.js-search
+        %tr.fg-search
           - fancygrid.each_visible_leaf do |leaf|
             %td{ :class => leaf.css_class }
               - next unless leaf.searchable
               - case leaf.search_input_kind
               - when :none
-                = text_field_tag( leaf.tag_name, leaf.search_value, :class => "js-attribute" )
+                = text_field_tag( leaf.tag_name, leaf.search_value, :class => :"fg-attribute" )
               - when :select
-                = select_tag( leaf.tag_name, options_for_select(leaf.search_select_collection, :selected => leaf.search_value),  :class => "js-attribute" )
+                = select_tag( leaf.tag_name, options_for_select(leaf.search_select_collection, :selected => leaf.search_value),  :class => :"fg-attribute" )
                 
       - fancygrid.each_record do |record|
-        %tr.js-row{ :class => fancygrid.evaluate_css_for(record) }
-          - fancygrid.each_leaf do |leaf|
+        %tr.fg-row{ :class => fancygrid.css_proc_evaluate(record) }
+          - fancygrid.each_visible_leaf do |leaf|
             %td{ :class => leaf.css_class }
               = render_fancygrid_leaf(record, leaf, &format_block)
                 
   - if fancygrid.has_bottom_control?
-    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => "controls bottom" })
+    = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => :"controls bottom" })
   - if fancygrid.has_sort_window?
     = render(:template => Fancygrid.sort_template, :locals => { :fancygrid => fancygrid })
     
@@ -38,8 +38,8 @@
   :javascript
     $(function(){
       var fancyOptions = #{fancygrid.js_options};
-      $(".js-fancygrid.#{fancygrid.name}").fancygrid(fancyOptions);
+      $(".fg-fancygrid.#{fancygrid.name}").fancygrid(fancyOptions);
       if(!fancyOptions.isStatic){
-        $(".js-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
+        $(".fg-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
       }
     });

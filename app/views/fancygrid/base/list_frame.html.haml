@@ -1,12 +1,12 @@
-.js-fancygrid{ :class => fancygrid.name }
+.fg-fancygrid{ :class => fancygrid.name }
   - if fancygrid.has_complex_search?
     = render(:template => Fancygrid.search_template, :locals => { :fancygrid => fancygrid })
   - if fancygrid.has_top_control?
     = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :css_class => "controls top" })
 
-  .js-tablewrapper
+  .fg-tablewrapper
     - unless fancygrid.is_static?
-      %ul.js-search
+      %ul.fg-search
         - fancygrid.each_visible_leaf do |leaf|
           - next unless leaf.searchable
           %li{ :class => leaf.css_class }
@@ -14,11 +14,11 @@
               = leaf.human_name
             - case leaf.search_input_kind
             - when :none
-              = text_field_tag( leaf.tag_name, leaf.search_value, :class => "js-attribute" )
+              = text_field_tag( leaf.tag_name, leaf.search_value, :class => "fg-attribute" )
             - when :select
-              = select_tag( leaf.tag_name, options_for_select(leaf.search_select_collection, :selected => leaf.search_value),  :class => "js-attribute" )
+              = select_tag( leaf.tag_name, options_for_select(leaf.search_select_collection, :selected => leaf.search_value),  :class => "fg-attribute" )
                 
-    %ul.js-row
+    %ul.fg-row
       - fancygrid.each_record do |record|
         %li{ :class => fancygrid.name.to_s.singularize }
           = render_fancygrid_leaf(record, fancygrid, &format_block)
@@ -30,8 +30,8 @@
   :javascript
     $(function(){
       var fancyOptions = #{fancygrid.js_options};
-      $(".js-fancygrid.#{fancygrid.name}").fancygrid(fancyOptions);
+      $(".fg-fancygrid.#{fancygrid.name}").fancygrid(fancyOptions);
       if(!fancyOptions.isStatic){
-        $(".js-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
+        $(".fg-fancygrid.#{fancygrid.name}").fancygrid("reloadPage");
       }
     });

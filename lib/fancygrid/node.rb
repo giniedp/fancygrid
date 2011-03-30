@@ -305,7 +305,8 @@ module Fancygrid#:nodoc:
         @css_class = []
         @css_class << self.record_table_name
         @css_class << self.name
-        @css_class << "js-orderable" if self.searchable
+        @css_class << "fg-orderable" if self.searchable
+        @css_class = @css_class.join(" ")
       end
       @css_class
     end

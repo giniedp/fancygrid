@@ -50,8 +50,8 @@ module Fancygrid
   mattr_accessor :default_per_page_selection
   @@default_per_page_selection = 20
   
-  mattr_accessor :extended_search_operators
-  @@extended_search_operators = Fancygrid::QueryGenerator::OPERATOR_NAMES
+  mattr_accessor :search_operators
+  @@search_operators = Fancygrid::QueryGenerator::OPERATOR_NAMES
   
   def self.setup
     yield self

@@ -1,40 +1,40 @@
-%ul.js-tablecontrol{ :class => css_class }
+%ul.fg-control-bar{ :class => css_class }
   %li
     %span
-      = t(:"fancygrid.pagination.per_page", :default => "Results per Page")
-    = select_tag(:per_page, options_for_select(fancygrid.per_page_options, fancygrid.view.get_pagination_per_page), :class => "js-per-page")
+      = t(:"pagination.per_page", :default => "Results per Page", :scope => Fancygrid.i18n_scope)
+    = select_tag(:per_page, options_for_select(fancygrid.per_page_options, fancygrid.view.get_pagination_per_page), :class => "fg-per-page")
     
   %li.separator
   %li.button
-    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-previous', :title => t(:"fancygrif.pagination.prev_page", :default => "Previous page"))
+    = fancygrid_button(:"fg-previous", :"pagination.prev_page", "Previous page")
     
   %li
     %span
-      = t(:"fancygrid.pagination.page", :default => "Page")
-    %input.js-page{ :type => "text", :value => fancygrid.view.get_pagination_page + 1 }
+      = t(:"pagination.page", :default => "Page", :scope => Fancygrid.i18n_scope)
+    = text_field_tag(:"fg-page", fancygrid.view.get_pagination_page + 1, :class => :"fg-page" )
     %span
-      = t(:"fancygrid.pagination.of", :default => "of")
-    %span.js-page-total
+      = t(:"pagination.of", :default => "of", :scope => Fancygrid.i18n_scope)
+    %span.fg-page-total
       = 0
       
   %li.button
-    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-next', :title => t(:"fancygrif.pagination.next_page", :default => "Next page"))
+    = fancygrid_button(:"fg-next", :"pagination.next_page","Next page")
   %li.separator
   %li
     %span
-      = t(:"fancygrid.pagination.results", :default => "Total entries")
-    %span.js-result-total
+      = t(:"pagination.results", :default => "Total entries", :scope => Fancygrid.i18n_scope)
+    %span.fg-result-total
       = fancygrid.resultcount or 0
   %li.button
-    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-reload', :title => t(:"fancygrif.pagination.reload", :default => "Reload"))
+    = fancygrid_button(:"fg-reload", :"pagination.reload", "Reload")
   %li.button
-    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-clear', :title => t(:"fancygrif.search.clear", :default => "Clear search"))
+    = fancygrid_button(:"fg-clear", :"search.clear", "Clear search")
   %li.button
-    = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-magnify', :title => t(:"fancygrif.search.toggle", :default => "Toggle Search"))
+    = fancygrid_button(:"fg-magnify", :"search.toggle", "Toggle Search")
       
   - if fancygrid.has_sort_window?
     %li.button
-      = image_tag('/images/fancygrid/spacer.gif', :size => '16x16', :class => 'js-sort', :title => t(:"fancygrif.sort.submit", :default => "Sort columns"))
+      = fancygrid_button(:"fg-sort", :"sort.submit", "Sort columns")
   %li.separator
   
   = yield :fancygrid_buttons

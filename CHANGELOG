@@ -1,3 +1,7 @@
+1.0.0-pre - Full Feature implementation done. 
+          - Fixed tests
+          - Added new style
+          - Every "js-" prefix in css classes is now "fg-" and stands for 'fancygrid'
 0.6.2 - Drop down select box is now possible as a simple search input field
 0.6.1 - Refactored js and improved column sorting
 0.6.0 - Initial implemetation of column sorting feature
