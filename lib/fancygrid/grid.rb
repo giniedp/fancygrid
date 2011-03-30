@@ -52,6 +52,9 @@ module Fancygrid#:nodoc:
     # Order and visibility definition for each column
     attr_accessor :view
     
+    # Specifies the search options for search input fields
+    attr_accessor :search_formats
+    
     # Initializes the root node of the fancygrid tree.
     def initialize(name, klass = nil, table_name = nil, params = nil)
       super(self, nil, name)
@@ -69,6 +72,7 @@ module Fancygrid#:nodoc:
       self.search_visible = Fancygrid.search_visible
       self.search_type    = Fancygrid.default_search_type
       self.extended_search_operators = Fancygrid.extended_search_operators
+      self.search_formats = {}
       
       if Fancygrid.use_grid_name_as_cells_template
         self.template = Fancygrid.cells_template_directory + name.to_s
@@ -311,7 +315,7 @@ module Fancygrid#:nodoc:
         :name => self.name,
         :isStatic => self.is_static?,
         :gridType => self.grid_type,
-        :searchEnabled => self.search_visible,
+        :searchVisible => (self.view.search_visible or self.search_visible),
         :searchType => self.search_type,
         :hideTopControl => self.hide_top_control,
         :hideBottomControl => self.hide_bottom_control,

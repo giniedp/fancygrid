@@ -78,19 +78,9 @@ module Fancygrid
       raise "Missing fancygrid for name '#{store_name}'" if(@fancygrid.nil? || @fancygrid[store_name].nil?)
       fancygrid_instance = @fancygrid[store_name]
       
-      #if params[:fancygrid]
-      #  if fancygrid_instance.store_view_proc.is_a?(Proc)
-      #    fancygrid_instance.store_view_proc.call(fancygrid_instance, fancygrid_instance.view.dump)
-      #  end
-      #else
-      #  if fancygrid_instance.load_view_proc.is_a?(Proc)
-      #    fancygrid_instance.view.load(fancygrid_instance.load_view_proc.call(fancygrid_instance))
-      #  end
-      #end
-      
       options ||= {}
       [:data, :template, :url, :search_visible, :hide_top_control, 
-       :hide_bottom_control, :grid_type
+       :hide_bottom_control, :grid_type, :search_formats
       ].each do |option|
         fancygrid_instance.send(option.to_s + "=", options[option]) if options[option]
       end

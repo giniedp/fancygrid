@@ -16,9 +16,13 @@
         %tr.js-search
           - fancygrid.each_visible_leaf do |leaf|
             %td{ :class => leaf.css_class }
-              - if leaf.searchable
-                %input.js-attribute{ :type => "text", :name => leaf.tag_name, :value => leaf.search_value }
-      
+              - next unless leaf.searchable
+              - case leaf.search_input_kind
+              - when :none
+                = text_field_tag( leaf.tag_name, leaf.search_value, :class => "js-attribute" )
+              - when :select
+                = select_tag( leaf.tag_name, options_for_select(leaf.search_select_collection, :selected => leaf.search_value),  :class => "js-attribute" )
+                
       - fancygrid.each_record do |record|
         %tr.js-row{ :class => fancygrid.evaluate_css_for(record) }
           - fancygrid.each_leaf do |leaf|

@@ -12,8 +12,12 @@
           %li{ :class => leaf.css_class }
             %label{ :for => leaf.tag_name }
               = leaf.human_name
-            %input.js-attribute{ :type => "text", :name => leaf.tag_name, :value => leaf.search_value }
-
+            - case leaf.search_input_kind
+            - when :none
+              = text_field_tag( leaf.tag_name, leaf.search_value, :class => "js-attribute" )
+            - when :select
+              = select_tag( leaf.tag_name, options_for_select(leaf.search_select_collection, :selected => leaf.search_value),  :class => "js-attribute" )
+                
     %ul.js-row
       - fancygrid.each_record do |record|
         %li{ :class => fancygrid.name.to_s.singularize }

@@ -32,8 +32,36 @@ $fg_border_separator2        : 1px solid #ffffff;
           font-weight : bold;
           padding     : 5px 10px 5px 10px;
           border-right: $fg_border;
+          
+          .js-order-tag{
+            display: none;
+            float: right;
+            width: 16px;
+            height: 16px;
+          }
         }
-
+        th[order='ASC']{
+          .js-order-tag{
+            display: block;
+            background: url('/images/fancygrid/dn.png') no-repeat scroll 50% 50% transparent;
+          }
+        }
+        th[order='ASC']:hover{
+          .js-order-tag{
+            background: url('/images/fancygrid/ddn.png') no-repeat scroll 50% 50% transparent;
+          }
+        }
+        th[order='DESC']{
+          .js-order-tag{
+            display: block;
+            background: url('/images/fancygrid/up.png') no-repeat scroll 50% 50% transparent;
+          }
+        }
+        th[order='DESC']:hover{
+          .js-order-tag{
+            background: url('/images/fancygrid/uup.png') no-repeat scroll 50% 50% transparent;
+          }
+        }
         td{
           padding     : 4px 10px 4px 10px;
           border-right: $fg_border;
@@ -66,13 +94,17 @@ $fg_border_separator2        : 1px solid #ffffff;
           padding   : 4px;
           background: $fg_background_system;
           
-          input{
+          input, select{
             display : inline;
             width   : 99%;
             height  : 25px;
             margin  : 0px;
             padding : 0px;
             border  : $fg_border;
+          }
+          
+          select {
+            width   : 100%;
           }
 
           input:focus{
@@ -88,18 +120,22 @@ $fg_border_separator2        : 1px solid #ffffff;
     }
   }
 
-  .js-extendedsearch{
-    padding: 5px;
-    input, select{
-      width: 80px;
+  .js-search{
+    .top, .bottom{
+      padding: 5px;
     }
-    ul {
+
+    ul.js-search-criteria {
       margin: 5px 0px;
       padding: 0px;
-      li{
+      
+      li.js-search-criterion{
         margin: 0px 0px 3px 0px;
         padding: 0px;
         list-style: none;
+        input, select{
+          width: 80px;
+        }
       }
       li.button{
         width  : 20px;
@@ -202,7 +238,7 @@ $fg_border_separator2        : 1px solid #ffffff;
   .js-sortable-hidden{
     float: right;
   }
-  .js-sortable-visible, .js-sortable-hidden { 
+  .js-sortable { 
     list-style-type: none; 
     margin: 0; 
     padding: 0; 
@@ -235,9 +271,8 @@ $fg_border_separator2        : 1px solid #ffffff;
 	  width: 90%;
 	  height: 90%;
 	}
-	.js-sort-save{
-	  position: absolute;
-	  top: -30px;
-	  right: -30px;
+	.ui-state-highlight{
+	  margin-bottom: 10px;
+	  padding: 10px;
 	}
 }

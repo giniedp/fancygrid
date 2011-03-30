@@ -1,7 +1,8 @@
+
 module Fancygrid#:nodoc:
   
   class Node
-    
+
     # Top level node. Must be a Fancygrid::Grid instance
     attr_accessor :root
     
@@ -142,7 +143,7 @@ module Fancygrid#:nodoc:
       options[:searchable] = false if options[:searchable].nil?
       options[:formatable] = false if options[:formatable].nil?
       options[:visible]    = true  if options[:visible].nil?
-      options[:selectable] = false if options[:selectable].nil?
+      options[:selectable] = options[:selectable].nil? ? options[:searchable] : options[:selectable]
       columns(names, options)
     end
     
@@ -169,7 +170,7 @@ module Fancygrid#:nodoc:
       options[:searchable] = false if options[:searchable].nil?
       options[:formatable] = true  if options[:formatable].nil?
       options[:visible]    = true  if options[:visible].nil?
-      options[:selectable] = false if options[:selectable].nil?
+      options[:selectable] = options[:selectable].nil? ? options[:searchable] : options[:selectable]
       columns(names, options)
     end
     
@@ -228,7 +229,7 @@ module Fancygrid#:nodoc:
       options[:searchable] = false  if options[:searchable].nil?
       options[:formatable] = false if options[:formatable].nil?
       options[:visible]    = true if options[:visible].nil?
-      options[:selectable] = false  if options[:selectable].nil?
+      options[:selectable] = options[:selectable].nil? ? options[:searchable] : options[:selectable]
       options[:proc]       = Proc.new
       column(name, options)
     end
@@ -320,6 +321,55 @@ module Fancygrid#:nodoc:
       else
         ""
       end
+    end
+    
+    def search_input_kind
+      return @search_input_kind if @search_input_kind
+      
+      @search_input_kind = :none
+      root.search_formats.each do |key, values|
+        next unless values.is_a? Hash
+        @search_input_kind = key if values.keys.include?(self.select_name)
+      end
+      
+      @search_input_kind
+    end
+    
+    def search_input_options
+      return @search_input_options if @search_input_options
+      
+      @search_input_options = {}
+      
+      root.search_formats.each do |key, values|
+        next unless values.is_a? Hash
+        opts = values[self.select_name.to_s] 
+        @search_input_options = opts if opts.is_a?(Hash)
+      end
+      
+      @search_input_options
+    end
+    
+    def search_select_collection
+      return @search_select_collection if @search_select_collection
+      
+      opts = search_input_options
+      
+      collection = opts[:collection] || []
+      text_method = opts[:text_method] || "id"
+      value_method = opts[:value_method] || "to_s"
+
+      collection = collection.map do |item|
+        [item.send(text_method), item.send(value_method)]
+      end
+      
+      if opts[:prompt]
+        collection.insert(0, [opts[:prompt], ""])
+      else
+        collection.insert(0, ["", ""])
+      end
+      
+      
+      @search_select_collection = collection
     end
     
     # Returns the internationalization path for this node if it is a leaf.

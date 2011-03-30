@@ -106,6 +106,11 @@ module Fancygrid#:nodoc:
       opts = self.view[:pagination] || {}
       opts[:per_page].to_i
     end
+    
+    def search_visible
+      self.view[:search_visible]
+    end
+    
   end
 end
 
