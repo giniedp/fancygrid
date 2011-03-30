@@ -174,6 +174,7 @@
       if (data.searchType == "simple"){
         
         // process simple search
+        data.query.operator = "all";
         
         $(this).find(".fg-attribute").each(function(){
           data.query.conditions[$(this).attr("name")] = $(this).val();
