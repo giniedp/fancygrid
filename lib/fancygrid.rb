@@ -62,7 +62,6 @@ module Fancygrid
     generators do
       require File.join(File.dirname(__FILE__), "generators", "install_generator")
       require File.join(File.dirname(__FILE__), "generators", "views_generator")
-      require File.join(File.dirname(__FILE__), "generators", "scss_generator")
     end
 
     initializer "fancygrid.initialize" do |app|
