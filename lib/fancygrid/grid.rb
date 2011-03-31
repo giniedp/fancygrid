@@ -101,7 +101,7 @@ module Fancygrid#:nodoc:
       raise "Node must be a leaf" unless node.is_leaf?
       if (self.view)        
         node.position = self.view.get_node_position(node)
-        node.visible = self.view.get_node_visibility(node) && node.visible
+        node.visible = (v = self.view.get_node_visibility(node) and v or node.visible)
         node.search_value = self.view.get_node_search_value(node)
         leafs.insert(node.position, node)
       else
