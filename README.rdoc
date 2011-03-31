@@ -1,8 +1,20 @@
 = Fancygrid
-Fancygrid is under heavy development. Things may change frequently.
+Fancygrid mades it easy to create and render tables for database records in rails.
+== Features
+* ActiveRecord and ActiveResource are supported
+* Ajax data fetch
+* Pagination
+* Simple search with LIKE condition
+* Complex search with 17 different conditions
+* Frontend column sorting
+* View state caching
+* May be rendered anywhere, not restricted to the index action
+* Column values may be attributes, methods or even custom blocks
+* Custom templates for column formatting
 
 = Requirements
 * jQuery >= 1.4.2
+* jQuery-ui (required if column sorting is wanted)
 * Rails 3
 * Haml
 
@@ -11,7 +23,7 @@ In your gemfile
     gem 'fancygrid', :git => 'git://github.com/giniedp/fancygrid.git'
 
 or for specific tag
-    gem 'fancygrid', :git => 'git://github.com/giniedp/fancygrid.git', :tag => "0.3.3"
+    gem 'fancygrid', :git => 'git://github.com/giniedp/fancygrid.git', :tag => "1.0.0-pre"
     
 Run
     bundle install
@@ -231,37 +243,6 @@ render that cell with custom code.
         end
         
         # ...
-        
-      end
-    end
-    
-== Conditional output (Implementing a filter)
-The find options are the same like you put into the find method of an ActiveRecord model
-
-    User.find(:first, <find_options>)
-    
-So you can use the conditions to find the wanted data.
-=== Example
-    # shows all users with a specific role
-    def index  
-      fancygrid_for :users do |user|
-      
-        # ...
-        
-        user.find( :include => :roles, :conditions => ["roles.name = ?", "admin"] )
-        
-      end
-    end
-
-If you have a filter that comes as an url parameter, you can pass it to the
-callback url, so the callback gets the same filter value
-=== Example
-    def index  
-      fancygrid_for :users do |user|
-      
-        # ...
-        user.url = users_path(:filter => params[:filter])
-        user.find( :include => :roles, :conditions => ["roles.name = ?", params[:filter] ] )
         
       end
     end
