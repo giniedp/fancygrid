@@ -32,39 +32,34 @@ $fg_border_separator2        : 1px solid #ffffff;
           border-right: $fg_border;
           background  : url('/images/fancygrid/th_bg.png');
           
-          .fg-order-tag {
-            display: none;
-            float: right;
-            width: 16px;
-            height: 16px;
+          .fg-head-wrapper{
+            padding     : 5px 10px 5px 10px;
           }
         }
         th.fg-orderable{
           .fg-order-tag {
             display: block;
-            background: url('/images/fancygrid/dots.png') no-repeat scroll 50% 50% transparent;
+            //background: url('/images/fancygrid/dots.png') no-repeat scroll 50% 0% transparent;
           }        
         }
         th[order='ASC'] {
           .fg-order-tag {
-            display: block;
-            background: url('/images/fancygrid/dn.png') no-repeat scroll 50% 50% transparent;
+            background: url('/images/fancygrid/dn.png') no-repeat scroll 50% 0% transparent;
           }
         }
         th[order='ASC']:hover {
           .fg-order-tag{
-            background: url('/images/fancygrid/ddn.png') no-repeat scroll 50% 50% transparent;
+            background: url('/images/fancygrid/ddn.png') no-repeat scroll 50% 0% transparent;
           }
         }
         th[order='DESC'] {
           .fg-order-tag{
-            display: block;
-            background: url('/images/fancygrid/up.png') no-repeat scroll 50% 50% transparent;
+            background: url('/images/fancygrid/up.png') no-repeat scroll 50% 0% transparent;
           }
         }
         th[order='DESC']:hover {
           .fg-order-tag{
-            background: url('/images/fancygrid/uup.png') no-repeat scroll 50% 50% transparent;
+            background: url('/images/fancygrid/uup.png') no-repeat scroll 50% 0% transparent;
           }
         }
         th:last-child, td:last-child {

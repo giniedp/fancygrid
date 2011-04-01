@@ -9,8 +9,8 @@
       %tr.fg-header
         - fancygrid.each_visible_leaf do |leaf|
           %th{ :class => leaf.css_class, :table => leaf.record_table_name, :column => leaf.name, :order => leaf.applied_sort_order }
-            = leaf.human_name
-            .fg-order-tag
+            .fg-head-wrapper.fg-order-tag
+              = leaf.human_name
       
       - if fancygrid.has_simple_search?
         %tr.fg-search
