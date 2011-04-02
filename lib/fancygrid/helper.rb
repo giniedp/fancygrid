@@ -52,6 +52,8 @@ module Fancygrid
       if !fancygrid_instance.is_static? && fancygrid_remote_call?(name)
         fancygrid_instance.query_for_data
       end
+      
+      fancygrid_instance.sort_leafs!
     end
     
     # Renders an existing fancygrid for the given name. You can append a rendering block

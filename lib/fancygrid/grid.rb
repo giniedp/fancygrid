@@ -94,8 +94,7 @@ module Fancygrid#:nodoc:
       self.load_view(view_opts || {})
     end
     
-    # Inserts a given node into the leafs collection. If a view is loaded
-    # the node will be inserted in its right place.
+    # Inserts a given node into the leafs collection.
     #
     def insert_node(node)
       raise "Node must be a leaf" unless node.is_leaf?
@@ -103,10 +102,14 @@ module Fancygrid#:nodoc:
         node.position = self.view.get_node_position(node)
         node.visible = self.view.get_node_visibility(node)
         node.search_value = self.view.get_node_search_value(node)
-        leafs.insert(node.position, node)
-      else
-        leafs << node
       end
+      leafs << node
+    end
+    
+    # Sorts the leafs by position attribute
+    #
+    def sort_leafs!
+      leafs.sort! { |a, b| a.position.to_i <=> b.position.to_i }
     end
     
     # Takes the given view hash and aligns the leafs using the passed view definitions
