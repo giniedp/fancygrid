@@ -92,7 +92,11 @@ module Fancygrid
     # leafs template or the passed rendering block. The result is a column cell content.
     def format_fancygrid_value(record, leaf, value=nil, &format_block)
       if block_given?
-        capture(leaf, record, value, &format_block)
+        if defined?(Haml::Helpers) && is_haml?
+          capture_haml(leaf, record, value, &format_block)
+        else
+          capture(leaf, record, value, &format_block)
+        end
       else
         render( :template => leaf.root.template, :locals => { 
           :grid => leaf.root, :table => leaf.root,
