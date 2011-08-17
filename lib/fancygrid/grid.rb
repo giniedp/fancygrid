@@ -27,6 +27,12 @@ module Fancygrid#:nodoc:
     # Url for the ajax callback.
     attr_accessor :url
     
+    # the request type for the ajax callback
+    attr_accessor :ajax_type
+    
+    # enables or disables the sort window
+    attr_accessor :enable_sort_window
+    
     # The template name that is used to render this grid.
     attr_accessor :template
     
@@ -66,6 +72,8 @@ module Fancygrid#:nodoc:
       initialize_node(name, klass, table_name)
       
       self.url              = nil
+      self.ajax_type        = :get
+      self.enable_sort_window = false
       self.leafs            = []
       self.dataset          = nil
       self.resultcount      = 0
@@ -239,7 +247,7 @@ module Fancygrid#:nodoc:
     # Determines whether the grid instance is able to sort columns
     #
     def has_sort_window?
-      !self.is_static? && !self.is_static?
+      !self.is_static? && self.enable_sort_window
     end
     
     def enable_state_caching!
@@ -359,6 +367,7 @@ module Fancygrid#:nodoc:
     def js_options
       {
         :url => self.url,
+        :ajaxType => self.ajax_type,
         :name => self.name,
         :isStatic => self.is_static?,
         :gridType => self.grid_type,

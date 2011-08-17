@@ -28,10 +28,10 @@ $fg_border_separator2        : 1px solid #ffffff;
         th {
           text-align  : left;
           font-weight : bold;
-          padding     : 5px 10px 5px 10px;
+          padding     : 0px;
           border-right: $fg_border;
           background  : url('/images/fancygrid/th_bg.png');
-          
+          white-space : nowrap;
           .fg-head-wrapper{
             padding     : 5px 10px 5px 10px;
           }
@@ -39,25 +39,26 @@ $fg_border_separator2        : 1px solid #ffffff;
         th.fg-orderable{
           .fg-order-tag {
             display: block;
+            cursor : pointer;
             //background: url('/images/fancygrid/dots.png') no-repeat scroll 50% 0% transparent;
           }        
         }
-        th[order='ASC'] {
+        th[order='DESC'] {
           .fg-order-tag {
             background: url('/images/fancygrid/dn.png') no-repeat scroll 50% 0% transparent;
           }
         }
-        th[order='ASC']:hover {
+        th[order='DESC']:hover {
           .fg-order-tag{
             background: url('/images/fancygrid/ddn.png') no-repeat scroll 50% 0% transparent;
           }
         }
-        th[order='DESC'] {
+        th[order='ASC'] {
           .fg-order-tag{
             background: url('/images/fancygrid/up.png') no-repeat scroll 50% 0% transparent;
           }
         }
-        th[order='DESC']:hover {
+        th[order='ASC']:hover {
           .fg-order-tag{
             background: url('/images/fancygrid/uup.png') no-repeat scroll 50% 0% transparent;
           }

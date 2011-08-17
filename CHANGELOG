@@ -1,3 +1,7 @@
+1.0.0 - Added the "ajax_type" option so ajax callbacks are not restricted to GET requests only.
+      - Fixed a js bug that removes the input field focus when doing a simple search
+      BREAKING CHANGES:
+        - Added the "enable_sort_window" option. Set it to true to display the sort button that opens the sort window. The button was previosly always visible.
 1.0.0-pre - Full Feature implementation done. 
           - Fixed tests
           - Added new style

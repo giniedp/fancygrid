@@ -14,6 +14,7 @@
     init : function(options){
       var settings = { 
         url               : "/", 
+				ajaxType          : "GET",
         name              : "", 
         query             : { 
           pagination      : { 
@@ -285,7 +286,7 @@
       queryData.fancygrid[data.name] = data.query;
       
       $.ajax({
-        type      : "GET",
+        type      : data.ajaxType,
         url       : data.url,
         data      : queryData,
         dataType  : "html",
@@ -326,6 +327,8 @@
       var $this = $(this);
       var data = $this.data('fancygrid');
       
+			var focused_id = $this.find("input:focus").attr("id");
+			
       // replace the content
       $this.find(".fg-tablewrapper").replaceWith(newContent);
       
@@ -347,6 +350,10 @@
       } else {
         $this.find(".fg-search").hide();
       }
+
+			if (focused_id){
+				$this.find("#" + focused_id).focus();
+			}
     },                           
     nextPage : function(){
       var $this = $(this);
