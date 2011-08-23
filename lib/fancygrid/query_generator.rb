@@ -8,13 +8,14 @@ module Fancygrid
       :like, :is_null, :is_not_null, :is_true, :is_not_true, :is_false, :is_not_false, :in, :not_in
     ]
     
-    attr_accessor :query
+    attr_accessor :query, :fancygrid
 
-    def initialize(options=nil)
+    def initialize(options=nil, grid=nil)
       options ||= {}
       options = ActiveSupport::HashWithIndifferentAccess.new(options)
       
       self.query = {}
+      self.fancygrid = grid
       
       self.select(options[:select])
       self.apply_pagination(options[:pagination])
@@ -104,7 +105,8 @@ module Fancygrid
               # }
               #
             unless value.blank?
-              { :column => "#{table}.#{column}", :operator => :like, :value => value } 
+              op = (fancygrid and fancygrid.simple_search_operator(table, column) or :like).to_s
+              { :column => "#{table}.#{column}", :operator => op, :value => value } 
             else 
               nil
             end

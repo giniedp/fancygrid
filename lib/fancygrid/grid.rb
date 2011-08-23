@@ -1,3 +1,5 @@
+require "active_support/hash_with_indifferent_access"
+
 module Fancygrid#:nodoc:
   
   class Grid < Fancygrid::Node
@@ -63,6 +65,9 @@ module Fancygrid#:nodoc:
     # Specifies the search options for search input fields
     attr_accessor :search_formats
     
+    # Specifies what operators the simple search has to ose for specific columns
+    attr_accessor :simple_search_operators
+    
     
     
     
@@ -86,6 +91,7 @@ module Fancygrid#:nodoc:
       self.search_type      = Fancygrid.default_search_type
       self.search_operators = Fancygrid.search_operators
       self.search_formats   = {}
+      self.simple_search_operators = ActiveSupport::HashWithIndifferentAccess.new({})
       
       if Fancygrid.use_grid_name_as_cells_template
         self.template = File.join(Fancygrid.cells_template_directory.to_s, name.to_s)
@@ -170,7 +176,7 @@ module Fancygrid#:nodoc:
         :operator => params[:operator]
       }
       
-      generator = Fancygrid::QueryGenerator.new(url_options)
+      generator = Fancygrid::QueryGenerator.new(url_options, self)
       generator.parse_options(options)
       yield(generator) if block_given?
       
@@ -361,7 +367,13 @@ module Fancygrid#:nodoc:
       end
     end
     
-
+    def simple_search_operator table, column
+      return simple_search_operators if simple_search_operators.is_a? Symbol
+      opts = (simple_search_operators || {})
+      opts = opts[table] || {}
+      return opts if opts.is_a? Symbol
+      opts[column]
+    end
     
     # Builds the javascript options for the javascript part of fancygrid
     def js_options
