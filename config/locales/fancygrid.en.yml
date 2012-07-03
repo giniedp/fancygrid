@@ -9,10 +9,10 @@ en:
       next_page: 'Next page'
       reload: 'Reload'
     sort:
-      submit: "Sort columns"
-      info: "You can sort the columns using drag&drop. Drag the columns you want to be visible into the left list and all other into the right list. To submit just click somwhere outside the two lists."
-      header_visible: "Visible columns"
-      header_hidden: "Hidden columns"
+      submit: "Sort leafs"
+      info: "You can sort the leafs using drag&drop. Drag the leafs you want to be visible into the left list and all other into the right list. To submit just click somwhere outside the two lists."
+      header_visible: "Visible leafs"
+      header_hidden: "Hidden leafs"
     search:
       title: 'Search'
       submit: 'Apply search'

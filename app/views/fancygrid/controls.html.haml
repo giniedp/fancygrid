@@ -1,0 +1,34 @@
+%ul.fg-control-bar{ :class => tag_class }
+
+  %li.fg-button-prev{ :title => "Previous page" }
+  %li
+    %span
+      Page
+    %span.fg-current-page
+      = fancygrid.view_state.pagination_page
+    %span
+      of
+    %span.fg-total-pages
+      = fancygrid.page_count
+  %li.fg-button-next{ :title => "Next page" }
+
+  %li.separator
+  
+  %li
+    %span
+      Go to page
+    = text_field_tag(:page, fancygrid.view_state.pagination_page, :class => "fg-current-page")
+      
+  %li
+    = select_tag(:per_page, options_for_select(fancygrid.per_page_values, fancygrid.per_page_value), :class => "fg-per-page")
+    
+  %li.separator
+  
+  %li.fg-button-search{ :title => "Search" }
+  %li.fg-button-refresh{ :title => "Reload" }
+  %li.fg-button-clear{ :title => "Reset Search" }
+      
+  - if fancygrid.sort_window?
+    %li.fg-button-sort{ :title => "Sort Columns" }
+  
+  = yield :"fancygrid_#{fancygrid.name}_buttons"

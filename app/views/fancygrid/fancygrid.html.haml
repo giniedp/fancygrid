@@ -1,0 +1,18 @@
+.fg-wrapper
+  .fg-container{ :id => "fancygrid_#{fancygrid.name}" }
+    - if fancygrid.complex_search?
+      = render(:template => Fancygrid.search_template, :locals => { :fancygrid => fancygrid })
+    - if fancygrid.top_control?
+      = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :tag_class => :"controls top" })
+    
+    = render(:template => Fancygrid.table_template, :locals => { :fancygrid => fancygrid })
+                  
+    - if fancygrid.bottom_control?
+      = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :tag_class => :"controls bottom" })
+    - if fancygrid.sort_window?
+      = render(:template => Fancygrid.sort_template, :locals => { :fancygrid => fancygrid })
+      
+  - if fancygrid.dynamic?
+    :javascript
+      $(function(){ $("#fancygrid_#{fancygrid.name}").fancygrid(#{fancygrid.js_options}); });
+      

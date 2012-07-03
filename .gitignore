@@ -1,6 +1,7 @@
 .project
 .DS_Store
 .rvmrc
+.project
 .bundle/*
 *.tmproj
 tmtags

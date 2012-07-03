@@ -1,399 +1,246 @@
-require "active_support/hash_with_indifferent_access"
-
 module Fancygrid#:nodoc:
-  
+
   class Grid < Fancygrid::Node
     
-    # Collection of all fancygrid leafs. These are instances of Fancygrid::Node
-    # and define the columns of a table. They may refer to an attribute or a
-    # method or a renderable cell of a model
+    # Collection of all defined columns.
     attr_accessor :leafs
     
-    # The database query that is sent to the database.
-    attr_accessor :query
+    # The grids view state.
+    attr_accessor :view_state
     
-    # The current POST or GET parameters.
-    attr_accessor :request_params
+    # The class of the database connector implementation to be used.
+    attr_accessor :orm
     
-    # The result of the database query. This is the data that is going to be rendered.
-    attr_accessor :dataset
+        
+    # The result of the database query. This is the data that is going 
+    # to be rendered.
+    attr_accessor :records
 
-    # Number of possible matching results.
-    attr_accessor :resultcount
-    
-    # Order and visibility definition for each column
-    attr_accessor :view
-    
-    
+    # Number of matching records. This is displayed in the pagination.
+    attr_accessor :record_count
     
     # Url for the ajax callback.
-    attr_accessor :url
+    attr_accessor :ajax_url
     
-    # the request type for the ajax callback
+    # The request method for the ajax callback e.g. GET or POST.
     attr_accessor :ajax_type
     
-    # enables or disables the sort window
-    attr_accessor :enable_sort_window
+    # Array of fancygrid component names that are going to be rendered.
+    attr_accessor :components
     
-    # The template name that is used to render this grid.
-    attr_accessor :template
     
-    # Enables or disables the input fields for simple search.
-    attr_accessor :search_visible
+    # If true then hides the search bar, but keeps it enabled.
+    attr_accessor :hide_search
     
-    # Specifies the type of the search. Must be one of "simple" or "complex"
-    attr_accessor :search_type
-    
-    # Specifies a set of enabled search operators
+    # Array of enabled search operators.
     attr_accessor :search_operators
     
-    # Enables or disables the rendering of the top control bar.
-    attr_accessor :hide_top_control
+    # The default search operator.
+    attr_accessor :search_operator
+        
+    # Specifies whether pagination is enabled or not.
+    attr_accessor :paginate
     
-    # Enables or disables the rendering of the bottom control bar.
-    attr_accessor :hide_bottom_control
+    # Array of select options for per page drop down.
+    attr_accessor :per_page_values
     
-    # Specifies the rendering strategy. May be one of 'table' or 'list'
-    attr_accessor :grid_type
-    
-    # Spcified the select options for per page drop down
-    attr_accessor :per_page_options
-    
-    # Spcified theselected value in the per page drop down
-    attr_accessor :per_page_selection
-    
-    # Specifies the search options for search input fields
-    attr_accessor :search_formats
-    
-    # Specifies what operators the simple search has to ose for specific columns
-    attr_accessor :simple_search_operators
-    
-    
-    
-    
-    # Initializes the root node of the fancygrid tree.
-    def initialize(name, klass = nil, table_name = nil, params = nil)
-      super(self, nil, name)
-      initialize_node(name, klass, table_name)
-      
-      self.url              = nil
-      self.ajax_type        = :get
-      self.enable_sort_window = false
-      self.leafs            = []
-      self.dataset          = nil
-      self.resultcount      = 0
+    # The default value for the per page drop down.
+    attr_accessor :per_page_value
 
-      self.query            = {}
-      self.request_params   = (params || {})
+    # If pagination is enabled this value holds the total number of 
+    # available data pages.
+    attr_accessor :page_count
+    
+    # Options that have been passed to initialize the fancygrid.
+    attr_accessor :options
+    
+    # Initializes the fancygrid
+    #
+    def initialize(name, options = {})
+      self.options = Fancygrid.default_options.merge(options)
+      super(nil, name, self.options)
+      self.apply_options(self.options)
+    end
+    
+    # Applies the given options and sets default values
+    #
+    def apply_options(options)
+      self.leafs            = []
+      self.view_state       = Fancygrid::ViewState.new(options.fetch(:state_hash, {}))
+    
+      self.records          = []
+      self.record_count     = 0
+      self.orm              = options[:orm].classify.constantize
+                     
+      self.ajax_url         = nil
+      self.ajax_type        = options[:ajax_type] 
+      self.components       = options[:components]
       
-      self.grid_type        = Fancygrid.default_grid_type
-      self.search_visible   = Fancygrid.search_visible
-      self.search_type      = Fancygrid.default_search_type
-      self.search_operators = Fancygrid.search_operators
-      self.search_formats   = {}
-      self.simple_search_operators = ActiveSupport::HashWithIndifferentAccess.new({})
+      self.hide_search      = options[:hide_search]
+      self.search_operators = options[:search_operators]
+      self.search_operator  = options[:search_operator]
       
-      if Fancygrid.use_grid_name_as_cells_template
-        self.template = File.join(Fancygrid.cells_template_directory.to_s, name.to_s)
-      else
-        self.template = File.join(Fancygrid.cells_template_directory.to_s, Fancygrid.cells_template.to_s)
+      self.per_page_values  = options[:per_page_values]
+      self.per_page_value   = self.view_state.pagination_per_page(options[:per_page_value])
+      self.paginate         = true
+      self.page_count       = 0
+    end
+    
+    def find &block
+      self.collect_columns
+      
+      query_options = {}
+      query_options[:grid]       = self
+      query_options[:select]     = self.leafs.select { |leaf| leaf.selectable }.map{ |leaf| leaf.identifier }
+      query_options[:conditions] = self.view_state.conditions
+      query_options[:operator]   = self.view_state.operator
+
+      if self.paginate
+        query_options[:pagination] = self.view_state.pagination_options(1, self.per_page_value)
       end
       
-      self.per_page_options = Fancygrid.default_per_page_options
-      self.per_page_selection = Fancygrid.default_per_page_selection
-      
-      view_opts = self.request_params[:fancygrid] || {}
-      view_opts = view_opts[self.name]
-            
-      self.load_view(view_opts || {})
+      self.records, self.record_count = self.orm.new(query_options).execute(resource_class, &block)
+      self.page_count = self.record_count / self.per_page_value
     end
     
-    # Inserts a given node into the leafs collection.
+    # Determines whether ajax callbacks are enabled or not
     #
-    def insert_node(node)
-      raise "Node must be a leaf" unless node.is_leaf?
-      if (self.view)        
-        node.position = self.view.get_node_position(node)
-        node.visible = self.view.get_node_visibility(node)
-        node.search_value = self.view.get_node_search_value(node)
-      end
-      leafs << node
+    def dynamic?
+      self.ajax_url.present?
     end
     
-    # Sorts the leafs by position attribute
+    # Determines whether the given component is enabled or not.
     #
-    def sort_leafs!
-      leafs.sort! { |a, b| a.position.to_i <=> b.position.to_i }
+    def component?(name)
+      self.components.include?(name)
     end
     
-    # Takes the given view hash and aligns the leafs using the passed view definitions
+    # Determines whether the simple search component is enabled.
     #
-    def load_view options
-      options ||= {}
-      options = options[:fancygrid] || options
-      options = options[self.name] || options
-      self.view = Fancygrid::View.new(options)
-      
-      # reorder current leafs
-      new_leafs = self.leafs
-      self.leafs = []
-      new_leafs.each do |leaf|
-        insert_node(leaf)
-      end
+    def simple_search?
+      dynamic? && component?(:search_bar)
     end
     
-    # Yields a query generator which should be used to build a find query
+    # Determines whether the complex search component is enabled.
     #
-    # == Options
-    # The options are the same as in active record finder method
-    # * <tt>:conditions</tt> - An SQL fragment like “administrator = 1”, ["user_name = ?", username], or ["user_name = :user_name", { :user_name => user_name }]
-    # * <tt>:order</tt> - An SQL fragment like “created_at DESC, name”.
-    # * <tt>:group</tt> - An attribute name by which the result should be grouped. Uses the GROUP BY SQL-clause.
-    # * <tt>:having</tt> - Combined with :group this can be used to filter the records that a GROUP BY returns. Uses the HAVING SQL-clause.
-    # * <tt>:limit</tt> - An integer determining the limit on the number of rows that should be returned.
-    # * <tt>:offset</tt> - An integer determining the offset from where the rows should be fetched. So at 5, it would skip rows 0 through 4.
-    # * <tt>:joins</tt> - Either an SQL fragment for additional joins like “LEFT JOIN comments ON comments.post_id = id” (rarely needed), named associations in the same form used for the :include option, which will perform an INNER JOIN on the associated table(s), or an array containing a mixture of both strings and named associations. If the value is a string, then the records will be returned read-only since they will have attributes that do not correspond to the table’s columns. Pass :readonly => false to override.
-    # * <tt>:include</tt> - Names associations that should be loaded alongside. The symbols named refer to already defined associations. See eager loading under Associations.
-    # * <tt>:select</tt> - By default, this is “*” as in “SELECT * FROM”, but can be changed if you, for example, want to do a join but not include the joined columns. Takes a string with the SELECT SQL fragment (e.g. “id, name”).
-    # * <tt>:from</tt> - By default, this is the table name of the class, but can be changed to an alternate table name (or even the name of a database view).
-    # * <tt>:readonly</tt> - Mark the returned records read-only so they cannot be saved or updated.
-    # * <tt>:lock</tt> - An SQL fragment like “FOR UPDATE” or “LOCK IN SHARE MODE”. :lock => true gives connection’s default exclusive lock, usually “FOR UPDATE”.
-    def find(options={})#:yields: generator
-      raise "calling 'find' twice or after 'data=' is not allowed" unless dataset.nil?
-      
-      # don not process same or equal leafs twice
-      leafs.compact!
-      
-      # get the parameters for this grid instance, they are mapped like this { :fancygrid => { :gird_name => ..options.. }}
-      params = request_params[:fancygrid] || {}
-      params = params[self.name] || {}
-      
-      # build default query hash
-      url_options = {
-        :select => self.leafs.map{ |leaf| leaf.select_name }.compact,
-        :conditions => params[:conditions],
-        :pagination => params[:pagination],
-        :operator => params[:operator]
+    def complex_search?
+      dynamic? && component?(:search)
+    end
+    
+    # Determines whether the top control bar component is enabled.
+    #
+    def top_control?
+      dynamic? && component?(:top_bar)
+    end
+    
+    # Determines whether the bottom control bar component is enabled.
+    #
+    def bottom_control?
+      dynamic? && component?(:bottom_bar)
+    end
+    
+    # Determines whether the sort window component is enabled.
+    #
+    def sort_window?
+      dynamic? && component?(:sort_window)
+    end   
+
+    # Collects and returns all columns that are marked to be visible.
+    # The collection is sorted by the column position attribute.
+    #
+    def visible_columns
+      @visible_columns ||= leafs.select { |leaf| 
+        leaf.visible 
+      }.sort { |a, b| 
+        a.position <=> b.position 
       }
-      
-      generator = Fancygrid::QueryGenerator.new(url_options, self)
-      generator.parse_options(options)
-      yield(generator) if block_given?
-      
-      generator.order(self.view.get_sort_order)
-      
-      self.query = generator.query
     end
     
-    # Sets a custom dataset that should be rendered.Blanks out the
-    # callback <tt>url</tt> so no ajax request will be made.
+    # Collects and returns all columns that are marked to be hidden.
+    # The collection is sorted by the column position attribute.
     #
-    def data= data
-      leafs.compact!
-      
-      self.dataset = data.to_a
-      self.url = nil
+    def hidden_columns
+      @hidden_columns ||= leafs.select { |leaf| 
+        leaf.hidden 
+      }.sort { |a, b| 
+        a.position <=> b.position 
+      }
     end
-    
-    # Runs the current query and caches the resulting data
+
+    # Generates options for dropdown selection to select a column.
     #
-    def query_for_data
-      if self.record_klass < ActiveRecord::Base
-        self.dataset = self.record_klass.find(:all, self.query)
-        
-        count_query = self.query.reject do |k, v| 
-          [:limit, :offset, :order].include?(k.to_sym )
-        end
-        self.resultcount = self.record_klass.count(:all, count_query)
-        
-      elsif self.record_klass < ActiveResource::Base
-        self.dataset = self.record_klass.find(:all, :params => self.query)
-        self.resultcount = self.dataset.delete_at(self.dataset.length - 1).total
-      else
-        raise "Unable to query for data. Supported base classes are 'ActiveRecord::Base' and 'ActiveResource::Base' but '#{self.record_klass}' was given"
-      end
-      
-      self.resultcount = self.resultcount.length  if self.resultcount.respond_to?(:length)
+    def select_column_options
+      leafs.select { |leaf| 
+        !leaf.hidden && leaf.searchable 
+      }.map { |leaf| 
+        [leaf.human_name, leaf.identifier] 
+      }
     end
     
-    
-    
-    
-    
-    # Returns true if the callback url is blank, that is when no ajax 
-    # functionality is wanted.
-    def is_static?
-      self.url.blank?
-    end
-    
-    # Determines whether the grid instance is initialized with simle search
+    # Generates options for dropdown selection to select a comparison operator.
     #
-    def has_simple_search?
-      self.search_type.to_s == "simple" && !self.is_static?
-    end
-    
-    # Determines whether the grid instance is initialized with complex search
-    #
-    def has_complex_search?
-      self.search_type.to_s == "complex" && !self.is_static?
-    end
-    
-    # Determines whether the grid instance displays the top control bar
-    #
-    def has_top_control?
-      !self.hide_top_control && !self.is_static?
-    end
-    
-    # Determines whether the grid instance displays the bottom control bar
-    #
-    def has_bottom_control?
-      !self.hide_bottom_control && !self.is_static?
-    end
-    
-    # Determines whether the grid instance is able to sort columns
-    #
-    def has_sort_window?
-      !self.is_static? && self.enable_sort_window
-    end
-    
-    def enable_state_caching!
-      load_view_proc do |instance|
-        opts = session[:fancygrid] || {}
-        opts[instance.name.to_s] || {}
-      end
-      load_view_proc do |instance, dump|
-        session[:fancygrid] ||= {}
-        session[:fancygrid][instance.name.to_s] = dump
+    def select_operator_options
+      @select_operator_options ||= self.search_operators.map do |op|
+        [ self.operator_human_name(op.to_s), op.to_s ] 
       end
     end
     
-    # If a block is given a new Proc is created for later css evaluation
+    # Gets the human readable name for given comparison operator.
     #
-    def css_proc
-      @css_proc = Proc.new if block_given?
-      @css_proc
+    def operator_human_name(name)
+      I18n.t(:"search.operator.#{name}", {
+        :default => name.humanize, 
+        :scope => Fancygrid.i18n_scope
+      })
     end
     
-    # Evaluates the css class for a table row by using the passed record and the ccs_proc of this grid
+    # Sets the search options for given column.
     #
-    def css_proc_evaluate(record)
-      @css_proc and @css_proc.call(record) or ""
+    def search_filter column, collection
+      node = self.children.select { |leaf| leaf.identifier == column }.first
+      node.search_options = Array(collection).map { |v| v.is_a?(Array) ? v : [v.to_s, v.to_s]}
     end
     
-    # Gets and sets a proc for loading a dumped view from session, database or whatever place
+    # Builds the javascript options for the javascript part of fancygrid.
     #
-    # == Example
-    #
-    #    fancygrid_for :companies do |g|
-    #      g.load_view_proc do |instance|
-    #        # load a hash from session, fancygrid will use that to initiate its view
-    #        session["fancygrid_#{instance.name.to_s}"] || {}
-    #      end
-    #    end
-    def load_view_proc
-      @load_view_proc = Proc.new if block_given?
-      @load_view_proc
-    end
-    
-    # Evaluates the <tt>load_view_proc</tt> if available
-    #
-    def load_view_proc_evaluate
-      return load_view_proc.call(self) if load_view_proc.is_a?(Proc)
-    end
-    
-    # Gets and sets a proc for storing a dumped view to session, database or whatever place
-    #
-    # == Example
-    #
-    #    fancygrid_for :companies do |g|
-    #      g.store_view_proc do |instance, dump|
-    #        # store the dump to. The dump comes from the fancygrid view
-    #        session["fancygrid_#{instance.name.to_s}"] = dump
-    #      end
-    #    end
-    def store_view_proc
-      @store_view_proc = Proc.new if block_given?
-      @store_view_proc
-    end
-    
-    # Evaluates the <tt>store_view_proc</tt> if available
-    #
-    def store_view_proc_evaluate
-      store_view_proc.call(self, self.view.dump) if store_view_proc.is_a?(Proc)
-    end
-    
-    
-    # Yields each leaf that is visible
-    #
-    def each_leaf#:yields: leaf
-      leafs.compact!
-      
-      leafs.each do |leaf|
-        yield leaf
-      end
-    end
-    
-    # Yields each leaf that is visible
-    #
-    def each_visible_leaf#:yields: leaf
-      leafs.compact!
-      
-      leafs.each do |leaf|
-        yield leaf if leaf.visible
-      end
-    end
-    
-    # Yields each leaf that is not visible
-    #
-    def each_hidden_leaf#:yields: leaf
-      leafs.compact!
-      
-      leafs.each do |leaf|
-        yield leaf unless leaf.visible
-      end
-    end
-    
-    #  Gets all leafs that are visible and searchable
-    def serachable_leafs
-      leafs.select { |leaf| leaf && leaf.searchable && leaf.visible }.compact
-    end
-    
-    # Yields each fetched record if available
-    #
-    def each_record#:yields: record
-      return unless self.dataset
-      self.dataset.each do |record|
-        yield record
-      end
-    end
-    
-    def simple_search_operator table, column
-      return simple_search_operators if simple_search_operators.is_a? Symbol
-      opts = (simple_search_operators || {})
-      opts = opts[table] || {}
-      return opts if opts.is_a? Symbol
-      opts[column]
-    end
-    
-    # Builds the javascript options for the javascript part of fancygrid
     def js_options
       {
-        :url => self.url,
+        :ajaxUrl => self.ajax_url,
         :ajaxType => self.ajax_type,
         :name => self.name,
-        :isStatic => self.is_static?,
-        :gridType => self.grid_type,
-        :searchVisible => (self.view.search_visible or self.search_visible),
-        :searchType => self.search_type,
-        :hideTopControl => self.hide_top_control,
-        :hideBottomControl => self.hide_bottom_control,
-        :paginationPage => self.view.get_pagination_page,
-        :paginationPerPage => self.view.get_pagination_per_page,
-      }.to_json
+        :page => self.view_state.pagination_page,
+        :perPage => self.view_state.pagination_per_page
+      }.to_json.gsub("<|>", "")
     end
     
-    def log(message)#:nodoc:
-      #Rails.logger.debug("[FANCYGRID] #{message.to_s}")
+    # Reorganizes the defined columns and post fixes some options
+    #
+    def collect_columns
+      leafs.clear
+      super(leafs)
+      leafs.each do |leaf|
+        leaf.position = self.view_state.column_option(leaf, :position, leaf.position).to_i
+        leaf.width    = self.view_state.column_option(leaf, :width,    leaf.width)
+        leaf.visible  = self.view_state.column_option(leaf, :visible, leaf.visible).to_s == "true"
+        
+        leaf.search_operator = self.view_state.column_condition(leaf, :operator, leaf.search_operator)
+        leaf.search_value    = self.view_state.column_condition(leaf, :value,    leaf.search_value)
+      end
+      leafs.sort! { |a, b| a.position <=> b.position }
+    end
+
+    # Dumps the fetched records into an array of hashes that
+    # can be rendered as xml or cvs. 
+    #
+    def dump_records
+      result = []
+      self.records.each do |record|
+        result << (dump = {})
+        self.visible_columns.each do |col|
+          dump[col.identifier] = col.fetch_value_and_format(record)
+        end
+      end
+      return result
     end
   end
 end
