@@ -20,5 +20,5 @@ pkg
 Gemfile.lock
 log/*.log
 spec/dummy/db/*.sqlute3
-spec/dummy/log/*,log
+spec/dummy/log/*.log
 spec/dummy/tmp/
