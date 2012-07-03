@@ -83,12 +83,6 @@ module Fancygrid
   end
   
   class Engine < Rails::Engine#:nodoc:
-
-    generators do
-      require File.join(File.dirname(__FILE__), "generators", "install_generator")
-      require File.join(File.dirname(__FILE__), "generators", "views_generator")
-    end
-
     initializer "fancygrid.initialize" do |app|
       ActionController::Base.send :include, Fancygrid::Controller::Helper
       ActionView::Base.send :include, Fancygrid::View::Helper
