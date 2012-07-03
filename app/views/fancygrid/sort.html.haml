@@ -1,0 +1,8 @@
+.fg-sort-window{ :style => "display: none;" }
+.fg-sort-content{ :style => "display: none;" }
+  %ul.fg-sortable
+    - fancygrid.leafs.each do |leaf|
+      %li.fg-sort-item
+        = check_box_tag leaf.identifier, "1", leaf.visible
+        = leaf.human_name
+  = submit_tag "Save"

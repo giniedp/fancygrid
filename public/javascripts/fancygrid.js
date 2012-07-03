@@ -1,5 +1,36 @@
 (function( $ ) {
+  var Fancygrid = window.Fancygrid = {};
 
+	var FancygridWrapper = function(name, container, data){
+		this.name = name;
+		this.container = container;
+		this.data = data;
+		
+		this.components = {};
+		this.components.search = container.find(".fg-search");
+		this.components.controls = container.find(".fg-control-bar");
+	};
+
+	FancygridWrapper.prototype.reload = function(count){
+		
+	};
+		
+	FancygridWrapper.prototype.flipPage = function(count){
+		this.flipToPage(this.data.pagination.page + count);
+	};
+	
+	FancygridWrapper.prototype.flipToPage = function(count){
+		this.data.pagination.page = Math.max(1, count);
+	};
+	
+	FancygridWrapper.prototype.setPerPage = function(count){
+		count = Math.max(1, count);
+		this.data.pagination.per_page = count;
+		if (this.components.per_page){
+			this.components.per_page.val(count).text(count);
+		}
+	};
+	
   $.fn.fancygrid = function(method) {
     if ( methods[method] ) {
       return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
@@ -13,27 +44,22 @@
   var methods = {
     init : function(options){
       var settings = { 
-        url               : "/", 
-				ajaxType          : "GET",
-        name              : "", 
-        query             : { 
-          pagination      : { 
-            page : (options.paginationPage || 0), 
-            per_page : options.paginationPerPage
+        ajaxUrl        : "/", 
+				ajaxType       : "GET",
+        name           : "",
+        searchFadeTime : 25,
+        searchFadeOpac : 0.5,
+        queries        : 0,
+        query: { 
+          pagination: { 
+            page     : (options.page || 1), 
+            per_page : (options.perPage || 25)
           },
-          columns         : {}, 
-          conditions      : {},
-          operator        : "any",
-          order           : {}
+          columns    : [], 
+          conditions : [],
+          operator   : "any",
+          order      : {}
         },
-        searchFadeTime    : 25,
-        searchFadeOpac    : 0.5,
-        searchType        : "simple",
-        queries           : 0,
-        isStatic          : false,
-        gridType          : "table",
-        hideTopControl    : false,
-        hideBottomControl : false
       };
       options = (options || {});
       $.extend(settings, options);
@@ -62,88 +88,79 @@
           
           // search attribute changed/focused
           $this.find(".fg-search").find("input[type='text'], select").bind("change.fancygrid", function(){
-            $(this).parents(".fg-fancygrid").fancygrid('newSearch'); 
-            return false;
+            $(this).parents(".fg-container").fancygrid('newSearch'); 
           }).bind("focus.fancygrid", function(){
             $(this).select();
-            return false;
           });
           
           // search attribute changed/focused
           $this.find(".fg-page").bind("change.fancygrid", function(){
-            $(this).parents(".fg-fancygrid").fancygrid('page', $(this).val()); 
-            return false;
+            $(this).parents(".fg-container").fancygrid('page', $(this).val()); 
           }).bind("focus.fancygrid", function(){
             $(this).select();
-            return false;
           });
           
           // previous page click
-          $this.find(".fg-previous").bind("click.fancygrid", function(){
-            $(this).parents(".fg-fancygrid").fancygrid('previousPage'); 
-            return false;
+          $this.find(".fg-previous").bind("click.fancygrid", function(e){
+						e.preventDefault();
+            $(this).parents(".fg-container").fancygrid('previousPage'); 
           });
           
           // next page click
-          $this.find(".fg-next").bind("click.fancygrid", function(){
-            $(this).parents(".fg-fancygrid").fancygrid('nextPage'); 
-            return false;
+          $this.find(".fg-next").bind("click.fancygrid", function(e){
+						e.preventDefault();
+            $(this).parents(".fg-container").fancygrid('nextPage'); 
           });
           
           // reload click
-          $this.find(".fg-reload").bind("click.fancygrid", function(){
-            $(this).parents(".fg-fancygrid").fancygrid('reloadPage'); 
-            return false;
+          $this.find(".fg-reload").bind("click.fancygrid", function(e){
+						e.preventDefault();
+            $(this).parents(".fg-container").fancygrid('reloadPage'); 
           });
           
           // clear click
-          $this.find(".fg-clear").bind("click.fancygrid", function(){
-            $(this).parents(".fg-fancygrid").fancygrid('clearSearch'); 
-            return false;
+          $this.find(".fg-clear").bind("click.fancygrid", function(e){
+						e.preventDefault();
+            $(this).parents(".fg-container").fancygrid('clearSearch'); 
           });
           
           // per page change
-          $this.find(".fg-per-page").bind("change.fancygrid", function(){
-            $(this).parents(".fg-fancygrid").fancygrid('perPage', $(this).val()); 
-            return false;
+          $this.find(".fg-per-page").bind("change.fancygrid", function(e){
+						e.preventDefault();
+            $(this).parents(".fg-container").fancygrid('perPage', $(this).val()); 
           });
           
           // magnifier click
-          $this.find(".fg-magnify").bind("click.fancygrid", function(){
-            $(this).parents(".fg-fancygrid").fancygrid('toggleSearch'); 
-            return false;
+          $this.find(".fg-magnify").bind("click.fancygrid", function(e){
+						e.preventDefault();
+            $(this).parents(".fg-container").fancygrid('toggleSearch'); 
           });
           
           // sort click
-          $this.find(".fg-sort").bind("click.fancygrid", function(){
-            $(this).parents(".fg-fancygrid").fancygrid('showSortWindow'); 
-            return false;
+          $this.find(".fg-sort").bind("click.fancygrid", function(e){
+						e.preventDefault();
+            $(this).parents(".fg-container").fancygrid('toggleSort'); 
           });
           
           //extended search submit
-          $this.find(".fg-search-submit").bind("click.fancygrid", function(){
-            $(this).parents(".fg-fancygrid").fancygrid('newSearch'); 
-            return false;
+          $this.find(".fg-search-submit").bind("click.fancygrid", function(e){
+						e.preventDefault();
+            $(this).parents(".fg-container").fancygrid('newSearch'); 
           });
           
           //button remove
-          $this.find(".fg-search-remove").click(function(){
+          $this.find(".fg-search-remove").click(function(e){
+						e.preventDefault();
             $(this).parents(".fg-search-criterion").remove();
           });
           
           //button add new criterion
-          $this.find(".fg-search-add").click(function(){
-            $this.fancygrid("addCriterionRow");
+          $this.find(".fg-search-add").click(function(e){
+						e.preventDefault();
+            $(this).fancygrid("addCriterionRow");
           });
           
-          // close the sort window if user clicked outside the sortable lists
-          $this.find(".fg-sort-content").click(function(){
-            $this.fancygrid("closeSortWindow");
-          });
-          $this.find(".fg-sortable").click(function(e){
-            e.stopPropagation();
-          });
-          
+					Fancygrid[data.name] = new FancygridInstance(data.name, $this, data);
         } else {
           // nothing to do when fancygrid is already initialized
           $.extend(data, options);
@@ -169,37 +186,25 @@
       var data = $this.data('fancygrid');
       
       data = $this.data('fancygrid');
-      data.query.conditions = {};
+      data.query.conditions = [];
+      data.query.operator = $this.find("#fg-search-conditions:checked").val() || "any";
       
-      if (data.searchType === "simple"){
+      $this.find(".fg-search-criterion").each(function(){
+        var column = $(this).find("select[name='column']").val();
+        var operator  = $(this).find("select[name='operator']").val();
+        var value = $(this).find("input[name='leaf_value']").val();
         
-        // process simple search
-        data.query.operator = "all";
+        if (typeof(data.query.conditions[leaf_name]) === "undefined"){
+          data.query.conditions[leaf_name] = [];
+        }
         
-        $(this).find(".fg-attribute").each(function(){
-          data.query.conditions[$(this).attr("name")] = $(this).val();
+        data.query.conditions[leaf_name].push({
+					table    : "",
+					column   : column,
+          operator : operator,
+          value    : value
         });
-      } else {
-        
-        // process complex search
-        
-        data.query.operator = $this.find("#fg-search-conditions:checked").val() || "any";
-
-        $this.find("ul.fg-search-criteria li.fg-search-criterion").each(function(){
-          var column_name = $(this).find("select[name='column_name']").val();
-          var operator  = $(this).find("select[name='operator']").val();
-          var value = $(this).find("input[name='column_value']").val();
-          
-          if (typeof(data.query.conditions[column_name]) === "undefined"){
-            data.query.conditions[column_name] = [];
-          }
-          
-          data.query.conditions[column_name].push({
-            operator : operator,
-            value : value
-          });
-        }); 
-      }
+      }); 
     },
     //
     // Fills the fancygrid query data with emputy search conditions
@@ -229,44 +234,44 @@
       var $this = $(this);
       var data = $this.data('fancygrid');
       var order = {};
-      var column = $this.find("th.fg-orderable[order='ASC'], th.fg-orderable[order='DESC']");
+      var leaf = $this.find("th.fg-orderable[order='ASC'], th.fg-orderable[order='DESC']");
       
-      if (column.length > 0){
-        order.table = column.attr("table");
-        order.column = column.attr("column");
-        order.direction = column.attr("order");        
+      if (leaf.length > 0){
+        order.table = leaf.attr("table");
+        order.leaf = leaf.attr("leaf");
+        order.direction = leaf.attr("order");        
       }
 
       data.query.order = order;
     },
     //
-    // Fills the fancygrid query data with column order and column visibility conditions
+    // Fills the fancygrid query data with leaf order and leaf visibility conditions
     //
     setupColumns : function(){
       var $this = $(this);
       var data = $this.data('fancygrid');
-      var columns = {};
+      var leafs = {};
       
       var visibleArray = $this.find('.fg-sortable-visible li:not(.fg-not-sortable)');
       var hiddenArray = $this.find('.fg-sortable-hidden li:not(.fg-not-sortable)');
       
       var index = 0;
       $(visibleArray).each(function(){
-        columns[$(this).attr("id")] = {
+        leafs[$(this).attr("id")] = {
           visible : true,
           position : index
         };
         index += 1;
       });
       $(hiddenArray).each(function(){
-        columns[$(this).attr("id")] = {
+        leafs[$(this).attr("id")] = {
           visible : false,
           position : index
         };
         index += 1;
       });
       
-      data.query.columns = columns;
+      data.query.leafs = leafs;
     },
     order : function(){
       return "";
@@ -287,7 +292,7 @@
       
       $.ajax({
         type      : data.ajaxType,
-        url       : data.url,
+        url       : data.ajaxUrl,
         data      : queryData,
         dataType  : "html",
         success   : function(result){  
@@ -322,39 +327,7 @@
           $this.trigger("loadError");
         }
       });
-    },
-    replaceContent : function(newContent){
-      var $this = $(this);
-      var data = $this.data('fancygrid');
-      
-			var focused_id = $this.find("input:focus").attr("id");
-			
-      // replace the content
-      $this.find(".fg-tablewrapper").replaceWith(newContent);
-      
-      // rebind events to search input fields
-      $this.find(".fg-tablewrapper").find(".fg-search").find("input[type='text'], select").bind("change.fancygrid", function(){
-        $(this).parents(".fg-fancygrid").fancygrid('newSearch'); 
-        return false;
-      }).bind("focus.fancygrid", function(){
-        $(this).select();
-        return false;
-      });
-      
-      $this.find("th.fg-orderable").click(function(){
-        $this.fancygrid("orderBy", $(this));
-      });
-      
-      if (data.searchVisible){
-        $this.find(".fg-search").show();
-      } else {
-        $this.find(".fg-search").hide();
-      }
-
-			if (focused_id){
-				$this.find("#" + focused_id).focus();
-			}
-    },                           
+    },                       
     nextPage : function(){
       var $this = $(this);
       data = $this.data('fancygrid');
@@ -434,7 +407,7 @@
       });
       
       row.find("input[type='text']").bind("change.fancygrid", function(){
-        $(this).parents(".fg-fancygrid").fancygrid('newSearch'); 
+        $(this).parents(".fg-container").fancygrid('newSearch'); 
         return false;
       }).bind("focus.fancygrid", function(){
         $(this).select();
@@ -458,17 +431,17 @@
       $this.find(".fg-sort-content").hide();
       $this.fancygrid("reloadPage");
     },
-    orderBy : function(column){
+    orderBy : function(leaf){
       $this = $(this);
       
-      var old_order = column.attr("order");
+      var old_order = leaf.attr("order");
       
       $this.find("th.fg-orderable").removeAttr("order");
       
       if (old_order === "DESC"){
-        column.attr("order", "ASC");
+        leaf.attr("order", "ASC");
       } else {
-        column.attr("order", "DESC");
+        leaf.attr("order", "DESC");
       }
 
       $this.fancygrid("reloadPage");

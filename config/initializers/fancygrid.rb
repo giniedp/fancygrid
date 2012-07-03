@@ -15,7 +15,7 @@ Fancygrid.setup do |config|
   #
   # config.controls_template = "fancygrid/base/controls"
 
-  # The path to the sort template which defines the view of the column sorting window
+  # The path to the sort template which defines the view of the leaf sorting window
   #
   # config.sort_template = "fancygrid/base/sort"
   
@@ -59,9 +59,9 @@ Fancygrid.setup do |config|
   
   # Default options for number of pages selection
   #
-  # config.default_per_page_options = [5, 10, 15, 20, 25, 30, 40, 50]
+  # config.per_page_values = [5, 10, 15, 20, 25, 30, 40, 50]
   
   # Default value for number of pagers selection
   #
-  # config.default_per_page_selection = 20
+  # config.per_page_default = 20
 end

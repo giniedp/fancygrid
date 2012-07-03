@@ -6,11 +6,11 @@ Fancygrid mades it easy to create and render tables for database records in rail
 * Pagination
 * Simple search with LIKE condition
 * Complex search with 17 different conditions
-* Frontend column sorting
+* Column sorting
 * View state caching
-* May be rendered anywhere, not restricted to the index action
-* Column values may be attributes, methods or even custom blocks
-* Custom templates for column formatting
+* Can be rendered anywhere, not restricted to the index action
+* Column values may be attributes, methods, method chains or even custom blocks
+* Custom templates for cell formatting
 
 = Requirements
 * jQuery >= 1.4.2
@@ -20,41 +20,33 @@ Fancygrid mades it easy to create and render tables for database records in rail
 
 = Installation
 In your gemfile
-    gem 'fancygrid', :git => 'git://github.com/giniedp/fancygrid.git'
+    gem 'fancygrid'
 
-or for specific tag
-    gem 'fancygrid', :git => 'git://github.com/giniedp/fancygrid.git', :tag => "1.0.0-pre"
-    
 Run
     bundle install
-    
-and
-    rails g fancygrid:install
-    
-then follow the instructions
 
 = Getting started
 
 == Basic Setup
 In any controller in any action you can define a fancygrid for a specific model.
 A controller is the place where you define what data should be queried from
-the database and what columns will be visible. For example you could define
-a table for your users like this:
+the model and what columns will be visible. Here is an example for a users table:
 === Example
     # UsersController
     def index
-      # setup fancygrid to display users
-      fancygrid_for :users do |user|
-        
-        # specify attributes to display  
-        user.attributes( :id, :username, :email )
 
+      fancygrid_for :users do |g|        
+        # specify attributes to display  
+        g.attributes :id, :username, :email 
         # specify the callback url for ajax loading
-        user.url = users_path
-        
-        # finally call find with some customized find options
-        user.find( :order => "users.created_at DESC" )
-        
+        g.ajax_url = users_path
+        # finally call find and open a block
+        g.find do |query|
+          # 'query' is a magic wrapper object. you can call
+          # any method that you would call after the 'find' method
+          # on a record, like: 'where', 'order', 'select' etc.
+          query.order "users.created_at DESC"
+        end
       end
     end
   
@@ -69,122 +61,86 @@ If you dont want to have an ajax table, you can set the data directly without
 providing a callback url. 
 === Example
     def index
-      fancygrid_for :users do |user|
-        
+      fancygrid_for :users do |g|
         # ...
-        
-        # dont set the url and find options like in the first example
-        # instead set the data directly
-        user.data= User.find(:all)
-        
+        g.attributes :id, :username, :email 
+        # don't set the ajax_url instead set the data directly
+        g.records = User.find(:all)
+        # no need to call the find method
       end
     end
    
 == Table names and model names
 Usually fancygrid takes the passed name and tries to resolve the models class
 and its database table name. If you need to use a name that is different
-from your models name which is the case when you have namespaced models, you can 
-pass the models constant and its table name to fancygrid
+from your models name, you can pass the models constant and its table name to fancygrid
 === Example
     def index
-      fancygrid_for :user, Namespace::User, "users" do |user|
-        
+      fancygrid_for :user, Namespace::User, "users" do |g|
         # ...
-        
       end
     end
     
-= Using methods on records
-You are not limited to the models attributes to display in the fancygrid. You can
-provide method names to display a models properties
+= Values from attributes, methods and blocks
+You are not limited to the models attributes to display in the fancygrid. 
+You can use method names to display a models properties
 === Example
     def index  
-      fancygrid_for :users do |user|
-      
+      fancygrid_for :users do |g|
         # ...
-        
-        # specify methods to call on each record
-        user.methods(:full_name, :some_other_method)
-        
+        g.columns :full_name, :some_other_method
         # ...
-        
+      end
+    end
+
+You can also pass method chains
+=== Example
+    def index  
+      fancygrid_for :users do |g|
+        # ...
+        g.columns "orders.count"
+        # ...
       end
     end
     
-You can even pass a proc to a single column
+You can even pass a proc
 === Example
     def index  
-      fancygrid_for :users do |user|
-      
+      fancygrid_for :users do |g|
         # ...
-        
-        user.proc( :roles ) do |record|
-          record.roles.map{ |r| r.name }.join(", ")
+        g.columns :roles do |record|
+          record.roles.map(&:name).join(", ")
         end
-        
         # ...
-        
       end
     end
     
-For more complex output you must have to render a column with custom template
+For more complex output you have to format the cell value in the view or a formatter method
 
-== Rendering columns with templates
-For custom cell rendering create a template at some place like *app/views/fancygrid/users.html.haml*
-In your fancygrid definition do:
-=== Example
-    def index  
-      fancygrid_for :users do |user|
-      
-        # ...
-        
-        # specify cells that will be rendered with custom code
-        user.rendered(:actions)
-        
-        # set the templates name 
-        user.template = "fancygrid/users"
-        
-        # ...
-        
-      end
-    end
-
-In your template you can use the following locals: <tt>table</tt>, <tt>column</tt>, <tt>record</tt> and <tt>value</tt>
-so you can render your cell like this:
-=== Example
-    - case table.name
-    - when :users
-      - case column.name
-      - when :actions
-        = link_to "Show", user_path(record)
-        = link_to "Edit", edit_user_path(record)
-
-== Rendering columns with a haml block
+== Formatting columns within a haml block
 In your view you can give a grid a block that should be used for rendering
 === Example
-    = fancygrid(:users) do |column, record, value|
-      - case column.name
+    = fancygrid :users do |leaf, record, value|
+      - case leaf.name
       - when :actions
         = link_to "Show", user_path(record)
         = link_to "Edit", edit_user_path(record)
         
-== Display associated data (belongs_to or has_one)
+== belongs_to or has_one associations 
 To display an associated data you have to build the nodes for that data and
 specify the include option for the find method
 === Example
     def index  
-      fancygrid_for :users do |user|
-      
+      fancygrid_for :users do |g|
         # ...
-        
-        user.columns_for(:contact) do |contact|
-          contact.attributes( :first_name, :last_name )
+        g.columns_for :contact do |contact|
+          contact.attributes :first_name, :last_name
         end
-        
         # ...
-        
-        user.find( :include => :contact )
-        
+        g.find do |query|
+          query.select :contact_id
+          query.includes :contact
+        end
       end
     end
     
@@ -192,38 +148,33 @@ If your association name is different from the models name pass the model
 constant into the columns_for method.
 === Example
     def index  
-      fancygrid_for :users do |user|
-      
+      fancygrid_for :users do |g|
         # ...
-        
-        user.columns_for(:work_address, Address) do |address|
-          address.attributes( :street, :zipcode, :city )
+        g.columns_for(:invoice_address, Address) do |adr|
+          adr.attributes :street, :zipcode, :city
         end
-        
         # ...
-        
-        user.find( :include => :work_address )
-        
+        g.find do |query|
+          query.select :invoice_address_id
+          query.includes :invoice_address
+        end
       end
     end
     
-== Display associated data (has_many or has_and_belongs_to_many)
+== has_many or has_and_belongs_to_many associations
 Similar to the previous example you have to build the nodes for the associations
 and specify the include option
 === Example
     def index  
-      fancygrid_for :users do |user|
-      
+      fancygrid_for :users do |g|
         # ...
-        
-        user.columns_for(:roles) do |roles|
-          roles.attributes( :name )
+        g.columns_for :roles do |roles|
+          roles.attributes :name 
         end
-        
         # ...
-
-        user.find( :unclude => :roles )
-        
+        g.find do |query|
+          query.includes :roles
+        end
       end
     end
     
@@ -234,66 +185,25 @@ Instead you should rather define a <tt>proc</tt> to return all role names or
 render that cell with custom code.
 === Example      
     def index  
-      fancygrid_for :users do |user|
-      
+      fancygrid_for :users do |g|
         # ...
-        
-        user.proc( :roles ) do |record|
-          record.roles.map{ |r| r.name }.join(", ")
+        g.columns :roles  do |record|
+          record.roles.map(&:name).join(", ")
         end
-        
-        # ...
-        
-      end
-    end
-
-== Order your conditions
-If you have a large condition to make or you want to use a condition that depends on a users role, for example when
-some of your users are not allowed to see specific data, then you can give the find method a block and use the query generator
-
-=== Example
-    fancygrid_for :users do |grid|
-      
-      # ...
-      
-      grid.find do |query|
-        # all the conditions are joined with an AND operator
-        query.conditions(["users.first_name = ?", "some name"])
-        query.conditions(["users.last_name = ?", "some name"])
-        
-        # use other finder options as methods
-        query.select #...
-        query.order  #...
         # ...
       end
     end
-    
+
 == Caching the view state
 To make your users life easier you can enable the view state caching. This way
 the user can search for data, leave the site, come back and have his last
 search back on screen. Here is an example of how to store the view in the users session:
 === Example
-    # ensure that there is a hash in the session
-    session[:users_table_view_state] ||= {}
-    
-    fancygrid_for :users do |grid|
-      
-      # ...
-      
-      # specify a proc to load the view state
-      grid.load_view_proc do |grid_instance|
-        session["fancygrid_users"] || {}
+    def index
+      fancygrid_for :users, :persist => true do |grid|
+        # ...
       end
-      
-      # specify a proc to store the view state
-      grid.store_view_proc do |grid_instance, dump|
-        session["fancygrid_users"] = dump
-      end
-
     end
-    
-Its up to your business logic where and how you store the dumped view state. If you have lots of tables 
-i would recommend to enable database session store.
    
 = Copyright
 Copyright (c) 2010 Alexander Graefenstein. See LICENSE for details.

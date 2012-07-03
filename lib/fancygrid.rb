@@ -1,60 +1,85 @@
 require "fancygrid"
-require "version"
-require "fancygrid/helper"
 require "fancygrid/node"
 require "fancygrid/grid"
-require "fancygrid/query_generator"
-require "fancygrid/view"
+require "fancygrid/column"
+require "fancygrid/view_state"
+require "fancygrid/object_wrapper"
+
+require "fancygrid/orm/sql_generator"
+require "fancygrid/orm/active_record"
+
+require "fancygrid/controller/helper"
+require "fancygrid/view/helper"
 
 module Fancygrid
-
-  mattr_accessor :table_template
-  @@table_template = "fancygrid/base/table_frame"
   
-  mattr_accessor :list_template
-  @@list_template = "fancygrid/base/list_frame"
+  mattr_accessor :base_template
+  @@base_template = "fancygrid/fancygrid"
+    
+  mattr_accessor :table_template
+  @@table_template = "fancygrid/table"
   
   mattr_accessor :controls_template
-  @@controls_template = "fancygrid/base/controls"
+  @@controls_template = "fancygrid/controls"
 
   mattr_accessor :sort_template
-  @@sort_template = "fancygrid/base/sort"
+  @@sort_template = "fancygrid/sort"
     
   mattr_accessor :search_template
-  @@search_template = "fancygrid/base/search"
-
-  mattr_accessor :cells_template_directory
-  @@cells_template_directory = "fancygrid/"
-  
-  mattr_accessor :cells_template
-  @@cells_template = "_cells"
+  @@search_template = "fancygrid/search"
 
   mattr_accessor :i18n_scope
   @@i18n_scope = "fancygrid"
-  
-  mattr_accessor :use_grid_name_as_cells_template
-  @@use_grid_name_as_cells_template = false
-  
-  mattr_accessor :search_visible
-  @@search_visible = false
-  
-  mattr_accessor :default_search_type
-  @@default_search_type = :simple
-  
-  mattr_accessor :default_grid_type
-  @@default_grid_type = :table
-  
-  mattr_accessor :default_per_page_options
-  @@default_per_page_options = [5, 10, 15, 20, 25, 30, 40, 50]
-  
-  mattr_accessor :default_per_page_selection
-  @@default_per_page_selection = 20
+
+  mattr_accessor :components
+  @@components = [:top_bar, :bottom_bar, :search_bar, :table]
+
+  mattr_accessor :orm
+  @@orm = "fancygrid/orm/active_record"
+      
+  mattr_accessor :hide_search
+  @@hide_search = false
   
   mattr_accessor :search_operators
-  @@search_operators = Fancygrid::QueryGenerator::OPERATOR_NAMES
+  @@search_operators = Fancygrid::Orm::SqlGenerator::OPERATOR_NAMES
+  
+  mattr_accessor :search_operator
+  @@search_operator = :like
+    
+  mattr_accessor :per_page_values
+  @@per_page_values = [5, 10, 15, 20, 25, 30, 40, 50, 100]
+  
+  mattr_accessor :per_page_value
+  @@per_page_value = 20
+
+  mattr_accessor :ajax_type
+  @@ajax_type = :get
+
+  mattr_accessor :persist_state
+  @@persist_state = false
   
   def self.setup
     yield self
+  end
+  
+  def self.default_options
+    {
+      :base_template => self.base_template,
+      :table_template => self.table_template,
+      :controls_template => self.controls_template,
+      :sort_template => self.sort_template,
+      :search_template => self.search_template,
+      :i18n_scope => self.i18n_scope,
+      :components => self.components,
+      :orm => self.orm,
+      :hide_search => self.hide_search,
+      :search_operators => self.search_operators,
+      :search_operator => self.search_operator,
+      :per_page_values => self.per_page_values,
+      :per_page_value => self.per_page_value,
+      :ajax_type => self.ajax_type,
+      :persist_state => self.persist_state
+    }
   end
   
   class Engine < Rails::Engine#:nodoc:
@@ -65,8 +90,8 @@ module Fancygrid
     end
 
     initializer "fancygrid.initialize" do |app|
-      ActionController::Base.send :include, Fancygrid::Helper
-      ActionView::Base.send :include, Fancygrid::Helper
+      ActionController::Base.send :include, Fancygrid::Controller::Helper
+      ActionView::Base.send :include, Fancygrid::View::Helper
     end
   end
 end
