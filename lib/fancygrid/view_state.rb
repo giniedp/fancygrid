@@ -22,8 +22,6 @@ module Fancygrid#:nodoc:
       self.fix_conditions
       self.fix_order
       self.fix_pagination
-      
-      Rails.logger.debug self.dump.inspect
     end
     
     def column_options(node)

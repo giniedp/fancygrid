@@ -20,8 +20,6 @@ class ApplicationController < ActionController::Base
       format.json { render :json => projects_grid.records }
       format.xml { render :xml => projects_grid.dump_records }
     end
-    
-    Rails.logger.debug session.inspect
   end
 end
 
