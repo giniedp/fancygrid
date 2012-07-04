@@ -152,11 +152,16 @@ To define columns for associations, use the #columns_for method.
       # ...
       g.find do |query|
         # eager loading of the association
+        query.select :contact_id
         query.includes :contact
       end
     end
   end
 ```
+Mention that in the query block the contact_id is selected. This is required, since fancygrid
+tries to use optimized sql queries by default. Therefore it will select only those attributes 
+that have been used during the fancygrid setup. If the contact_id is missing, it will not be
+possible to include the contact association.
 
 If your association name is different from the models name, pass the model 
 class as option.
