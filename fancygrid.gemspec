@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.version = "2.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Alexander Gr\303\244fenstein"]
-  s.date = "2012-07-03"
+  s.authors = ["Alexander Graefenstein"]
+  s.date = "2012-07-04"
   s.description = "Enables easy table rendering in rails applications"
   s.email = "giniedp@online.de"
   s.extra_rdoc_files = [
@@ -36,9 +36,9 @@ Gem::Specification.new do |s|
     "config/locales/fancygrid.en.yml",
     "fancygrid.gemspec",
     "init.rb",
-    "lib/assets/javascripts/jquery-fancygrid.js",
-    "lib/assets/javascripts/jquery-fancygrid.min.js",
-    "lib/assets/stylesheets/fancygrid-light.css",
+    "lib/assets/javascripts/fancygrid.js",
+    "lib/assets/javascripts/fancygrid.min.js",
+    "lib/assets/stylesheets/fancygrid.css",
     "lib/fancygrid.rb",
     "lib/fancygrid/column.rb",
     "lib/fancygrid/controller/helper.rb",
@@ -114,7 +114,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = "http://github.com/giniedp/fancygrid"
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.21"
+  s.rubygems_version = "1.8.24"
   s.summary = "Table rendering for rails applications"
 
   if s.respond_to? :specification_version then
