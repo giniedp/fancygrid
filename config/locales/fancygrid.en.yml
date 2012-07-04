@@ -1,24 +1,23 @@
 en:
   fancygrid:
-    pagination:
+    pagination: 
+      page: Page
+      of: of
       per_page: 'Per page:'
-      page: 'Page'
-      of: 'of'
-      results: 'Results'
-      prev_page: 'Pervious page'
-      next_page: 'Next page'
+      go_to: Go to page
+    actions:
+      search: 'Search'
       reload: 'Reload'
-    sort:
-      submit: "Sort leafs"
-      info: "You can sort the leafs using drag&drop. Drag the leafs you want to be visible into the left list and all other into the right list. To submit just click somwhere outside the two lists."
-      header_visible: "Visible leafs"
-      header_hidden: "Hidden leafs"
+      reset: 'Reset'
+      sort: 'Sort columns'
+      save: 'Save'
+      prev: 'Pervious page'
+      next: 'Next page'
     search:
-      title: 'Search'
-      submit: 'Apply search'
-      clear: 'Clear search'
-      toggle: 'Show/Hide search'
+      title: Search
       conditions: 'All conditions must be met:'
+      add_criterion: Add criterion
+      remove_criterion: Remove criterion
       
       operator:
         equal: 'equal'
@@ -38,5 +37,3 @@ en:
         is_not_false: 'is not false'
         in: 'is in'
         not_in: 'is not in'
-
-      

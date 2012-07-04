@@ -1,24 +1,24 @@
 = field_set_tag( t(:"search.title", :default => "Search", :scope => Fancygrid.i18n_scope), :class => :"fg-search" ) do
   %ul.fg-search-controls
-    %li.fg-button-add-criterion{ :title => "Add" }
-    %li.fg-button-refresh{ :title => "Search" }
-    %li.fg-button-clear{ :title => "Clear search" }
+    %li.fg-button-refresh{ :title => t(:"search.add_criterion",  :default => "Add criterion", :scope => Fancygrid.i18n_scope) }
+    %li.fg-button-refresh{ :title => t(:"actions.reload",        :default => "Reload",        :scope => Fancygrid.i18n_scope) }
+    %li.fg-button-clear{   :title => t(:"actions.reset",         :default => "Reset",         :scope => Fancygrid.i18n_scope) }
     %li
       = check_box_tag(:"fg-search-conditions", :all, fancygrid.view_state.conditions_match_all?)
-      = label_tag(:"fg-search-conditions", t(:"fancygrid.search.conditions", :default => 'All conditions must met:'))
+      = label_tag(:"fg-search-conditions", t(:"search.conditions", :default => 'All conditions must met:', :scope => Fancygrid.i18n_scope))
       
   %ul.fg-search-criteria
     - fancygrid.visible_columns.each do |column|
       - fancygrid.view_state.column_conditions(column).each do |condition|
         %li.fg-search-criterion
-          .fg-button-remove-criterion{ :title => "Remove" }
+          .fg-button-remove-criterion{ :title => t(:"search.remove_criterion",  :default => "Remove criterion", :scope => Fancygrid.i18n_scope) }
           = select_tag(:identifier, options_for_select(fancygrid.select_column_options, condition[:identifier]))
           = select_tag(:operator, options_for_select(fancygrid.select_operator_options, condition[:operator] || fancygrid.search_operator))
           = text_field_tag(:value, condition[:value])
       
 .fg-search-template
   %li.fg-search-criterion
-    .fg-button-remove-criterion{ :title => "Remove" }
+    .fg-button-remove-criterion{ :title => t(:"search.remove_criterion",  :default => "Remove criterion", :scope => Fancygrid.i18n_scope) }
     = select_tag(:identifier, options_for_select(fancygrid.select_column_options))
     = select_tag(:operator, options_for_select(fancygrid.select_operator_options, fancygrid.search_operator))
     = text_field_tag(:value)

@@ -1,3 +1,10 @@
+2.0.0 - Completely refactored version of fancygrid
+      - Better integration in to rails
+      - improved fancygrid setup process, less complicated
+      - added possibility to implement different ORMs
+      - added possibility to use builder and value formatter
+      - added "download" feature e.g. to download data in csv, json or xml format
+      - improved rails 3.2 asset pipeline compatibility
 1.0.0 - Added the "ajax_type" option so ajax callbacks are not restricted to GET requests only.
       - Fixed a js bug that removes the input field focus when doing a simple search
       BREAKING CHANGES:

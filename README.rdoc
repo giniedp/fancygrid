@@ -1,16 +1,14 @@
 = Fancygrid
 Fancygrid mades it easy to create and render tables for database records in rails.
 == Features
-* ActiveRecord and ActiveResource are supported
 * Ajax data fetch
 * Pagination
-* Simple search with LIKE condition
+* Simple search
 * Complex search with 17 different conditions
 * Column sorting
 * View state caching
-* Can be rendered anywhere, not restricted to the index action
-* Column values may be attributes, methods, method chains or even custom blocks
-* Custom templates for cell formatting
+* ActiveRecord supported. MongoDB coming (some day).
+* Column values from attributes, methods, method chains or even custom blocks
 
 = Requirements
 * jQuery >= 1.4.2
@@ -41,17 +39,11 @@ the model and what columns will be visible. Here is an example for a users table
         # specify the callback url for ajax loading
         g.ajax_url = users_path
         # finally call find and open a block
-        g.find do |query|
-          # 'query' is a magic wrapper object. you can call
-          # any method that you would call after the 'find' method
-          # on a record, like: 'where', 'order', 'select' etc.
-          query.order "users.created_at DESC"
-        end
+        g.find
       end
     end
-  
-In your View you have to render the fancygrid. Use the name that you have used
-in your controller
+
+To render the fancygrid in the view, use the same name you passed in the setup
 === Example
     # app/views/users/index.html.haml
     = fancygrid :users
@@ -64,71 +56,77 @@ providing a callback url.
       fancygrid_for :users do |g|
         # ...
         g.attributes :id, :username, :email 
-        # don't set the ajax_url instead set the data directly
-        g.records = User.find(:all)
-        # no need to call the find method
+        # don't set the ajax_url and just call find
+        g.find
       end
     end
    
 == Table names and model names
-Usually fancygrid takes the passed name and tries to resolve the models class
-and its database table name. If you need to use a name that is different
-from your models name, you can pass the models constant and its table name to fancygrid
+Usually fancygrid tries to resolve the models class and table name from given 
+name. If you happen to use namespaced models, you must pass the class as an option.
 === Example
     def index
-      fancygrid_for :user, Namespace::User, "users" do |g|
+      fancygrid_for :user, :class => Namespace::User do |g|
         # ...
       end
     end
     
-= Values from attributes, methods and blocks
-You are not limited to the models attributes to display in the fancygrid. 
-You can use method names to display a models properties
+Optionally you can also pass a specific table name. However, if the class responds
+to #table_name, this is not necessary
+=== Example
+    def index
+      fancygrid_for :user, :class => Namespace::User, :table_name => "users" do |g|
+        # ...
+      end
+    end
+    
+= Define columns
+To display attributs as columns use the #attributes method like this:
 === Example
     def index  
       fancygrid_for :users do |g|
         # ...
-        g.columns :full_name, :some_other_method
+        g.attributes :id, :email, :created_at
         # ...
       end
     end
 
-You can also pass method chains
+For everything else use the #columns method. You can have method names,
+method chains and procs to resolve column values.
 === Example
     def index  
       fancygrid_for :users do |g|
         # ...
+        # methods
+        g.columns :full_name, :some_other_method
+        # method chains
         g.columns "orders.count"
-        # ...
-      end
-    end
-    
-You can even pass a proc
-=== Example
-    def index  
-      fancygrid_for :users do |g|
-        # ...
+        # procs
         g.columns :roles do |record|
           record.roles.map(&:name).join(", ")
-        end
+        end        
         # ...
       end
     end
     
 For more complex output you have to format the cell value in the view or a formatter method
 
-== Formatting columns within a haml block
-In your view you can give a grid a block that should be used for rendering
+== Columns formatting in the view
+Add a block to the fancygrid call in the view. In there you can use a switch case condition
+on the columns name to determine what to render. Should not omit the else case. If this
+is missing, you might end up with blank columns
 === Example
-    = fancygrid :users do |leaf, record, value|
-      - case leaf.name
+    = fancygrid :users do |column, record, value|
+      - case column.name
       - when :actions
         = link_to "Show", user_path(record)
         = link_to "Edit", edit_user_path(record)
-        
+      - else
+        / this else case is important
+        = value
+
 == belongs_to or has_one associations 
-To display an associated data you have to build the nodes for that data and
-specify the include option for the find method
+To define columns for associations, use the #columns_for method.
 === Example
     def index  
       fancygrid_for :users do |g|
@@ -138,33 +136,33 @@ specify the include option for the find method
         end
         # ...
         g.find do |query|
-          query.select :contact_id
+          # eager loading of the association
           query.includes :contact
         end
       end
     end
     
 If your association name is different from the models name pass the model 
-constant into the columns_for method.
+constant as option.
 === Example
     def index  
       fancygrid_for :users do |g|
         # ...
-        g.columns_for(:invoice_address, Address) do |adr|
+        g.columns_for(:invoice_address, :class => Address) do |adr|
           adr.attributes :street, :zipcode, :city
         end
         # ...
-        g.find do |query|
-          query.select :invoice_address_id
-          query.includes :invoice_address
-        end
       end
     end
     
 == has_many or has_and_belongs_to_many associations
-Similar to the previous example you have to build the nodes for the associations
-and specify the include option
+This is not directly supported. If you have Users that has_many Orders, you 
+should rather define a fancygrid for the Orders than for Users.
+However, there is a workaround that allows to search on the association that
+is usually enough.
+
 === Example
+    
     def index  
       fancygrid_for :users do |g|
         # ...
@@ -172,32 +170,28 @@ and specify the include option
           roles.attributes :name 
         end
         # ...
-        g.find do |query|
-          query.includes :roles
-        end
       end
     end
     
-However this would not work as expected. Its the same as calling <tt>user.roles.name</tt>
-which would call <tt>name</tt> on a collection of roles.
+The definition is valid, and you can already search for users with a specific
+role. But nothing is going to be rendered in the roles.name column. You can now
+format the column in the view like this
 
-Instead you should rather define a <tt>proc</tt> to return all role names or 
-render that cell with custom code.
-=== Example      
-    def index  
-      fancygrid_for :users do |g|
-        # ...
-        g.columns :roles  do |record|
-          record.roles.map(&:name).join(", ")
-        end
-        # ...
-      end
-    end
+=== Example
+    fancygrid :users do |column, record, value|
+      - case column.identifier
+      - when "roles.name"
+        = record.roles.map(&:name).join("|")
+      - else
+        = value
+
+Here the column identifier is used to identify the column. All roles of the user
+are rendered in to one cell.
 
 == Caching the view state
 To make your users life easier you can enable the view state caching. This way
 the user can search for data, leave the site, come back and have his last
-search back on screen. Here is an example of how to store the view in the users session:
+search back on screen.
 === Example
     def index
       fancygrid_for :users, :persist => true do |grid|

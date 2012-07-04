@@ -5,4 +5,4 @@
       %li.fg-sort-item
         = check_box_tag leaf.identifier, "1", leaf.visible
         = leaf.human_name
-  = submit_tag "Save"
+  = submit_tag t(:"actions.save", :default => "Save", :scope => Fancygrid.i18n_scope) 

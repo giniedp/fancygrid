@@ -88,14 +88,14 @@ module Fancygrid#:nodoc:
     
     def find &block
       self.collect_columns
-      
+
       query_options = {}
       query_options[:grid]       = self
       query_options[:select]     = self.leafs.select { |leaf| leaf.selectable }.map{ |leaf| leaf.identifier }
       query_options[:conditions] = self.view_state.conditions
       query_options[:operator]   = self.view_state.operator
 
-      if self.paginate
+      if self.paginate && self.dynamic?
         query_options[:pagination] = self.view_state.pagination_options(1, self.per_page_value)
       end
       
@@ -197,7 +197,7 @@ module Fancygrid#:nodoc:
     # Sets the search options for given column.
     #
     def search_filter column, collection
-      node = self.children.select { |leaf| leaf.identifier == column }.first
+      node = self.children.select { |leaf| leaf.respond_to?(:identifier) && leaf.identifier == column }.first
       node.search_options = Array(collection).map { |v| v.is_a?(Array) ? v : [v.to_s, v.to_s]}
     end
     

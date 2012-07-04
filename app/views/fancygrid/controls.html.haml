@@ -1,22 +1,22 @@
 %ul.fg-control-bar{ :class => tag_class }
 
-  %li.fg-button-prev{ :title => "Previous page" }
+  %li.fg-button-prev{ :title => t(:"actions.prev", :default => "Previous page", :scope => Fancygrid.i18n_scope) }
   %li
     %span
-      Page
+      = I18n.t(:"pagination.page", :default => "Page", :scope => Fancygrid.i18n_scope)
     %span.fg-current-page
       = fancygrid.view_state.pagination_page
     %span
-      of
+      = I18n.t(:"pagination.of", :default => "of", :scope => Fancygrid.i18n_scope)
     %span.fg-total-pages
       = fancygrid.page_count
-  %li.fg-button-next{ :title => "Next page" }
+  %li.fg-button-next{ :title => t(:"actions.next", :scope => Fancygrid.i18n_scope, :default => "Next page") }
 
   %li.separator
   
   %li
     %span
-      Go to page
+      = I18n.t(:"pagination.go_to", :default => "Go to page", :scope => Fancygrid.i18n_scope)
     = text_field_tag(:page, fancygrid.view_state.pagination_page, :class => "fg-current-page")
       
   %li
@@ -24,11 +24,11 @@
     
   %li.separator
   
-  %li.fg-button-search{ :title => "Search" }
-  %li.fg-button-refresh{ :title => "Reload" }
-  %li.fg-button-clear{ :title => "Reset Search" }
+  %li.fg-button-search{ :title => t(:"actions.search", :default => "Search", :scope => Fancygrid.i18n_scope) }
+  %li.fg-button-refresh{ :title => t(:"actions.reload", :default => "Reload", :scope => Fancygrid.i18n_scope) }
+  %li.fg-button-clear{ :title => t(:"actions.reset", :default => "Reset", :scope => Fancygrid.i18n_scope) }
       
   - if fancygrid.sort_window?
-    %li.fg-button-sort{ :title => "Sort Columns" }
+    %li.fg-button-sort{ :title => t(:"actions.sort", :default => "Sort columns", :scope => Fancygrid.i18n_scope) }
   
   = yield :"fancygrid_#{fancygrid.name}_buttons"

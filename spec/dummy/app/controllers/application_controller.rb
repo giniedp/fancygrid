@@ -3,16 +3,22 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
     
   def index
+    #Project.destroy_all
     if Project.count < 10
       10.times do |i|
-        Project.create :title => "Project #{i}"
+        proj = Project.create :title => "Project #{i}"
+        3.times do
+          proj.tickets.create!
+        end
       end
     end
     
     projects_grid = fancygrid_for :projects, :builder => MyGrid, :persist => true do |grid|
       grid.ajax_url = "/index.html"
       grid.paginate = request.format.html?
-      grid.find
+      grid.find do |q|
+        q.includes :tickets
+      end
     end
     
     respond_to do |format|
@@ -30,9 +36,12 @@ class MyGrid < Fancygrid::Grid
     
     self.attributes :id, :title
     self.columns :hash, :object_id
+    self.columns_for :tickets do |t|
+      t.attributes :id
+    end
     #self.components -= [:search_bar]
     self.components += [:sort_window]
-    self.ajax_url = "/"
+    #self.ajax_url = "/"
     self.ajax_type = :get
     
     self.search_filter "projects.title", [["-- choose --", ""], [:foo, :foo], [:bar, :bar]]
