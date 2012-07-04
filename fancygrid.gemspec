@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.email = "giniedp@online.de"
   s.extra_rdoc_files = [
     "LICENSE",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = [
     ".rspec",
@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
     "Gemfile",
     "Gemfile.lock",
     "LICENSE",
-    "README.rdoc",
+    "README.md",
     "ROADMAP",
     "Rakefile",
     "VERSION",
