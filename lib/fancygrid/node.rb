@@ -27,7 +27,7 @@ module Fancygrid
       raise ArgumentError, "name must not be blank" if name.blank?
       
       @parent   = parent
-      @name     = name.to_s
+      @name     = name
       @children = []
       @root     = self.get_root
       

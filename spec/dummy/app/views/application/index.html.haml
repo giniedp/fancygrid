@@ -1,4 +1,9 @@
 - content_for :fancygrid_projects_buttons do
   %li
     = link_to "XML", "#", :onclick => "Fancygrid.projects.download('xml'); return false;"
-= fancygrid :projects
+= fancygrid :projects do |column, record, value|
+  - case column.name
+  - when :title
+    = value
+  - else
+    = value
