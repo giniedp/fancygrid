@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
       end
     end
     
-    projects_grid = fancygrid_for :projects, :builder => MyGrid do |grid|
+    projects_grid = fancygrid_for :projects, :builder => MyGrid, :persist => true do |grid|
       grid.ajax_url = "/index.html"
       grid.paginate = request.format.html?
       grid.find

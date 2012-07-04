@@ -209,7 +209,8 @@ module Fancygrid#:nodoc:
         :ajaxType => self.ajax_type,
         :name => self.name,
         :page => self.view_state.pagination_page,
-        :perPage => self.per_page_value
+        :perPage => self.per_page_value,
+        :searchVisible => !self.hide_search || !self.view_state.conditions.empty?
       }.to_json.gsub("<|>", "")
     end
     

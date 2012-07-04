@@ -58,7 +58,7 @@
     };
     options = (options || {});
     $.extend(settings, options);
-
+    
     // cache parameters
     this.name = options.name;
     this.container = container;

@@ -38,7 +38,7 @@ module Fancygrid
   @@orm = "fancygrid/orm/active_record"
       
   mattr_accessor :hide_search
-  @@hide_search = false
+  @@hide_search = true
   
   mattr_accessor :search_operators
   @@search_operators = Fancygrid::Orm::SqlGenerator::OPERATOR_NAMES
