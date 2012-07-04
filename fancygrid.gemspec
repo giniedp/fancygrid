@@ -17,7 +17,6 @@ Gem::Specification.new do |s|
     "README.rdoc"
   ]
   s.files = [
-    ".bundle/config",
     ".rspec",
     "CHANGELOG",
     "Gemfile",

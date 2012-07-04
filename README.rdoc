@@ -38,19 +38,19 @@ the model and what columns will be visible. Here is an example for a users table
         g.attributes :id, :username, :email 
         # specify the callback url for ajax loading
         g.ajax_url = users_path
-        # finally call find and open a block
+        # finally call find to query the data
         g.find
       end
     end
 
-To render the fancygrid in the view, use the same name you passed in the setup
+To render the fancygrid in the view, use the same name that you passed in the setup
 === Example
     # app/views/users/index.html.haml
     = fancygrid :users
 
 == Static tables
-If you dont want to have an ajax table, you can set the data directly without
-providing a callback url. 
+If you dont want to have an ajax table, dont specify the ajax_url. The table will
+be rendered without pagination with all data that is found.
 === Example
     def index
       fancygrid_for :users do |g|
@@ -112,9 +112,9 @@ method chains and procs to resolve column values.
 For more complex output you have to format the cell value in the view or a formatter method
 
 == Columns formatting in the view
-Add a block to the fancygrid call in the view. In there you can use a switch case condition
-on the columns name to determine what to render. Should not omit the else case. If this
-is missing, you might end up with blank columns
+Add a block to the fancygrid call in the view. In there you can use a switch condition
+on the columns name to determine what to render. You should never omit the else case. 
+If this is missing, you might end up with blank columns.
 === Example
     = fancygrid :users do |column, record, value|
       - case column.name
@@ -142,13 +142,13 @@ To define columns for associations, use the #columns_for method.
       end
     end
     
-If your association name is different from the models name pass the model 
+If your association name is different from the models name, pass the model 
 constant as option.
 === Example
     def index  
       fancygrid_for :users do |g|
         # ...
-        g.columns_for(:invoice_address, :class => Address) do |adr|
+        g.columns_for :invoice_address, :class => Address do |adr|
           adr.attributes :street, :zipcode, :city
         end
         # ...
@@ -156,10 +156,9 @@ constant as option.
     end
     
 == has_many or has_and_belongs_to_many associations
-This is not directly supported. If you have Users that has_many Orders, you 
-should rather define a fancygrid for the Orders than for Users.
-However, there is a workaround that allows to search on the association that
-is usually enough.
+If you have Users that has_many Orders, you should rather define a fancygrid 
+for the Orders than for Users. However, if it must be a Users table and
+you want to search on the associations attributes, you can do that:
 
 === Example
     
@@ -174,7 +173,8 @@ is usually enough.
     end
     
 The definition is valid, and you can already search for users with a specific
-role. But nothing is going to be rendered in the roles.name column. You can now
+role. But nothing is going to be rendered in the roles.name column. This is
+because roles is a collection of records, and not a single record. You can now
 format the column in the view like this
 
 === Example
@@ -185,8 +185,8 @@ format the column in the view like this
       - else
         = value
 
-Here the column identifier is used to identify the column. All roles of the user
-are rendered in to one cell.
+Here the column identifier is used to identify the column. This is useful
+if you have more columns that are named the same.
 
 == Caching the view state
 To make your users life easier you can enable the view state caching. This way
