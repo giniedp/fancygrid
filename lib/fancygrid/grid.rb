@@ -100,7 +100,7 @@ module Fancygrid#:nodoc:
       end
       
       self.records, self.record_count = self.orm.new(query_options).execute(resource_class, &block)
-      self.page_count = self.record_count / self.per_page_value
+      self.page_count = (self.record_count.to_f / self.per_page_value.to_f).ceil
     end
     
     # Determines whether ajax callbacks are enabled or not
@@ -209,7 +209,7 @@ module Fancygrid#:nodoc:
         :ajaxType => self.ajax_type,
         :name => self.name,
         :page => self.view_state.pagination_page,
-        :perPage => self.view_state.pagination_per_page
+        :perPage => self.per_page_value
       }.to_json.gsub("<|>", "")
     end
     

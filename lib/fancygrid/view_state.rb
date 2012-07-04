@@ -93,13 +93,13 @@ module Fancygrid#:nodoc:
       self.dump.fetch(:pagination, {})
     end
 
-    def pagination_page default = 1
+    def pagination_page default=1
       result = self.pagination.fetch(:page, default)
       return default if result <= 0
       return result
     end
 
-    def pagination_per_page default = 5
+    def pagination_per_page default=20
       result = self.pagination.fetch(:per_page, default)
       return default if result <= 0
       return result
@@ -107,8 +107,8 @@ module Fancygrid#:nodoc:
     
     def pagination_options(default_page, default_per_page)
       {
-        :page => self.pagination_page(default_page),
-        :per_page => self.pagination_per_page(default_per_page)
+        :page => self.pagination_page(default_page).to_i,
+        :per_page => self.pagination_per_page(default_per_page).to_i
       }
     end
     

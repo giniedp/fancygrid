@@ -96,14 +96,7 @@ module Fancygrid
     # and the #name of this column.
     #
     def tag_class
-      if @tag_class.nil?
-        @tag_class = []
-        @tag_class << self.table_name
-        @tag_class << self.name
-        @tag_class << "fg-orderable" if self.searchable
-        @tag_class = @tag_class.join(" ")
-      end
-      @tag_class
+      @tag_class or @tag_class = self.identifier.split(".").join(" ")
     end
 
     # Gets the internationalization lookup path for this column.

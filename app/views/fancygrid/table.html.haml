@@ -2,7 +2,7 @@
   %table.fg-datacontainer
     %tr.fg-header
       - fancygrid.visible_columns.each do |column|
-        %th{ :class => column.tag_class, :"fg-identifier" => column.identifier, :"fg-sort-order" => column.sort_order }
+        %th{ :class => column.tag_class + (column.searchable ? " fg-orderable" : ""), :"fg-identifier" => column.identifier, :"fg-sort-order" => column.sort_order }
           .fg-head-wrapper.fg-order-tag
             = column.human_name
     - if fancygrid.simple_search?
