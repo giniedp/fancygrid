@@ -28,7 +28,9 @@ module Fancygrid#:nodoc:
     # Array of fancygrid component names that are going to be rendered.
     attr_accessor :components
     
-    
+    # Specifies whether sql select optimization should be performed
+    attr_accessor :select
+        
     # If true then hides the search bar, but keeps it enabled.
     attr_accessor :hide_search
     
@@ -83,6 +85,7 @@ module Fancygrid#:nodoc:
       self.per_page_values  = options[:per_page_values]
       self.per_page_value   = self.view_state.pagination_per_page(options[:per_page_value])
       self.paginate         = true
+      self.select           = true
       self.page_count       = 0
     end
     
@@ -91,9 +94,12 @@ module Fancygrid#:nodoc:
 
       query_options = {}
       query_options[:grid]       = self
-      query_options[:select]     = self.leafs.select { |leaf| leaf.selectable }.map{ |leaf| leaf.identifier }
       query_options[:conditions] = self.view_state.conditions
       query_options[:operator]   = self.view_state.operator
+      
+      if self.select
+        query_options[:select]     = self.leafs.select { |leaf| leaf.selectable }.map{ |leaf| leaf.identifier }
+      end
 
       if self.paginate && self.dynamic?
         query_options[:pagination] = self.view_state.pagination_options(1, self.per_page_value)

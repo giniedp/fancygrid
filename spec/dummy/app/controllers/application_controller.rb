@@ -16,6 +16,7 @@ class ApplicationController < ActionController::Base
     projects_grid = fancygrid_for :projects, :builder => MyGrid, :persist => true do |grid|
       grid.ajax_url = "/index.html"
       grid.paginate = request.format.html?
+      grid.select = true
       grid.find do |q|
         q.includes :tickets
       end
@@ -37,7 +38,7 @@ class MyGrid < Fancygrid::Grid
     self.attributes :id, :title
     self.columns :hash, :object_id
     self.columns_for :tickets do |t|
-      t.attributes :id
+      t.columns :id
     end
     #self.components -= [:search_bar]
     self.components += [:sort_window]

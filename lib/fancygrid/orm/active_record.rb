@@ -7,7 +7,7 @@ module Fancygrid
         query = resource_class.where({})
 
         if self.query_options[:select].present?
-          query.select(self.query_options[:select])
+          query = query.select(self.query_options[:select])
         end
         
         if self.query_options[:conditions].present?

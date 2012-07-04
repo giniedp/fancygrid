@@ -2,8 +2,10 @@
   %li
     = link_to "XML", "#", :onclick => "Fancygrid.projects.download('xml'); return false;"
 = fancygrid :projects do |column, record, value|
-  - case column.name
-  - when :title
+  - case column.identifier
+  - when "projects.title"
     = value
+  - when "tickets.id"
+    = record.tickets.count
   - else
     = value
