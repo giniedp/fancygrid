@@ -15,7 +15,7 @@ begin
     gem.description = %Q{Enables easy table rendering in rails applications}
     gem.email = "giniedp@online.de"
     gem.homepage = "http://github.com/giniedp/fancygrid"
-    gem.authors = ["Alexander Gräfenstein"]
+    gem.authors = ["Alexander Graefenstein"]
     # gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
