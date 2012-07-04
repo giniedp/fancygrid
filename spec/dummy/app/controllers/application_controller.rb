@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
       end
     end
     
-    projects_grid = fancygrid_for :projects, :builder => MyGrid, :per_page_value => 5, :persist => true do |grid|
+    projects_grid = fancygrid_for :projects, :builder => MyGrid do |grid|
       grid.ajax_url = "/index.html"
       grid.paginate = request.format.html?
       grid.find
@@ -37,7 +37,7 @@ class MyGrid < Fancygrid::Grid
     self.ajax_url = "/"
     self.ajax_type = :get
     
-    self.search_filter "projects.title", [["-- Wählen --", ""], [:foo, :foo], [:bar, :bar]]
+    self.search_filter "projects.title", [["-- choose --", ""], [:foo, :foo], [:bar, :bar]]
   end
 
 end

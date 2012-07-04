@@ -27,7 +27,9 @@ module Fancygrid#:nodoc:
     end
     
     def column_options(node)
-      self.dump[:columns].select { |hash| node.identifier == hash[:identifier] }.first || {}
+      self.dump[:columns].select { |hash| 
+        node.identifier == hash[:identifier] 
+      }.first || {}
     end
     
     def column_option(node, option, default)
@@ -35,11 +37,13 @@ module Fancygrid#:nodoc:
     end
     
     def column_conditions(node)
-      self.dump[:conditions].select { |hash| node.identifier == hash[:identifier] }
+      self.dump[:conditions].select { |hash| 
+        node.identifier == hash[:identifier] 
+      }.first || {}
     end
     
     def column_condition(node, option, default)
-      self.column_conditions(node).fetch(option, default)
+      self.column_conditions(node).fetch(option.to_s, default)
     end
 
     def conditions
