@@ -27,8 +27,7 @@ Run
 
 == Basic Setup
 In any controller in any action you can define a fancygrid for a specific model.
-A controller is the place where you define what data should be queried from
-the model and what columns will be visible. Here is an example for a users table:
+Here is an example for a simple table for the Users model:
 === Example
     # UsersController
     def index
