@@ -22,4 +22,4 @@
       %tr.fg-row
         - fancygrid.visible_columns.each do |column|
           %td{ :class => column.tag_class }
-            = render_fancygrid_cell(record, column)
+            = render_fancygrid_cell(record, column, &format_block)

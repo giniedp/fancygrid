@@ -5,7 +5,7 @@
     - if fancygrid.top_control?
       = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :tag_class => :"controls top" })
     
-    = render(:template => Fancygrid.table_template, :locals => { :fancygrid => fancygrid })
+    = render(:template => Fancygrid.table_template, :locals => { :fancygrid => fancygrid, :format_block => format_block })
                   
     - if fancygrid.bottom_control?
       = render(:template => Fancygrid.controls_template, :locals => { :fancygrid => fancygrid, :tag_class => :"controls bottom" })
