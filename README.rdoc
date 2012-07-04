@@ -48,8 +48,8 @@ To render the fancygrid in the view, use the same name that you passed in the se
     = fancygrid :users
 
 == Static tables
-If you dont want to have an ajax table, dont specify the ajax_url. The table will
-be rendered without pagination with all data that is found.
+If you dont want to have an ajax table, dont specify the ajax_url. The data will be
+queried and the table will be rendered without pagination.
 === Example
     def index
       fancygrid_for :users do |g|
@@ -71,7 +71,7 @@ name. If you happen to use namespaced models, you must pass the class as an opti
     end
     
 Optionally you can also pass a specific table name. However, if the class responds
-to #table_name, this is not necessary
+to #table_name, this is not necessary.
 === Example
     def index
       fancygrid_for :user, :class => Namespace::User, :table_name => "users" do |g|
@@ -80,7 +80,7 @@ to #table_name, this is not necessary
     end
     
 = Define columns
-To display attributs as columns use the #attributes method like this:
+To display attributes as columns use the #attributes method for setup like this:
 === Example
     def index  
       fancygrid_for :users do |g|
@@ -108,12 +108,12 @@ method chains and procs to resolve column values.
       end
     end
     
-For more complex output you have to format the cell value in the view or a formatter method
+For more complex output you have to format the cell value in the view or a formatter method.
 
 == Columns formatting in the view
 Add a block to the fancygrid call in the view. In there you can use a switch condition
-on the columns name to determine what to render. You should never omit the else case. 
-If this is missing, you might end up with blank columns.
+on the columns name to determine what to render. Do not forget to add the else case to
+render all unformatted values.
 === Example
     = fancygrid :users do |column, record, value|
       - case column.name
@@ -142,7 +142,7 @@ To define columns for associations, use the #columns_for method.
     end
     
 If your association name is different from the models name, pass the model 
-constant as option.
+class as option.
 === Example
     def index  
       fancygrid_for :users do |g|
