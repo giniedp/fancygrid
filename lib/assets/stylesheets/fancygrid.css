@@ -23,7 +23,7 @@ tr.fg-search td .fg-search-criterion select{
   outline: none;
   -webkit-appearance:scrollbarbutton-down;
 }
-tr.fg-search td .fg-search-criterion select:focus;{
+tr.fg-search td .fg-search-criterion select:focus{
   outline: none;
 }
 
