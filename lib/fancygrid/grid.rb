@@ -297,5 +297,19 @@ module Fancygrid#:nodoc:
         @td_id
       end
     end
+
+    def table_class=value
+      @table_class = value
+    end
+    def table_class
+      @table_class
+    end
+
+    def table_id=value
+      @table_id = value
+    end
+    def table_id
+      @table_id
+    end
   end
 end

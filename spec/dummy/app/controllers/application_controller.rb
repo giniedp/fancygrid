@@ -32,9 +32,13 @@ class ApplicationController < ActionController::Base
         "td-#{record.id}"
       end
 
+      #grid.table_class = "table-class"
+      #grid.table_id = "table-id"
+
       grid.find do |q|
         q.includes :tickets
       end
+
     end
     
     respond_to do |format|

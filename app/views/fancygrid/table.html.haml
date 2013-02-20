@@ -1,5 +1,5 @@
 .fg-datawrapper{ :class => "fg-#{fancygrid.name}"}
-  %table.fg-datacontainer
+  %table.fg-datacontainer{ :class => fancygrid.table_class, :id => fancygrid.table_id }
     %tr.fg-header
       - fancygrid.visible_columns.each do |column|
         %th{ :class => column.tag_class + (column.searchable ? " fg-orderable" : ""), :"fg-identifier" => column.identifier, :"fg-sort-order" => column.sort_order }
