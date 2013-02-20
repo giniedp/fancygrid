@@ -17,6 +17,21 @@ class ApplicationController < ActionController::Base
       grid.ajax_url = "/index.html"
       grid.paginate = request.format.html?
       grid.select = true
+
+      grid.tr_class do |record|
+        "tr-#{record.id}"
+      end
+      grid.tr_id do |record|
+        "tr-#{record.id}"
+      end
+
+      grid.td_class do |record|
+        "td-#{record.id}"
+      end
+      grid.td_id do |record|
+        "td-#{record.id}"
+      end
+
       grid.find do |q|
         q.includes :tickets
       end

@@ -249,5 +249,53 @@ module Fancygrid#:nodoc:
       end
       return result
     end
+
+    def tr_class=value
+      @tr_class = value
+    end
+    def tr_class(record=nil)
+      @tr_class = Proc.new if block_given?
+      if @tr_class.is_a? Proc
+        @tr_class.call(record) if record
+      else
+        @tr_class
+      end
+    end
+
+    def tr_id=value
+      @tr_id = value
+    end
+    def tr_id(record=nil)
+      @tr_id = Proc.new if block_given?
+      if @tr_id.is_a? Proc
+        @tr_id.call(record) if record
+      else
+        @tr_id
+      end
+    end
+
+    def td_class=value
+      @td_class = value
+    end
+    def td_class(record=nil)
+      @td_class = Proc.new if block_given?
+      if @td_class.is_a? Proc
+        @td_class.call(record) if record
+      else
+        @td_class
+      end
+    end
+
+    def td_id=value
+      @td_id = value
+    end
+    def td_id(record=nil)
+      @td_id = Proc.new if block_given?
+      if @td_id.is_a? Proc
+        @td_id.call(record) if record
+      else
+        @td_id
+      end
+    end
   end
 end

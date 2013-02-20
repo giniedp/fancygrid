@@ -19,7 +19,7 @@
                 = text_field_tag(:value, column.search_value)
 
     - fancygrid.records.each do |record|
-      %tr.fg-row
+      %tr.fg-row{ :class => fancygrid.tr_class(record), :id => fancygrid.tr_id(record) }
         - fancygrid.visible_columns.each do |column|
-          %td{ :class => column.tag_class }
+          %td{ :class => column.tag_class + " " + fancygrid.td_class(record).to_s, :id => fancygrid.td_id(record) }
             = render_fancygrid_cell(record, column, &format_block)

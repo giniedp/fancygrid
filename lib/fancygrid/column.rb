@@ -35,7 +35,6 @@ module Fancygrid
     # Value resolver proc for this column.
     attr_accessor :value_proc
     
-    
     def initialize(parent, name, options = {})
       super(parent, name, options)
       
@@ -53,6 +52,9 @@ module Fancygrid
       @value_proc      = options.fetch(:value_proc, nil)
       
       @human_name      = options.fetch(:human_name, nil)
+
+      @th_class        = options.fetch(:th_class, "")
+      @td_class        = options.fetch(:td_class, "")
       
       @formatable      = self.root.respond_to?(self.formatter_method)
     end
@@ -97,6 +99,12 @@ module Fancygrid
     #
     def tag_class
       @tag_class or @tag_class = self.identifier.split(".").join(" ")
+    end
+
+    def th_class(record)
+    end
+
+    def td_class(record)
     end
 
     # Gets the internationalization lookup path for this column.
