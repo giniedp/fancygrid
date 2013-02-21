@@ -93,6 +93,23 @@ to #table_name, this is not necessary.
   end
 ```
 
+### Add class and id values to table and tr and td table elements
+To add a class or id to either the table, TR, or TD elements you add it to the fancygrid_for block like this:
+```ruby
+  def index
+    fancygrid_for :user do |g|
+    #...
+    g.tr_id do |record|
+      "row-#{record.id}"
+    end
+    # or
+    g.tr_id = :row_id
+    # same with tr_class, td_id and td_class
+    g.table_class = "user_table"
+    #same with table_id
+  end
+```
+
 ## Define columns
 To display attributes as columns use the #attributes method for setup like this:
 ```ruby
