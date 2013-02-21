@@ -18,8 +18,10 @@
               - else
                 = text_field_tag(:value, column.search_value)
 
+    - count = 1
     - fancygrid.records.each do |record|
-      %tr.fg-row{ :class => fancygrid.tr_class(record), :id => fancygrid.tr_id(record) }
+      - count = 1 - count
+      %tr.fg-row{ :class => fancygrid.tr_class(record) + " " + (count == 1 ? "odd" : "even"), :id => fancygrid.tr_id(record) }
         - fancygrid.visible_columns.each do |column|
           %td{ :class => column.tag_class + " " + fancygrid.td_class(record).to_s, :id => fancygrid.td_id(record) }
             = render_fancygrid_cell(record, column, &format_block)
