@@ -46,6 +46,8 @@ module Fancygrid
         
         Array(search_conditions).each do |options|
           sql, value = comparison_operator(options[:identifier], options[:operator], options[:value])
+          # skip empty LIKE conditions
+          next if value == "%%" || value == "%"
           conditions << sql
           arguments << value unless value.nil?
         end
