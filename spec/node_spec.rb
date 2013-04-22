@@ -8,7 +8,7 @@ describe Fancygrid::Node do
   
   describe "#initialize" do
     it "should call #to_s on name attribute" do
-      Fancygrid::Node.new(nil, :project).name.should == "project"
+      Fancygrid::Node.new(nil, :project).name.should == :project
     end
     
     it "should resolve resource class" do
