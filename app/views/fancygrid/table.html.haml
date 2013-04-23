@@ -12,10 +12,11 @@
             - next unless column.searchable
             .fg-search-criterion
               = hidden_field_tag(:identifier, column.identifier)
-              = hidden_field_tag(:operator, fancygrid.search_operator)
               - if column.search_options
+                = hidden_field_tag(:operator, :starts_with)
                 = select_tag(:value, options_from_collection_for_select(column.search_options, :last, :first), :selected => column.search_value)
               - else
+                = hidden_field_tag(:operator, fancygrid.search_operator)
                 = text_field_tag(:value, column.search_value)
 
     - count = 1
