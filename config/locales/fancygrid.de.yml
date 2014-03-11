@@ -1,6 +1,6 @@
 de:
   fancygrid:
-    pagination: 
+    pagination:
       page: Seite
       of: von
       per_page: 'Pro Seite:'
@@ -18,7 +18,7 @@ de:
       conditions: 'Alle kriterien müssen erfüllt sein:'
       add_criterion: Kriterium hinzufügen
       remove_criterion: Kriterium löschen
-      
+
       operator:
         equal: 'gleich'
         not_equal: 'ungleich'
@@ -29,6 +29,9 @@ de:
         starts_with: 'beginnt mit'
         ends_with: 'endet mit'
         like: 'ähnlich wie'
+        insensitive_starts_with: 'beginnt mit (Groß-und Kleinschreibung)'
+        insensitive_ends_with: 'endet mit (Groß-und Kleinschreibung)'
+        insensitive_like: 'ähnlich wie (Groß-und Kleinschreibung)'
         is_null: 'ist leer'
         is_not_null: 'ist nicht leer'
         is_true: 'ist wahr'

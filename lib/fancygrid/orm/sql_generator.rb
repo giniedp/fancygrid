@@ -3,8 +3,9 @@ module Fancygrid
     module SqlGenerator#:nodoc:
       
       OPERATOR_NAMES = [
-        :equal, :not_equal, :less, :less_equal, :greater, :greater_equal, :starts_with, :ends_with, 
-        :like, :is_null, :is_not_null, :is_true, :is_not_true, :is_false, :is_not_false, :in, :not_in
+        :equal, :not_equal, :less, :less_equal, :greater, :greater_equal, :starts_with, :ends_with,
+        :like, :insensitive_starts_with, :insensitive_ends_with, :insensitive_like,
+        :is_null, :is_not_null, :is_true, :is_not_true, :is_false, :is_not_false, :in, :not_in
       ]
       
       attr_accessor :query_options
@@ -78,6 +79,15 @@ module Fancygrid
         when "like"
           value = "%#{value.to_param}%"
           "LIKE"
+        when "insensitive_starts_with"
+          value = "#{value.to_param}%"
+          "ILIKE"
+        when "insensitive_ends_with"
+          value = "%#{value.to_param}"
+          "ILIKE"
+        when "insensitive_like"
+          value = "%#{value.to_param}%"
+          "ILIKE"
         when "is_null"
           value = nil
           "IS NULL"
