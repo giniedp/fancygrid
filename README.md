@@ -4,7 +4,7 @@ Fancygrid mades it easy to create and render tables for database records in rail
 * Ajax data fetch
 * Pagination
 * Simple search
-* Complex search with 17 different conditions
+* Complex search with 20 different conditions
 * Column sorting
 * View state caching
 * ActiveRecord supported. MongoDB coming (some day).
@@ -26,7 +26,7 @@ Run
 bundle install
 ```
 
-If you use Rails3 with asset pipeline enabled, you can just require the javascript and css 
+If you use Rails3 with asset pipeline enabled, you can just require the javascript and css
 ```
 // = require fancygrid
 ```
@@ -40,10 +40,10 @@ Here is an example for a simple table for the Users model:
 ```ruby
   # UsersController
   def index
-  
-    fancygrid_for :users do |g|        
-      # specify attributes to display  
-      g.attributes :id, :username, :email 
+
+    fancygrid_for :users do |g|
+      # specify attributes to display
+      g.attributes :id, :username, :email
       # specify the callback url for ajax loading
       g.ajax_url = users_path
       # finally call find to query the data
@@ -58,6 +58,20 @@ To render the fancygrid in the view, use the same name that you passed in the se
   = fancygrid :users
 ```
 
+### Changing default comparison operator
+The default SQL string comparison operator is `LIKE '%term%'`.  You can update this to Postgresql's case-insensitive `ILIKE` as seen below:
+```ruby
+  def index
+    fancygrid_for :users do |g|
+      g.search_operator = :insensitive_like
+      g.attributes :id, :email, :created_at
+      # ...
+    end
+  end
+```
+
+The LIKE options include `:like` (the default), `:starts_with`, `:ends_with`, `:insensitive_like`, `:insensitive_starts_with`, and `:insensitive_ends_with`.
+
 ### Static tables
 If you dont want to have an ajax table, dont specify the ajax_url. The data will be
 queried and the table will be rendered without pagination.
@@ -65,15 +79,15 @@ queried and the table will be rendered without pagination.
   def index
     fancygrid_for :users do |g|
       # ...
-      g.attributes :id, :username, :email 
+      g.attributes :id, :username, :email
       # don't set the ajax_url and just call find
       g.find
     end
   end
-``` 
+```
 
 ### Table names and model names
-Usually fancygrid tries to resolve the models class and table name from given 
+Usually fancygrid tries to resolve the models class and table name from given
 name. If you happen to use namespaced models, you must pass the class as an option.
 ```ruby
   def index
@@ -113,7 +127,7 @@ To add a class or id to either the table, TR, or TD elements you add it to the f
 ## Define columns
 To display attributes as columns use the #attributes method for setup like this:
 ```ruby
-  def index  
+  def index
     fancygrid_for :users do |g|
       # ...
       g.attributes :id, :email, :created_at
@@ -125,7 +139,7 @@ To display attributes as columns use the #attributes method for setup like this:
 For everything else use the #columns method. You can have method names,
 method chains and procs to resolve column values.
 ```ruby
-  def index  
+  def index
     fancygrid_for :users do |g|
       # ...
       # methods
@@ -135,7 +149,7 @@ method chains and procs to resolve column values.
       # procs
       g.columns :roles do |record|
         record.roles.map(&:name).join(", ")
-      end        
+      end
       # ...
     end
   end
@@ -157,10 +171,10 @@ render all unformatted values.
       = value
 ```
 
-## belongs_to or has_one associations 
+## belongs_to or has_one associations
 To define columns for associations, use the #columns_for method.
 ```ruby
-  def index  
+  def index
     fancygrid_for :users do |g|
       # ...
       g.columns_for :contact do |contact|
@@ -176,14 +190,14 @@ To define columns for associations, use the #columns_for method.
   end
 ```
 Mention that in the query block the contact_id is selected. This is required, since fancygrid
-tries to use optimized sql queries by default. Therefore it will select only those attributes 
+tries to use optimized sql queries by default. Therefore it will select only those attributes
 that have been used during the fancygrid setup. If the contact_id is missing, it will not be
 possible to include the contact association.
 
-If your association name is different from the models name, pass the model 
+If your association name is different from the models name, pass the model
 class as option.
 ```ruby
-  def index  
+  def index
     fancygrid_for :users do |g|
       # ...
       g.columns_for :invoice_address, :class => Address do |adr|
@@ -195,22 +209,22 @@ class as option.
 ```
 
 ## has_many or has_and_belongs_to_many associations
-If you have Users that has_many Orders, you should rather define a fancygrid 
+If you have Users that has_many Orders, you should rather define a fancygrid
 for the Orders than for Users. However, if it must be a Users table and
 you want to search on the associations attributes, you can do that:
 
 ```ruby
-  def index  
+  def index
     fancygrid_for :users do |g|
       # ...
       g.columns_for :roles do |roles|
-        roles.attributes :name 
+        roles.attributes :name
       end
       # ...
     end
   end
 ```
-    
+
 The definition is valid, and you can already search for users with a specific
 role. But nothing is going to be rendered in the roles.name column. This is
 because roles is a collection of records, and not a single record. You can now

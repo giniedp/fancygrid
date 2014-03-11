@@ -1,6 +1,6 @@
 en:
   fancygrid:
-    pagination: 
+    pagination:
       page: Page
       of: of
       per_page: 'Per page:'
@@ -18,7 +18,7 @@ en:
       conditions: 'All conditions must be met:'
       add_criterion: Add criterion
       remove_criterion: Remove criterion
-      
+
       operator:
         equal: 'equal'
         not_equal: 'not equal'
@@ -29,6 +29,9 @@ en:
         starts_with: 'starts with'
         ends_with: 'ends with'
         like: 'like'
+        insensitive_starts_with: 'starts with (case-insensitive)'
+        insensitive_ends_with: 'ends with (case-insensitive)'
+        insensitive_like: 'like (case-insensitive)'
         is_null: 'is null'
         is_not_null: 'is not null'
         is_true: 'is true'
