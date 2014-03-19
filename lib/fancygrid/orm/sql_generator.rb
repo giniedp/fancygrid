@@ -57,7 +57,7 @@ module Fancygrid
       end
 
       def comparison_operator(column, operator, value)
-        perform_cast_to_char = false
+        perform_cast_to_varchar = false
         operator = case operator.to_s
         when "equal"
           "="
@@ -72,27 +72,24 @@ module Fancygrid
         when "greater_equal"
           ">="
         when "starts_with"
-          perform_cast_to_char = true
           value = "#{value.to_param}%"
           "LIKE"
         when "ends_with"
-          perform_cast_to_char = true
           value = "%#{value.to_param}"
           "LIKE"
         when "like"
-          perform_cast_to_char = true
           value = "%#{value.to_param}%"
           "LIKE"
         when "insensitive_starts_with"
-          perform_cast_to_char = true
+          perform_cast_to_varchar = true
           value = "#{value.to_param}%"
           "ILIKE"
         when "insensitive_ends_with"
-          perform_cast_to_char = true
+          perform_cast_to_varchar = true
           value = "%#{value.to_param}"
           "ILIKE"
         when "insensitive_like"
-          perform_cast_to_char = true
+          perform_cast_to_varchar = true
           value = "%#{value.to_param}%"
           "ILIKE"
         when "is_null"
@@ -125,8 +122,8 @@ module Fancygrid
 
         if value.nil?
           return "( #{column} #{operator} )", value
-        elsif perform_cast_to_char
-          return "( CAST(#{column} AS CHAR) #{operator} (?) )", value
+        elsif perform_cast_to_varchar
+          return "( CAST(#{column} AS varchar) #{operator} (?) )", value
         else
           return "( #{column} #{operator} (?) )", value
         end
