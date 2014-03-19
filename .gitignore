@@ -9,6 +9,7 @@ tmtags
 \#*
 .\#*
 *.swp
+*.gem
 
 ## PROJECT::GENERAL
 coverage

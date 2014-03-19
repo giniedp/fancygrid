@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Graefenstein"]
-  s.date = "2014-03-18"
+  s.date = "2014-03-19"
   s.description = "Enables easy table rendering in rails applications"
   s.email = "giniedp@online.de"
   s.extra_rdoc_files = [
