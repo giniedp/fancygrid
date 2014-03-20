@@ -1,50 +1,50 @@
 module Fancygrid
   module Orm
     module SqlGenerator#:nodoc:
-      
+
       OPERATOR_NAMES = [
         :equal, :not_equal, :less, :less_equal, :greater, :greater_equal, :starts_with, :ends_with,
         :like, :insensitive_starts_with, :insensitive_ends_with, :insensitive_like,
         :is_null, :is_not_null, :is_true, :is_not_true, :is_false, :is_not_false, :in, :not_in
       ]
-      
+
       attr_accessor :query_options
-    
+
       def initialize(options)
 
         self.query_options = {}
-        
+
         if grid = options[:grid]
           self.query_options[:order] = grid.view_state.sql_order
         end
-        
+
         if select = options[:select]
           self.query_options[:select] = select
         end
-        
+
         if pagination = options[:pagination]
           self.query_options[:limit] = pagination[:per_page].to_i
           self.query_options[:offset] = (pagination[:page].to_i - 1) * pagination[:per_page].to_i
         end
-        
+
         if conditions = self.build_conditions(options[:operator], options[:conditions])
           self.query_options[:conditions] = conditions
         end
       end
-      
+
       def execute resource_class
         raise "called execute on abstract class"
       end
-      
+
       protected
-      
+
       def build_conditions(operator, search_conditions)
         return nil if Array(search_conditions).empty?
-        
+
         operator = logical_operator(operator)
         conditions = []
         arguments = []
-        
+
         Array(search_conditions).each do |options|
           sql, value = comparison_operator(options[:identifier], options[:operator], options[:value])
           # skip empty LIKE conditions
@@ -52,11 +52,12 @@ module Fancygrid
           conditions << sql
           arguments << value unless value.nil?
         end
-        
+
         return [conditions.join(operator)] + arguments
       end
 
       def comparison_operator(column, operator, value)
+        perform_cast_to_varchar = false
         operator = case operator.to_s
         when "equal"
           "="
@@ -80,12 +81,15 @@ module Fancygrid
           value = "%#{value.to_param}%"
           "LIKE"
         when "insensitive_starts_with"
+          perform_cast_to_varchar = true
           value = "#{value.to_param}%"
           "ILIKE"
         when "insensitive_ends_with"
+          perform_cast_to_varchar = true
           value = "%#{value.to_param}"
           "ILIKE"
         when "insensitive_like"
+          perform_cast_to_varchar = true
           value = "%#{value.to_param}%"
           "ILIKE"
         when "is_null"
@@ -115,15 +119,17 @@ module Fancygrid
         else
           "="
         end
-        
+
         if value.nil?
           return "( #{column} #{operator} )", value
+        elsif perform_cast_to_varchar
+          return "( CAST(#{column} AS varchar) #{operator} (?) )", value
         else
           return "( #{column} #{operator} (?) )", value
         end
-        
+
       end
-      
+
       def logical_operator(name)
         case name.to_s
         when "all", "and"
@@ -132,8 +138,8 @@ module Fancygrid
           " OR "
         end
       end
-     
-       
+
+
     end
   end
 end
