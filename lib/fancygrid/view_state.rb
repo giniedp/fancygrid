@@ -84,7 +84,7 @@ module Fancygrid#:nodoc:
     
     def sql_order
       return nil unless ordered?
-      return "#{order_table}.#{order_column} #{order_direction}"
+      return "LOWER(#{order_table}.#{order_column}) #{order_direction}"
     end
     
     def pagination
