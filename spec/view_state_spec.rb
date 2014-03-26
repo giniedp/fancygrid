@@ -86,6 +86,12 @@ describe Fancygrid::ViewState do
       state = Fancygrid::ViewState.new :order => { :identifier => "a.b" }
       state.ordered?.should be false
     end
+
+    it "sql_order should not be case sensitive" do
+      state = Fancygrid::ViewState.new :order => { :identifier => 'a.b', :direction => 'asc' }
+      state.sql_order.should eql 'LOWER(a.b) asc'
+    end
+
   end
 
 end
